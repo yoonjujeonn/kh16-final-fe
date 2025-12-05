@@ -13,10 +13,8 @@ import "bootstrap";
 import './index.css'
 
 //axios
-import "./utils/axios"
+//import "./utils/axios"
 
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
     <App />
-  </StrictMode>,
 )

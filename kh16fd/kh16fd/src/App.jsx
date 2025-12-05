@@ -2,7 +2,6 @@ import { Bounce, ToastContainer } from "react-toastify"
 import './App.css'
 import Content from "./components/Content"
 import Footer from "./components/Footer"
-import Menu from "./components/Menu"
 import {BrowserRouter, HashRouter, useNavigate} from "react-router-dom"
 import { Provider, useAtom, useSetAtom } from "jotai";
 
@@ -10,16 +9,17 @@ import { Provider, useAtom, useSetAtom } from "jotai";
 import "jotai-devtools/styles.css";//디자인
 import { DevTools, useAtomDevtools } from "jotai-devtools";//도구
 import axios from "axios";
-import { accessTokenState, clearLoginState, refreshTokenState } from "./utils/jotai"
+//import { accessTokenState, clearLoginState, refreshTokenState } from "./utils/jotai"
 import { useEffect, useReducer, useRef } from "react"
+import Menu from "./components/Menu"
 
 function App() {
   //const navigate = useNavigate();//사용 불가(Router 외부라서)
 
   // jotai state
-  const [accessToken, setAccessToken] = useAtom(accessTokenState);
-  const [refreshToken, setRefreshToken] = useAtom(refreshTokenState);
-  const clearLogin = useSetAtom(clearLoginState);
+  // const [accessToken, setAccessToken] = useAtom(accessTokenState);
+  // const [refreshToken, setRefreshToken] = useAtom(refreshTokenState);
+  // const clearLogin = useSetAtom(clearLoginState);
 
 
   return (
@@ -33,10 +33,8 @@ function App() {
             process.env.NODE_ENV 정보를 읽었을 때 development면 개발모드, production이면 배포모드
           */}
           {process.env.NODE_ENV === "development" && <DevTools/>}
-
-          <Menu/>
-
-          <div className="container-fluid my-5  pt-5">
+          <Menu />
+          <div className="container-fluid pt-5">
             <Content/>
             <hr/>
             <Footer/>
@@ -45,7 +43,7 @@ function App() {
       </BrowserRouter>
 
       {/* 토스트 메세지 컨테이너 */}
-      <ToastContainer
+      {/* <ToastContainer
         position="bottom-right"
         autoClose={5000}
         hideProgressBar={false}
@@ -57,7 +55,7 @@ function App() {
         pauseOnHover
         theme="colored"
         transition={Bounce}
-      />
+      /> */}
     </>
   )
 }
