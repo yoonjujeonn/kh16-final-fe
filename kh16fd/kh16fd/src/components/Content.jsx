@@ -5,6 +5,8 @@ import RestaurantAdd from "./restaurant/RestaurantAdd";
 import RestaurantInfo from "./restaurant/RestaurantInfo";
 import ReservationInfo from "./restaurant/ReservationInfo";
 import ReservationMoreInfo from "./restaurant/ReservationMoreInfo";
+import CategoryAdd from "./category/CategoryAdd";
+
 
 export default function Content () {
 
@@ -15,21 +17,31 @@ export default function Content () {
 
                     {/* path=주소, element=화면 */}
                     <Routes>
+
+                        {/* 메인 페이지 */}
+
                         <Route path="/" element={<Home />}></Route>
+
                         {/* 식당 관련 메뉴 */}
                         <Route path="/restaurant/add" element={<RestaurantAdd/>}>
                             <Route index element={<RestaurantInfo />}></Route>
                             <Route path="/restaurant/add/info" element={<ReservationInfo />}></Route>
                             <Route path="/restaurant/add/info/1" element={<ReservationMoreInfo />}></Route>
                         </Route>
+
                         {/* 관리 메뉴 - 추후 guard 추가 */}
                         <Route path="/admin/setting" element={<AdminSetting />}>
                         
                         </Route>
+
+
+                        {/* 카테고리 등록 페이지 */}
+                        <Route path="/category/add" element={<CategoryAdd />} />
+
                     </Routes>
 
                 </div>
             </div>
         </>
-    );
+    )
 }
