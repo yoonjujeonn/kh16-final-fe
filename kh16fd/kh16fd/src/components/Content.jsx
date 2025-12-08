@@ -7,6 +7,7 @@ import ReservationInfo from "./restaurant/ReservationInfo";
 import ReservationMoreInfo from "./restaurant/ReservationMoreInfo";
 import CategoryAdd from "./category/CategoryAdd";
 
+
 export default function Content () {
 
     return (
@@ -16,7 +17,9 @@ export default function Content () {
 
                     {/* path=주소, element=화면 */}
                     <Routes>
+
                         {/* 메인 페이지 */}
+
                         <Route path="/" element={<Home />}></Route>
 
                         {/* 식당 관련 메뉴 */}
@@ -30,6 +33,7 @@ export default function Content () {
                         <Route path="/admin/setting" element={<AdminSetting />}>
                         
                         </Route>
+
 
                         {/* 카테고리 등록 페이지 */}
                         <Route path="/category/add" element={<CategoryAdd />} />

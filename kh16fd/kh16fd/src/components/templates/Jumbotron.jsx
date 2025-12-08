@@ -3,6 +3,7 @@ export default function Jumbotron({ subject = "제목", detail = "", bgColor = "
 
     return (
         <>
+
             <div className="row mt-4">
                 <div className="col">
                     <div className={`bg-${bgColor} text-${textColor} p-4 rounded`}>
@@ -10,5 +11,5 @@ export default function Jumbotron({ subject = "제목", detail = "", bgColor = "
                     </div>
                 </div>
             </div>
-        </>)
+        </>) 
 }
