@@ -23,7 +23,7 @@ export default function RestaurantAdd() {
         restaurantBreakStart: "",
         restaurantBreakEnd: "",
         reservationInterval: "",
-        restaurantOpeningDays: [],
+        restaurantOpeningDays: "",
         restaurantLastOrder: "",
         restaurantReservationPrice: "",
         restaurantDescription: ""

@@ -37,7 +37,7 @@ const restaurantInfo = {
         restaurantBreakStart: "",
         restaurantBreakEnd: "",
         reservationInterval: "",
-        restaurantOpeningDays: [],
+        restaurantOpeningDays: "",
         restaurantLastOrder: "",
         restaurantReservationPrice: "",
         restaurantDescription: ""
