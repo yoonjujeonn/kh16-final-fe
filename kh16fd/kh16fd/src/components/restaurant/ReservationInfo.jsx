@@ -18,21 +18,41 @@ export default function ReservationInfo() {
 
     const weekdays = ["월", "화", "수", "목", "금", "토", "일"];
     
+    // 체크박스 토글 시 바로 DB 저장용 문자열로 업데이트
+    const handleWeekdayToggle = useCallback((day) => {
+        const currentString = basicInfo.restaurantOpeningDays || "";
+        const current = currentString ? currentString.split(",") : [];
+
+        const updated = current.includes(day)
+            ? current.filter(d => d !== day)  // 해제
+            : [...current, day];             // 선택
+
+        const updatedString = updated.join(","); // "월,화,수" 형태
+
+        setBasicInfo(prev => ({
+            ...prev,
+            restaurantOpeningDays: updatedString
+        }));
+    }, [basicInfo, setBasicInfo]);
+
+    // 체크박스 체크 여부 확인
+    const isChecked = useCallback((day) => {
+        const currentString = basicInfo.restaurantOpeningDays || "";
+        const current = currentString ? currentString.split(",") : [];
+        return current.includes(day);
+    }, [basicInfo]);
+
     const changeTimeValue = useCallback((field) => (value) => {
         setBasicInfo(prev => ({
             ...prev,
             [field]: value
         }));
     }, []);
+
     const changeStrValue = useCallback(e => {
         const { name, value } = e.target;
         setBasicInfo(prev => ({
             ...prev,
-            restaurantOpen: openTime,
-            restaurantClose: closeTime,
-            restaurantBreakStart: breakStart,
-            restaurantBreakEnd: breakEnd,
-            restaurantLastOrder: lastOrder,
             [name]: value
         }));
     }, []);
@@ -45,9 +65,18 @@ export default function ReservationInfo() {
             </div>
             <div className="row mt-4">
                 <label className="col-sm-3 col-form-label">영업일</label>
-                <div className="col-sm-9">
-                    <input type="text" className="form-control" placeholder="ex) 월-금"/>
-                </div>
+                <div className="col-sm-9 d-flex flex-wrap">
+                {weekdays.map(day => (
+                    <label key={day} className="form-check me-2">
+                        <input
+                            type="checkbox" className="form-check-input"
+                            checked={isChecked(day)}
+                            onChange={() => handleWeekdayToggle(day)}
+                        />
+                        {day}
+                    </label>
+                ))}
+            </div>
             </div>
             <div className="row mt-4">
                 <label className="col-sm-3 col-form-label">오픈 시간</label>

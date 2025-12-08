@@ -93,8 +93,8 @@ export default function RestaurantInfo() {
     const searchAddress = useCallback(() => {
         openPostcode({
             onComplete: (data) => {
-                const addr = data.userSelectedType === "R" ? data.roadAddress : data.jibunAddress;
-
+                const addr = data.jibunAddress || data.autoJibunAddress;
+                console.log(data);
                 setBasicInfo(prev => ({ ...prev, address1: addr, address2: "" }));
 
                 if (address2Ref.current) address2Ref.current.focus();
