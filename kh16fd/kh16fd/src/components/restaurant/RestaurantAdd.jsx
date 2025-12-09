@@ -5,12 +5,10 @@ import { useAtom } from "jotai";
 import { loginIdState, restaurantInfoState } from "../../utils/jotai";
 
 export default function RestaurantAdd() {
-    const [loginId, setLoginId] = useAtom(loginIdState);
     const [basicInfo, setBasicInfo] = useAtom(restaurantInfoState);
-    
+
     useEffect(() => {
         setBasicInfo({
-        ownerId: loginId,
         restaurantName: "",
         restaurantContact: "",
         restaurantAddress: "",

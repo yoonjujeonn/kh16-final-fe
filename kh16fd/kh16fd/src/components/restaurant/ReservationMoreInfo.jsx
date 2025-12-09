@@ -20,7 +20,6 @@ export default function ReservationMoreInfo() {
         instance.hide();
     }, [modal]);
 
-
     return (
         <>
             <div className="progress">
