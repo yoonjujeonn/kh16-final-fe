@@ -32,7 +32,7 @@ export default function ReservationInfo() {
             ...prev,
             restaurantOpeningDays: updatedString
         }));
-    }, [basicInfo, setBasicInfo]);
+    }, [basicInfo]);
 
     // 체크박스 체크 여부 확인
     const isChecked = useCallback((day) => {
@@ -93,6 +93,7 @@ export default function ReservationInfo() {
             restaurantDescription: ""
         });
     },[]);
+    
     return (
         <>
             <div className="progress">
