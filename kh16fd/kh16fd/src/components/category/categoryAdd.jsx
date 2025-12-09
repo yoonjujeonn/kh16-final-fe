@@ -1,148 +1,136 @@
+import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
-import { useState, useEffect, useCallback } from "react";
 import Jumbotron from "../templates/Jumbotron";
+import { useNavigate, Link } from "react-router-dom";
 import { toast } from "react-toastify";
-import { Link } from "react-router-dom";
+import { FaPlus, FaList } from "react-icons/fa6";
 
 export default function CategoryAdd() {
 
-    // 입력값 state
+    const navigate = useNavigate();
+
+    // 입력값
     const [category, setCategory] = useState({
         categoryName: "",
-        parentCategoryNo: "",
-        categoryOrder: ""
+        parentCategoryNo: ""  // "" → 상위 카테고리 없음
     });
 
-    // css 유효성 class
-    const [categoryClass, setCategoryClass] = useState({
-        categoryName: "",
-        categoryOrder: ""
-    });
+    // 상위 카테고리 선택용 목록 (parentCategoryNo == null 인 것만)
+    const [parentList, setParentList] = useState([]);
 
-    // 상위 카테고리 선택용 목록
-    const [categoryList, setCategoryList] = useState([]);
-
-    // 첫 로딩 → 상위 카테고리 목록 가져오기
+    // 처음 로딩 시 상위 카테고리들만 불러오기
     useEffect(() => {
         axios.get("http://localhost:8080/category/")
-            .then(res => {
-                setCategoryList(res.data);
+            .then(response => {
+                const list = Array.isArray(response.data) ? response.data : [];
+                // 🔥 parentCategoryNo == null 인 애들만 상위 카테고리로 사용
+                const parents = list.filter(item => item.parentCategoryNo == null);
+                setParentList(parents);
             })
             .catch(err => {
-                console.log("카테고리 목록 조회 실패", err);
+                console.error("카테고리 목록 조회 실패", err);
+                toast.error("카테고리 목록을 불러올 수 없습니다.");
             });
     }, []);
 
-    // 서버로 등록 요청
+    // 공통 입력 처리
+    const changeValue = useCallback((e) => {
+        const { name, value } = e.target;
+        setCategory(prev => ({ ...prev, [name]: value }));
+    }, []);
+
+    // 서버로 보낼 데이터 만들기
+    const buildPayload = () => ({
+        categoryName: category.categoryName,
+        parentCategoryNo:
+            category.parentCategoryNo === ""
+                ? null
+                : Number(category.parentCategoryNo)
+    });
+
+    // 등록 처리
     const sendData = useCallback(() => {
+        if (category.categoryName.trim().length === 0) {
+            toast.warning("카테고리명을 입력하세요.");
+            return;
+        }
 
-        axios({
-            url: "http://localhost:8080/category/",
-            method: "post",
-            data: {
-                categoryName: category.categoryName,
-                parentCategoryNo: category.parentCategoryNo === "" ? null : Number(category.parentCategoryNo),
-                categoryOrder: Number(category.categoryOrder)
-            }
-        })
-        .then(() => {
-            toast.success("카테고리 등록 완료!");
+        const payload = buildPayload();
 
-            // 초기화
-            setCategory({
-                categoryName: "",
-                parentCategoryNo: "",
-                categoryOrder: ""
+        axios.post("http://localhost:8080/category/", payload)
+            .then(() => {
+                toast.success("카테고리 등록 완료");
+                navigate("/category/list");
+            })
+            .catch(err => {
+                console.error(err);
+                toast.error("카테고리 등록 실패");
             });
-
-            setCategoryClass({
-                categoryName: "",
-                categoryOrder: ""
-            });
-        })
-        .catch(err => {
-            toast.error("등록 실패");
-            console.log(err);
-        });
-    }, [category]);
+    }, [category, navigate]);
 
     return (
         <>
-            <Jumbotron subject="카테고리 등록" detail="새로운 카테고리를 입력하세요" />
+            <Jumbotron
+                subject="카테고리 등록"
+                detail="새로운 카테고리를 등록합니다."
+            />
 
             {/* 카테고리명 */}
             <div className="row mt-4">
                 <label className="col-sm-3 col-form-label">카테고리명</label>
                 <div className="col-sm-9">
-                    <input type="text"
-                        className={"form-control " + categoryClass.categoryName}
+                    <input
+                        type="text"
+                        name="categoryName"
+                        className="form-control"
                         value={category.categoryName}
-                        onChange={e => {
-                            setCategory({
-                                ...category,
-                                categoryName: e.target.value
-                            });
-                        }}
-                        onBlur={() => {
-                            setCategoryClass({
-                                ...categoryClass,
-                                categoryName: category.categoryName ? "is-valid" : "is-invalid"
-                            });
-                        }}
+                        onChange={changeValue}
                     />
-                    <div className="valid-feedback">좋은 이름이에요!</div>
-                    <div className="invalid-feedback">카테고리명을 입력하세요.</div>
                 </div>
             </div>
 
-            {/* 상위 카테고리 선택 */}
+            {/* 상위 카테고리 선택 (상위만 표시) */}
             <div className="row mt-4">
                 <label className="col-sm-3 col-form-label">상위 카테고리</label>
                 <div className="col-sm-9">
                     <select
+                        name="parentCategoryNo"
                         className="form-select"
                         value={category.parentCategoryNo}
-                        onChange={e => {
-                            setCategory({
-                                ...category,
-                                parentCategoryNo: e.target.value
-                            });
-                        }}
+                        onChange={changeValue}
                     >
-                        <option value="">(상위 없음)</option>
-
-                        {/* 🔥 여기 추가! 최상위(부모 없음) 카테고리만 보여주기 */}
-                        {categoryList
-                            .filter(c => c.parentCategoryNo === null)
-                            .map(c => (
-                                <option key={c.categoryNo} value={c.categoryNo}>
-                                    {c.categoryName}
-                                </option>
-                            ))
-                        }
-
+                        <option value="">상위카테고리로 등록</option>
+                        {parentList.map(parent => (
+                            <option
+                                key={parent.categoryNo}
+                                value={parent.categoryNo}
+                            >
+                                [{parent.categoryNo}] {parent.categoryName}
+                            </option>
+                        ))}
                     </select>
                 </div>
             </div>
 
-            {/* 등록 버튼 */}
+            {/* 버튼 영역 */}
             <div className="row mt-4">
-                <div className="col">
+                <div className="col text-end">
                     <button
                         type="button"
-                        className="btn btn-success btn-lg w-100"
+                        className="btn btn-success me-2"
                         onClick={sendData}
-                        disabled={!category.categoryName}
                     >
+                        <FaPlus className="me-2" />
                         등록하기
                     </button>
-                </div>
-            </div>
 
-            {/* 홈으로 이동 */}
-            <div className="row mt-4">
-                <div className="col">
-                    <Link to="/" className="btn btn-secondary w-100">홈으로</Link>
+                    <Link
+                        to="/category/list"
+                        className="btn btn-secondary"
+                    >
+                        <FaList className="me-2" />
+                        목록으로
+                    </Link>
                 </div>
             </div>
         </>
