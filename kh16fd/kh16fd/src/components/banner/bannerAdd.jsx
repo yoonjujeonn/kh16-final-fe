@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useCallback, useState } from "react";
 import axios from "axios";
 import Jumbotron from "../templates/Jumbotron";
 import { useNavigate, Link } from "react-router-dom";
@@ -9,7 +9,7 @@ export default function BannerAdd() {
 
     const navigate = useNavigate();
 
-    // 입력값
+    //state
     const [banner, setBanner] = useState({
         bannerTitle: "",
         bannerLink: "",
@@ -17,18 +17,16 @@ export default function BannerAdd() {
         attach: null
     });
 
-    // 공통 입력 처리
+    //callback
     const changeValue = useCallback((e) => {
         const { name, value } = e.target;
         setBanner(prev => ({ ...prev, [name]: value }));
     }, []);
 
-    // 파일 입력 처리
     const changeFile = useCallback((e) => {
         setBanner(prev => ({ ...prev, attach: e.target.files[0] }));
     }, []);
 
-    // FormData 생성
     const buildFormData = () => {
         const formData = new FormData();
         formData.append("bannerTitle", banner.bannerTitle);
@@ -40,8 +38,8 @@ export default function BannerAdd() {
         return formData;
     };
 
-    // 등록 처리
     const sendData = useCallback(() => {
+
         if (banner.bannerTitle.trim().length === 0) {
             toast.warning("배너 제목을 입력하세요.");
             return;
@@ -53,7 +51,7 @@ export default function BannerAdd() {
 
         const formData = buildFormData();
 
-        axios.post("http://localhost:8080/admin/banner/add", formData, {
+        axios.post("http://localhost:8080/banner/add", formData, {
             headers: { "Content-Type": "multipart/form-data" }
         })
             .then(() => {
@@ -96,7 +94,7 @@ export default function BannerAdd() {
                         type="text"
                         name="bannerLink"
                         className="form-control"
-                        placeholder="/product/list"
+                        placeholder="/restaurant/list"
                         value={banner.bannerLink}
                         onChange={changeValue}
                     />
@@ -118,7 +116,7 @@ export default function BannerAdd() {
                 </div>
             </div>
 
-            {/* 배너 이미지 업로드 */}
+            {/* 배너 이미지 */}
             <div className="row mt-4">
                 <label className="col-sm-3 col-form-label">배너 이미지 *</label>
                 <div className="col-sm-9">
@@ -134,7 +132,7 @@ export default function BannerAdd() {
                 </div>
             </div>
 
-            {/* 버튼 영역 */}
+            {/* 버튼 */}
             <div className="row mt-4">
                 <div className="col text-end">
                     <button

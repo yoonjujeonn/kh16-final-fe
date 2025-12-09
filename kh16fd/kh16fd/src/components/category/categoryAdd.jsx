@@ -9,16 +9,14 @@ export default function CategoryAdd() {
 
     const navigate = useNavigate();
 
-    // 입력값
+    //state
     const [category, setCategory] = useState({
         categoryName: "",
         parentCategoryNo: ""  // "" → 상위 카테고리 없음
     });
 
-    // 상위 카테고리 선택용 목록 (parentCategoryNo == null 인 것만)
     const [parentList, setParentList] = useState([]);
 
-    // 처음 로딩 시 상위 카테고리들만 불러오기
     useEffect(() => {
         axios.get("http://localhost:8080/category/")
             .then(response => {
@@ -33,13 +31,12 @@ export default function CategoryAdd() {
             });
     }, []);
 
-    // 공통 입력 처리
+    //callback
     const changeValue = useCallback((e) => {
         const { name, value } = e.target;
         setCategory(prev => ({ ...prev, [name]: value }));
     }, []);
 
-    // 서버로 보낼 데이터 만들기
     const buildPayload = () => ({
         categoryName: category.categoryName,
         parentCategoryNo:
@@ -48,7 +45,6 @@ export default function CategoryAdd() {
                 : Number(category.parentCategoryNo)
     });
 
-    // 등록 처리
     const sendData = useCallback(() => {
         if (category.categoryName.trim().length === 0) {
             toast.warning("카테고리명을 입력하세요.");
