@@ -8,6 +8,7 @@ import ReservationMoreInfo from "./restaurant/ReservationMoreInfo";
 import CategoryAdd from "./category/CategoryAdd";
 import MemberLogin from "./member/MemberLogin";
 import RestaurantAddFinish from "./restaurant/RestaurantAddFinish";
+import MemberJoin from "./member/MemberJoin";
 
 
 export default function Content () {
@@ -26,7 +27,7 @@ export default function Content () {
 
                         {/* 회원 관련 메뉴 */}
                         <Route path="/member/login" element={<MemberLogin />}></Route>
-                        
+                        <Route path="/member/join" element={<MemberJoin />}></Route>
                         {/* 식당 관련 메뉴 */}
                         <Route path="/restaurant/add" element={<RestaurantAdd/>}>
                             <Route index element={<RestaurantInfo />}></Route>
