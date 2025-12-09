@@ -14,10 +14,7 @@ import { toast } from "react-toastify";
 export default function ReservationInfo() {
 
     const [basicInfo, setBasicInfo] = useAtom(restaurantInfoState);
-    const [time, setTime] = useState({
-        restaurantOpen : "",
-        restaurantClose : "",
-    });
+   
     const weekdays = ["월", "화", "수", "목", "금", "토", "일"];
     
     // 체크박스 토글 시 바로 DB 저장용 문자열로 업데이트
@@ -45,10 +42,12 @@ export default function ReservationInfo() {
     }, [basicInfo]);
 
     const changeTimeValue = useCallback((field) => (value) => {
-        
+        if(value === null) return;
+        const time = value.toString();
+        console.log(time)
         setBasicInfo(prev => ({
             ...prev,
-            [field] : value
+            [field] : time
         }));
     }, []);
 
