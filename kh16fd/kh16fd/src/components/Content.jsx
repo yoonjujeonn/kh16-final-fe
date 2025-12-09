@@ -10,6 +10,7 @@ import MemberLogin from "./member/MemberLogin";
 import RestaurantAddFinish from "./restaurant/RestaurantAddFinish";
 import MemberJoin from "./member/MemberJoin";
 import CategoryAdd from "./category/categoryAdd";
+import BannerAdd from "./banner/bannerAdd";
 
 export default function Content() {
 
@@ -42,6 +43,8 @@ export default function Content() {
                         <Route path="/category/add" element={<CategoryAdd />} />
                         <Route path="/category/list" element={<CategoryList />} />
 
+                        {/* 배너 페이지 */}
+                        <Route path="/banner/add" element={<BannerAdd />} />
                     </Routes>
 
                 </div>
