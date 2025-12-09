@@ -138,6 +138,12 @@ export default function CategoryAdd() {
                     </button>
                 </div>
             </div>
+            {/* 목록으로 이동 */}
+            <div className="row mt-4">
+                <div className="col">
+                    <Link to="/category/list" className="btn btn-success btn-lg w-100">목록</Link>
+                </div>
+            </div>
 
             {/* 홈으로 이동 */}
             <div className="row mt-4">
