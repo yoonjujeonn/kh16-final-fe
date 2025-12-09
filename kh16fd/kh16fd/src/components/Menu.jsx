@@ -126,7 +126,7 @@ export default function Menu() {
                                         <li className="nav-item dropdown">
                                            <a className="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false"><FaUser className="me-2"/></a>
                                             <div className="dropdown-menu">
-                                            <Link to="#" className="nav-link"><FaUserPlus className="me-2" />회원가입</Link>
+                                            <Link to="/member/join" className="nav-link"><FaUserPlus className="me-2" />회원가입</Link>
                                             <Link to="/member/login" className="nav-link"><FaRightToBracket className="me-2" /><span>로그인</span></Link>
                                             </div>
                                         </li>
