@@ -38,7 +38,7 @@ axios.interceptors.response.use((response) => {
             //const refreshToken = useAtomValue(refreshTokenState);//컴포넌트 내부에서 쓰는 코드
             const refreshToken = store.get(refreshTokenState);//컴포넌트 외부에서 쓰는 코드
             console.log("토큰 확인 : ", refreshToken);
-            const response = await axios.post("/account/refresh", { 
+            const response = await axios.post("/member/refresh", { 
                 refreshToken : `Bearer ${refreshToken}` 
             });
             //response안에는 반드시 다시 발급된 accessToken과 refreshToken이 있어야 함
@@ -57,8 +57,7 @@ axios.interceptors.response.use((response) => {
     catch(ex) {//refresh token마저 사용이 불가능한 상황
     //clearLogin();//모든 jotai state 초기화
     store.set(clearLoginState);
-    //navigate("/account/login");//로그인 페이지로 이동 (사용불가... Routes 외부)
-    location.href = "/account/login";
+    location.href = "/member/login";
     }
     return Promise.reject(error);//에러 발생 처리
 });

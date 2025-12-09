@@ -220,6 +220,13 @@ export default function RestaurantInfo() {
                             ></div>
                         </div>
                     </div>
+                        {/* 식당 소개 */}
+                    <div className="row mt-4">
+                                <label className="col-sm-3 col-form-label">식당 소개글</label>
+                                <div className="col-sm-9 text-end">
+                                    <textarea type="text" name="restaurantDescription" className="form-control" value={basicInfo.restaurantDescription} onChange={changeStrValue}style={{resize : "none"}} rows={15}/>
+                                </div>
+                    </div>
 
                 </div>
             </div>

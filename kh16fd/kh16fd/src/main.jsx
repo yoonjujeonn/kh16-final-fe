@@ -12,8 +12,8 @@ import "bootstrap";
 //custom css
 import './index.css'
 
-//axios
-//import "./utils/axios"
+// axios
+import "./utils/axios"
 
 createRoot(document.getElementById('root')).render(
     <App />

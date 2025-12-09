@@ -8,6 +8,7 @@ export default function Jumbotron({ subject = "제목", detail = "", bgColor = "
                 <div className="col">
                     <div className={`bg-${bgColor} text-${textColor} p-4 rounded`}>
                         <h1 className={`text-${textColor}`}>{subject}</h1>
+                        <div>{detail}</div>
                     </div>
                 </div>
             </div>

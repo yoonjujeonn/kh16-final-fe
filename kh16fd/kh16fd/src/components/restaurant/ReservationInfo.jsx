@@ -5,17 +5,19 @@ import TimePicker from 'react-time-picker';
 import '/src/custom-css/timepicker-custom.css';
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useAtom } from "jotai";
 import { restaurantInfoState } from "../../utils/jotai";
-
+import axios from "axios";
+import { toast } from "react-toastify";
 
 export default function ReservationInfo() {
 
-    const restaurantId = useParams();
-
     const [basicInfo, setBasicInfo] = useAtom(restaurantInfoState);
-
+    const [time, setTime] = useState({
+        restaurantOpen : "",
+        restaurantClose : "",
+    });
     const weekdays = ["월", "화", "수", "목", "금", "토", "일"];
     
     // 체크박스 토글 시 바로 DB 저장용 문자열로 업데이트
@@ -43,9 +45,10 @@ export default function ReservationInfo() {
     }, [basicInfo]);
 
     const changeTimeValue = useCallback((field) => (value) => {
+        
         setBasicInfo(prev => ({
             ...prev,
-            [field]: value
+            [field] : value
         }));
     }, []);
 
@@ -57,6 +60,40 @@ export default function ReservationInfo() {
         }));
     }, []);
 
+    const navigate = useNavigate();
+
+    //식당 데이터 전송
+    const sendData = useCallback(async ()=>{
+       try {
+            const {data} = await axios.post("/restaurant/", basicInfo);
+            const id = data.restaurantId
+            navigate(`/restaurant/add/info/${id}`);
+        }
+        catch(err){
+            toast.error("요청이 정상적으로 처리되지 않았습니다");
+        }
+    },[]);
+
+    const clearData = useCallback(()=>{
+        setBasicInfo({
+            restaurantName: "",
+            restaurantContact: "",
+            restaurantAddress: "",
+            address1 : "",
+            address2 : "",
+            restaurantAddressX: "",
+            restaurantAddressY: "",
+            restaurantOpen: "",
+            restaurantClose: "",
+            restaurantBreakStart: "",
+            restaurantBreakEnd: "",
+            reservationInterval: "",
+            restaurantOpeningDays: "",
+            restaurantLastOrder: "",
+            restaurantReservationPrice: "",
+            restaurantDescription: ""
+        });
+    },[]);
     return (
         <>
             <div className="progress">
@@ -132,7 +169,7 @@ export default function ReservationInfo() {
                         <Link to="/restaurant/add" className="btn btn-secondary">이전으로</Link>
                     </div>
                     <div className="btn-wrapper">
-                        <Link to={`/restaurant/add/info/1`} className="btn btn-success">추가 정보 설정</Link>
+                        <button type="button" className="btn btn-success" onClick={sendData}>추가 정보 설정</button>
                     </div>
                 </div>
             </div>
