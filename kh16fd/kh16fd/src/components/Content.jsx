@@ -7,6 +7,7 @@ import ReservationInfo from "./restaurant/ReservationInfo";
 import ReservationMoreInfo from "./restaurant/ReservationMoreInfo";
 import CategoryAdd from "./category/CategoryAdd";
 import MemberLogin from "./member/MemberLogin";
+import RestaurantAddFinish from "./restaurant/RestaurantAddFinish";
 
 
 export default function Content () {
@@ -32,6 +33,7 @@ export default function Content () {
                             <Route path="/restaurant/add/info" element={<ReservationInfo />}></Route>
                             <Route path="/restaurant/add/info/:restaurantId" element={<ReservationMoreInfo />}></Route>
                         </Route>
+                         <Route path="/restaurant/add/finish" element={<RestaurantAddFinish />}></Route>
 
                         {/* 관리 메뉴 - 추후 guard 추가 */}
                         <Route path="/admin/setting" element={<AdminSetting />}>
