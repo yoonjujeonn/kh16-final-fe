@@ -6,8 +6,9 @@ import RestaurantInfo from "./restaurant/RestaurantInfo";
 import ReservationInfo from "./restaurant/ReservationInfo";
 import ReservationMoreInfo from "./restaurant/ReservationMoreInfo";
 import CategoryAdd from "./category/CategoryAdd";
-import CategoryList from "./category/CategoryList";;   
-
+import CategoryList from "./category/CategoryList";
+import MemberLogin from "./member/MemberLogin";
+import MemberJoin from "./member/MemberJoin";
 
 export default function Content() {
 
@@ -21,11 +22,15 @@ export default function Content() {
                         {/* 메인 페이지 */}
                         <Route path="/" element={<Home />} />
 
+                        {/* 회원 관련 메뉴 */}
+                        <Route path="/member/login" element={<MemberLogin />} />
+                        <Route path="/member/join" element={<MemberJoin />} />
+
                         {/* 식당 관련 메뉴 */}
                         <Route path="/restaurant/add" element={<RestaurantAdd />}>
                             <Route index element={<RestaurantInfo />} />
-                            <Route path="/restaurant/add/info" element={<ReservationInfo />} />
-                            <Route path="/restaurant/add/info/1" element={<ReservationMoreInfo />} />
+                            <Route path="info" element={<ReservationInfo />} />
+                            <Route path="info/:restaurantId" element={<ReservationMoreInfo />} />
                         </Route>
 
                         {/* 관리 메뉴 */}
