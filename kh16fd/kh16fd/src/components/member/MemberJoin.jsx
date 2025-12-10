@@ -57,7 +57,13 @@ export default function MemberJoin() {
     const changeDateValue = useCallback((date) => {
         const replacement = format(date, "yyyy-MM-dd");//date-fns에서 제공하는 변환 명령
         setMember(prev => ({ ...prev, memberBirth: replacement }));
-    }, [member]);
+        if(date === null) {
+            setMemberClass(prev => ({...prev, memberBirth : "is-invalid"}))
+        }
+        else if(date !== null) {
+            setMemberClass (prev => ({...prev, memberBirth : "is-valid"}))
+        }
+    }, [member, memberClass]);
 
     const checkMemberId = useCallback(async (e) => {
         //형식검사 -> 아이디 중복검사 -> 결과 설정
@@ -326,8 +332,8 @@ export default function MemberJoin() {
         if (memberClass.memberNickname !== "is-valid") return false;
         if (memberClass.memberEmail !== "is-valid") return false;
         if (certNumberClass !== "is-valid") return false;
+        if (memberClass.memberBirth !== "is-valid") return false;
         //선택 항목 (미입력은 괜찮지만 잘못된 입력은 문제가 됨)
-        if (memberClass.memberBirth === "is-invalid") return false;
         if (memberClass.memberContact === "is-invalid") return false;
         if (memberClass.memberPost === "is-invalid") return false;
         if (memberClass.memberAddress1 === "is-invalid") return false;
@@ -359,7 +365,7 @@ export default function MemberJoin() {
             <div className="col-sm-9">
                 <input type="text" className={`form-control ${memberClass.memberId}`}
                     name="memberId" value={member.memberId} onChange={changeStrValue}
-                    onBlur={checkMemberId} />
+                    onBlur={checkMemberId}/>
                 <div className="valid-feedback">사용 가능한 아이디입니다!</div>
                 <div className="invalid-feedback">{memberIdFeedback}</div>
             </div>
@@ -382,7 +388,7 @@ export default function MemberJoin() {
             <div className="col-sm-9">
                 <input type={showPassword === true ? "text" : "password"} className={`form-control ${memberClass.memberPw}`}
                     name="memberPw" value={member.memberPw} onChange={changeStrValue}
-                    onBlur={checkMemberPw} />
+                    onBlur={checkMemberPw} autoComplete="off"/>
                 <div className="valid-feedback">사용 가능한 비밀번호 형식입니다!</div>
                 <div className="invalid-feedback">대문자, 소문자, 숫자, 특수문자를 반드시 한개 포함해 8~16자로 작성하세요</div>
             </div>
@@ -470,7 +476,7 @@ export default function MemberJoin() {
         {/* 생년월일 */}
         <div className="row mt-4">
             <label className="col-sm-3 col-form-label">
-                생년월일
+                생년월일 <FaAsterisk className="text-danger" />
             </label>
             <div className="col-sm-9">
                 {/* <input type="text" className="form-control"
@@ -487,7 +493,8 @@ export default function MemberJoin() {
                     showMonthDropdown
                     dropdownMode="select"
                 />
-                <div className="invalid-feedback">올바른 날짜 형식이 아닙니다</div>
+                {/* <div className="invalid-feedback">올바른 날짜 형식이 아닙니다</div> */}
+                {/* <div className="invalid-feedback">생년월일은 필수 항목입니다</div> */}
             </div>
         </div>
 
