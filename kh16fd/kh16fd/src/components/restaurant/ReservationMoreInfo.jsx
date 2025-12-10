@@ -70,7 +70,8 @@ export default function ReservationMoreInfo() {
     const navigate = useNavigate();
 
     const clearData = useCallback(() => {
-        setSeat(() => ({
+        setSeat(prev => ({
+            ...prev,
             seatType: "",
             seatMaxPeople: 1
         }));
