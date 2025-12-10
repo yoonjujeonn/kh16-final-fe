@@ -14,7 +14,7 @@ import { toast } from "react-toastify";
 export default function ReservationInfo() {
 
     const [basicInfo, setBasicInfo] = useAtom(restaurantInfoState);
-   
+
     const weekdays = ["월", "화", "수", "목", "금", "토", "일"];
     
     // 체크박스 토글 시 바로 DB 저장용 문자열로 업데이트
@@ -33,7 +33,7 @@ export default function ReservationInfo() {
             restaurantOpeningDays: updatedString
         }));
     }, [basicInfo]);
-
+    
     // 체크박스 체크 여부 확인
     const isChecked = useCallback((day) => {
         const currentString = basicInfo.restaurantOpeningDays || "";
@@ -63,7 +63,8 @@ export default function ReservationInfo() {
 
     //식당 데이터 전송
     const sendData = useCallback(async ()=>{
-       try {
+        try {
+            console.log(basicInfo);
             const {data} = await axios.post("/restaurant/", basicInfo);
             const id = data.restaurantId
             navigate(`/restaurant/add/info/${id}`);
@@ -71,7 +72,7 @@ export default function ReservationInfo() {
         catch(err){
             toast.error("요청이 정상적으로 처리되지 않았습니다");
         }
-    },[]);
+    },[basicInfo]);
 
     const clearData = useCallback(()=>{
         setBasicInfo({
