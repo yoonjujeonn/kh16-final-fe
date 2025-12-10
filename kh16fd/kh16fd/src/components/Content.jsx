@@ -12,6 +12,9 @@ import MemberJoin from "./member/MemberJoin";
 import CategoryAdd from "./category/categoryAdd";
 import BannerAdd from "./banner/bannerAdd";
 import ReviewList from "./review/ReviewList";
+import ReservationAdd from "./reservation/ReservationAdd";
+import RestaurantDetail from "./restaurant/RestaurantDetail";
+import RestaurantList from "./restaurant/RestaurantList";
 import ReviewWrite from "./review/ReviewWrite";
 import ReviewEdit from "./review/ReviewEdit";
 import MemberJoinFinish from "./member/MemberJoinFinish";
@@ -20,7 +23,6 @@ import BizMemberJoinFinish from "./member/BizMemberJoinFinish";
 import MemberInfo from "./member/Memberinfo";
 import MemberChange from "./member/MemberChange";
 import BannerList from "./banner/bannerList";
-
 
 export default function Content() {
 
@@ -52,6 +54,13 @@ export default function Content() {
                             <Route path="info/:restaurantId" element={<ReservationMoreInfo />} />
                         </Route>
                          <Route path="/restaurant/add/finish" element={<RestaurantAddFinish />}></Route>
+                        
+                        {/* 식당 페이지 */}
+                         <Route path="/restaurant/list" element={<RestaurantList />}></Route>
+                         <Route path="/restaurant/detail/:restaurantId" element={<RestaurantDetail />}></Route>
+                        
+                        {/* 예약 페이지 */}
+                        <Route path="/reservation/add" element={<ReservationAdd />} />
 
                         {/* 관리자 메뉴 */}
                         <Route path="/admin/setting" element={<AdminSetting />} />

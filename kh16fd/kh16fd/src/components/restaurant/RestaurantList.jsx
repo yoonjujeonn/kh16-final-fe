@@ -1,1 +1,7 @@
-//전체 
+export default function RestaurantList(){
+
+    return(
+        <>
+        </>
+    )
+}
