@@ -5,7 +5,6 @@ import { useCallback, useState } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
 import Jumbotron from "../templates/Jumbotron";
-import { FaStar } from "react-icons/fa6";
 import StarRatingInput from "./StarRatingInput";
 
 
@@ -20,12 +19,6 @@ export default function ReviewWrite() {
 
     const [reviewContent, setReviewContent] = useState('');
     const [reviewRating, setReviewRating] = useState(0.0);
-
-    // 별점 입력 핸들러 (숫자 필드용)
-    // const handleRatingChange = useCallback((e) => {
-    //     const value = parseFloat(e.target.value);
-    //     setReviewRating(value);
-    // }, []);
 
     const handleSubmit = useCallback(async () => {
 
@@ -75,7 +68,6 @@ export default function ReviewWrite() {
                         <label htmlFor="reviewRating" className="form-label">
                             ⭐ 별점 (0.5 ~ 5.0)
                         </label>
-                       {/* StarRatingInput 컴포넌트는 rating, onRatingChange, disabled 프롭스를 받습니다. */}
                         <StarRatingInput
                             rating={reviewRating}
                             onRatingChange={setReviewRating} // 리뷰 점수 상태 업데이트 함수 전달
