@@ -1,11 +1,12 @@
 import axios from "axios";
 import { useCallback, useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom"
+import { Link, useNavigate, useParams } from "react-router-dom"
 import { toast } from "react-toastify";
 import Jumbotron from "../templates/Jumbotron";
 import { useAtom } from "jotai";
 import { loginIdState } from "../../utils/jotai";
 import Swal from "sweetalert2";
+import { FaStar } from "react-icons/fa6";
 
 
 export default function ReviewList() {
@@ -38,8 +39,8 @@ export default function ReviewList() {
             text: "정말로 이 리뷰를 삭제하시겠습니까?",
             icon: "warning",
             showCancelButton: true,
-            confirmButtonColor: "#dc3545", // Bootstrap danger color
-            cancelButtonColor: "#6c757d", // Bootstrap secondary color
+            confirmButtonColor: "#dc3545", 
+            cancelButtonColor: "#6c757d", 
             confirmButtonText: "삭제",
             cancelButtonText: "취소"
         });
@@ -76,7 +77,9 @@ export default function ReviewList() {
     // render
     return (<>
         <Jumbotron subject={`${restaurantId}번 식당의 리뷰 목록`} />
-
+        <div className="text-end">
+            <Link to={`/restaurant/${restaurantId}/review/write`} className="btn btn-success mt-2">리뷰 작성하기</Link>
+        </div>
         {reviews.length === 0 ? (
             <div className="alert alert-warning">아직 등록된 리뷰가 없습니다.</div>
         ) : (
@@ -84,7 +87,7 @@ export default function ReviewList() {
                 {reviews.map((review) => (
                     <li key={review.reviewNo} className="list-group-item d-flex justify-content-between align-items-center mt-2">
                         <div>
-                            <h5>{review.memberId} (별점: {review.reviewRating})</h5>
+                            <h5>{review.memberId} (<FaStar color="#ffc107"/> {review.reviewRating})</h5>
                             <p>{review.reviewContent}</p>
                             <small className="text-muted">작성일: {review.reviewCreatedAt}</small>
                         </div>
