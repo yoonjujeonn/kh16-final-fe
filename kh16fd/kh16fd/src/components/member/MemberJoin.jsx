@@ -343,8 +343,8 @@ export default function MemberJoin() {
         const response = await axios.post("/member/", member);
         // toast.success("회원 가입이 완료되었습니다");
         //다른 페이지로 이동(완료페이지 or 메인페이지 or 로그인페이지)
-        // navigate("/member/joinFinish");//메인페이지
-        navigate("/");
+        navigate("/member/joinFinish");//완료 페이지
+        // navigate("/");
     }, [member, memberValid]);
 
 
