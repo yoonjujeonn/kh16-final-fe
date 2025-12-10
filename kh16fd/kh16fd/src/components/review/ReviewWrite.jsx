@@ -5,6 +5,9 @@ import { useCallback, useState } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
 import Jumbotron from "../templates/Jumbotron";
+import { FaStar } from "react-icons/fa6";
+import StarRatingInput from "./StarRatingInput";
+
 
 
 export default function ReviewWrite() {
@@ -16,27 +19,27 @@ export default function ReviewWrite() {
     const currentMemberId = loginId;
 
     const [reviewContent, setReviewContent] = useState('');
-    const [reviewRating, setReviewRating] = useState(5.0);
+    const [reviewRating, setReviewRating] = useState(0.0);
 
     // 별점 입력 핸들러 (숫자 필드용)
-    const handleRatingChange = useCallback((e) => {
-        const value = parseFloat(e.target.value);
-        setReviewRating(value);
-    }, []);
+    // const handleRatingChange = useCallback((e) => {
+    //     const value = parseFloat(e.target.value);
+    //     setReviewRating(value);
+    // }, []);
 
     const handleSubmit = useCallback(async () => {
 
         if (!currentMemberId) {
             toast.error("리뷰 작성을 위해 먼저 로그인 해주세요");
-            navigate("http://localhost:8080//member/login");
+            navigate("/member/login");
             return;
         }
         if (!reviewContent.trim()) {
             toast.error("리뷰 내용을 입력해주세요");
             return;
         }
-        if (reviewRating < 1.0 || reviewRating > 5.0 || isNaN(reviewRating)) {
-            toast.error("별점은 1.0점에서 5.0점 사이의 숫자로 입력해주세요");
+        if (reviewRating < 0.5) {
+            toast.error("별점을 0.5점 이상 선택해주세요");
             return;
         }
         const payload = {
@@ -70,19 +73,13 @@ export default function ReviewWrite() {
 
                     <div className="col-md-8">
                         <label htmlFor="reviewRating" className="form-label">
-                            ⭐ 별점 (1.0 ~ 5.0)
+                            ⭐ 별점 (0.5 ~ 5.0)
                         </label>
-                        <input
-                            type="number"
-                            id="reviewRating"
-                            className="form-control"
-                            value={reviewRating}
-                            onChange={handleRatingChange}
-                            step="0.5"
-                            min="1.0"
-                            max="5.0"
-                            required
-                            disabled={!currentMemberId}
+                       {/* StarRatingInput 컴포넌트는 rating, onRatingChange, disabled 프롭스를 받습니다. */}
+                        <StarRatingInput
+                            rating={reviewRating}
+                            onRatingChange={setReviewRating} // 리뷰 점수 상태 업데이트 함수 전달
+                            disabled={!currentMemberId} // 로그인 여부에 따라 비활성화 여부 전달
                         />
                     </div>
 
