@@ -3,11 +3,16 @@ import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom"
 import { toast } from "react-toastify";
 import Jumbotron from "../templates/Jumbotron";
+import { useAtom } from "jotai";
+import { loginIdState } from "../../utils/jotai";
+import Swal from "sweetalert2";
 
 
 export default function ReviewList() {
     const { restaurantId } = useParams();
     const navigate = useNavigate();
+
+    const [loginId] = useAtom(loginIdState);
 
     const [reviews, setReviews] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -26,6 +31,38 @@ export default function ReviewList() {
             setLoading(false);
         }
     }, [restaurantId]);
+
+    const handleDelete = useCallback(async (reviewNo) => {
+        const result = await Swal.fire({
+            title: "리뷰 삭제",
+            text: "정말로 이 리뷰를 삭제하시겠습니까?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#dc3545", // Bootstrap danger color
+            cancelButtonColor: "#6c757d", // Bootstrap secondary color
+            confirmButtonText: "삭제",
+            cancelButtonText: "취소"
+        });
+        if (result.isConfirmed) {
+            try {
+                await axios.delete(`http://localhost:8080/restaurant/${restaurantId}/review/${reviewNo}`);
+                Swal.fire({
+                    title: "삭제 완료!",
+                    text: "리뷰가 성공적으로 삭제되었습니다.",
+                    icon: "success"
+                });
+                loadData();
+            } catch (error) {
+                console.error("리뷰 삭제 실패 : ", error);
+                Swal.fire({
+                    title: "삭제 실패",
+                    text: "리뷰 삭제 중 오류가 발생했습니다.",
+                    icon: "error"
+                });
+            }
+        }
+
+    }, [restaurantId, loadData]);
 
     useEffect(() => {
         loadData();
@@ -51,12 +88,24 @@ export default function ReviewList() {
                             <p>{review.reviewContent}</p>
                             <small className="text-muted">작성일: {review.reviewCreatedAt}</small>
                         </div>
-                        <button
-                            className="btn btn-sm btn-outline-secondary"
-                            onClick={() => navigate(`/restaurant/${restaurantId}/review/edit/${review.reviewNo}`)}
-                        >
-                            수정
-                        </button>
+
+                        {/* 조건부 렌더링 유지 */}
+                        {loginId && loginId === review.memberId && (
+                            <div className="d-flex gap-2">
+                                <button
+                                    className="btn btn-sm btn-outline-secondary"
+                                    onClick={() => navigate(`/restaurant/${restaurantId}/review/edit/${review.reviewNo}`)}
+                                >
+                                    수정
+                                </button>
+                                <button
+                                    className="btn btn-sm btn-outline-danger"
+                                    onClick={() => handleDelete(review.reviewNo)} // 수정된 handleDelete 호출
+                                >
+                                    삭제
+                                </button>
+                            </div>
+                        )}
                     </li>
                 ))}
             </ul>
