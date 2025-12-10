@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { FaBookOpen, FaCommentDollar, FaGear, FaGraduationCap, FaMagnifyingGlass, FaRightToBracket, FaUserPlus } from "react-icons/fa6";
+import { FaBookOpen, FaCommentDollar, FaGear, FaGraduationCap, FaMagnifyingGlass, FaRightToBracket, FaTag, FaUserPlus } from "react-icons/fa6";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { accessTokenState, adminState, clearLoginState, loginCompleteState, loginIdState, loginLevelState, loginState, refreshTokenState } from "../utils/jotai";
@@ -108,15 +108,15 @@ export default function Menu() {
                                 (
                                     <>
                                         <li className="nav-item dropdown">
-                                            <a className="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false"><FaUser className="me-2"/></a>
+                                            <a className="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false"><FaUser className="me-2" /></a>
                                             <div className="dropdown-menu">
-                                            <Link className="nav-link" to="#" onClick={closeMenu}>
-                                                <span><FaUser className="me-2" />{loginId}</span>
-                                            </Link>
-                                            <Link className="nav-link" to="/restaurant/add" onClick={closeMenu}>
-                                                <span><IoRestaurant className="me-2" />식당 등록</span>
-                                            </Link>
-                                            <Link className="nav-link" onClick={logout}><FaRightToBracket className="me-2" /><span>로그아웃</span></Link>
+                                                <Link className="nav-link" to="#" onClick={closeMenu}>
+                                                    <span><FaUser className="me-2" />{loginId}</span>
+                                                </Link>
+                                                <Link className="nav-link" to="/restaurant/add" onClick={closeMenu}>
+                                                    <span><IoRestaurant className="me-2" />식당 등록</span>
+                                                </Link>
+                                                <Link className="nav-link" onClick={logout}><FaRightToBracket className="me-2" /><span>로그아웃</span></Link>
                                             </div>
                                         </li>
                                     </>
@@ -124,24 +124,36 @@ export default function Menu() {
                                 : (
                                     <>
                                         <li className="nav-item dropdown">
-                                           <a className="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false"><FaUser className="me-2"/></a>
+                                            <a className="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false"><FaUser className="me-2" /></a>
                                             <div className="dropdown-menu">
-                                            <Link to="/member/join" className="nav-link"><FaUserPlus className="me-2" />회원가입</Link>
-                                            <Link to="/member/login" className="nav-link"><FaRightToBracket className="me-2" /><span>로그인</span></Link>
+                                                <Link to="/member/join" className="nav-link"><FaUserPlus className="me-2" />회원가입</Link>
+                                                <Link to="/member/login" className="nav-link"><FaRightToBracket className="me-2" /><span>로그인</span></Link>
                                             </div>
                                         </li>
                                     </>
                                 )}
                             {isAdmin && (
-                                <>
-                                    <li className="nav-item" onClick={closeMenu}>
-                                        <Link className="nav-link" to="#"><FaGear className="me-2" /><span>관리 메뉴</span></Link>
-                                    </li>
-                                </>
+                                <li className="nav-item dropdown">
+                                    <a className="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                                        <FaGear className="me-2" />
+                                        <span>관리 메뉴</span>
+                                    </a>
+
+                                    <div className="dropdown-menu">
+                                        <Link className="dropdown-item" to="/category/list" onClick={closeMenu}>
+                                            <FaTag className="me-2" />
+                                            <span>카테고리 관리</span>
+                                        </Link>
+                                        <Link className="dropdown-item" to="/banner/list" onClick={closeMenu}>
+                                            <FaTag className="me-2" />
+                                            <span>배너 관리</span>
+                                        </Link>
+                                    </div>
+                                </li>
                             )}
                         </ul>
                         <div className="input-group flex-grow-1 me-3">
-                                    <input className="form-control" placeholder="검색어를 입력하세요" readOnly style={{cursor:"pointer"}}/>
+                            <input className="form-control" placeholder="검색어를 입력하세요" readOnly style={{ cursor: "pointer" }} />
                         </div>
                     </div>
                 </div>

@@ -20,7 +20,11 @@ export default function BannerAdd() {
     //callback
     const changeValue = useCallback((e) => {
         const { name, value } = e.target;
-        setBanner(prev => ({ ...prev, [name]: value }));
+
+        setBanner(prev => ({
+            ...prev,
+            [name]: name === "bannerOrder" ? Number(value) : value
+        }));
     }, []);
 
     const changeFile = useCallback((e) => {
@@ -52,11 +56,12 @@ export default function BannerAdd() {
         const formData = buildFormData();
 
         axios.post("http://localhost:8080/banner/add", formData, {
-            headers: { "Content-Type": "multipart/form-data" }
+            headers: { "Content-Type": "multipart/form-data" },
+            withCredentials: true
         })
             .then(() => {
                 toast.success("배너 등록 완료");
-                navigate("/admin/banner/list");
+                navigate("/banner/list");
             })
             .catch(err => {
                 console.error(err);
@@ -126,30 +131,22 @@ export default function BannerAdd() {
                         accept="image/*"
                         onChange={changeFile}
                     />
-                    <small className="text-muted">
+                    <div className="form-text">
                         이미지 파일만 업로드 가능합니다 (jpg, png, gif 등)
-                    </small>
+                    </div>
                 </div>
             </div>
 
             {/* 버튼 */}
             <div className="row mt-4">
                 <div className="col text-end">
-                    <button
-                        type="button"
-                        className="btn btn-success me-2"
-                        onClick={sendData}
-                    >
-                        <FaPlus className="me-2" />
-                        등록하기
+                    <button type="button" className="btn btn-success me-2" onClick={sendData}>
+                        <FaPlus className="me-2" /><span>등록</span>
                     </button>
 
                     <Link
-                        to="/admin/banner/list"
-                        className="btn btn-secondary"
-                    >
-                        <FaList className="me-2" />
-                        목록으로
+                        to="/banner/list" className="btn btn-secondary">
+                        <FaList className="me-2" /><span>목록</span>
                     </Link>
                 </div>
             </div>

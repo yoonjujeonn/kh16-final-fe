@@ -15,6 +15,14 @@ import ReviewList from "./review/ReviewList";
 import ReservationAdd from "./reservation/ReservationAdd";
 import RestaurantDetail from "./restaurant/RestaurantDetail";
 import RestaurantList from "./restaurant/RestaurantList";
+import ReviewWrite from "./review/ReviewWrite";
+import ReviewEdit from "./review/ReviewEdit";
+import MemberJoinFinish from "./member/MemberJoinFinish";
+import BizMemberJoin from "./member/BizMemberJoin";
+import BizMemberJoinFinish from "./member/BizMemberJoinFinish";
+import MemberInfo from "./member/Memberinfo";
+import MemberChange from "./member/MemberChange";
+import BannerList from "./banner/bannerList";
 
 export default function Content() {
 
@@ -31,6 +39,13 @@ export default function Content() {
                         {/* 회원 관련 메뉴 */}
                         <Route path="/member/login" element={<MemberLogin />} />
                         <Route path="/member/join" element={<MemberJoin />} />
+                        <Route path="/member/joinFinish" element={<MemberJoinFinish />} />
+                        <Route path="/member/bizJoin" element={<BizMemberJoin />} />
+                        <Route path="/member/bizJoinFinish" element={<BizMemberJoinFinish />} />
+                        {/*일반회원 페이지 가드 예정 */}
+                        {/* 회원 결제가 이루어지면 여기다가 주소를 넣으면 될거같아요 */}
+                        <Route path="/member/info/" element={<MemberInfo />} />
+                        <Route path="/member/info/Change" element={<MemberChange />} />
 
                         {/* 식당 등록 페이지 */}
                         <Route path="/restaurant/add" element={<RestaurantAdd />}>
@@ -57,8 +72,12 @@ export default function Content() {
 
                         {/* 배너 페이지 */}
                         <Route path="/banner/add" element={<BannerAdd />} />
+                        <Route path="/banner/list" element={<BannerList />} />
 
+                        {/* 리뷰 관련 */}
                         <Route path="/restaurant/:restaurantId/review" element={<ReviewList />} />
+                        <Route path="/restaurant/:restaurantId/review/write" element={<ReviewWrite />} />
+                        <Route path="/restaurant/:restaurantId/review/edit/:reviewNo" element={<ReviewEdit />} />
 
                     </Routes>
 
