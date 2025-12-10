@@ -19,6 +19,8 @@ import BizMemberJoin from "./member/BizMemberJoin";
 import BizMemberJoinFinish from "./member/BizMemberJoinFinish";
 import MemberInfo from "./member/Memberinfo";
 import MemberChange from "./member/MemberChange";
+import BannerList from "./banner/bannerList";
+
 
 export default function Content() {
 
@@ -61,6 +63,7 @@ export default function Content() {
 
                         {/* 배너 페이지 */}
                         <Route path="/banner/add" element={<BannerAdd />} />
+                        <Route path="/banner/list" element={<BannerList />} />
 
                         {/* 리뷰 관련 */}
                         <Route path="/restaurant/:restaurantId/review" element={<ReviewList />} />
