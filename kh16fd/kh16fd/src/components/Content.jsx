@@ -12,6 +12,7 @@ import MemberJoin from "./member/MemberJoin";
 import CategoryAdd from "./category/categoryAdd";
 import BannerAdd from "./banner/bannerAdd";
 import ReviewList from "./review/ReviewList";
+import MemberJoinFinish from "./member/MemberJoinFinish";
 
 export default function Content() {
 
@@ -28,6 +29,7 @@ export default function Content() {
                         {/* 회원 관련 메뉴 */}
                         <Route path="/member/login" element={<MemberLogin />} />
                         <Route path="/member/join" element={<MemberJoin />} />
+                        <Route path="/member/joinFinish" element={<MemberJoinFinish />} />
 
                         {/* 식당 등록 페이지 */}
                         <Route path="/restaurant/add" element={<RestaurantAdd />}>
