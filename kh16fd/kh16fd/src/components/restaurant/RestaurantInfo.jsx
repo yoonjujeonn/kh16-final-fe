@@ -12,7 +12,7 @@ export default function RestaurantInfo() {
     const address2Ref = useRef(null);    // 상세주소 input
 
     const [basicInfo, setBasicInfo] = useAtom(restaurantInfoState);
-    
+
     // 페이지 이동 시에도 마커 복원
     useEffect(() => {
         if (!window.kakao) return;
@@ -50,7 +50,7 @@ export default function RestaurantInfo() {
             // 지도 중심 이동
             mapInstance.current.setCenter(position);
         }
-    }, []); 
+    }, []);
 
 
 
@@ -74,9 +74,9 @@ export default function RestaurantInfo() {
             ...prev,
             address1: "",
             address2: "",
-            restaurantAddress : "",
-            restaurantAddressX : "",
-            restaurantAddressY : ""
+            restaurantAddress: "",
+            restaurantAddressX: "",
+            restaurantAddressY: ""
         }));
 
         if (!window.kakao) return;
@@ -84,7 +84,7 @@ export default function RestaurantInfo() {
             center: new window.kakao.maps.LatLng(37.499002, 127.032842),
             level: 2
         });
-        
+
     }, []);
 
     // Daum 우편번호 팝업
@@ -94,8 +94,7 @@ export default function RestaurantInfo() {
         openPostcode({
             onComplete: (data) => {
                 const addr = data.jibunAddress || data.autoJibunAddress;
-                console.log(data);
-                setBasicInfo(prev => ({ ...prev, address1: addr, address2: "" }));
+                setBasicInfo(prev => ({ ...prev, address1: addr, address2: "", restaurantAddress : addr}));
 
                 if (address2Ref.current) address2Ref.current.focus();
 
@@ -208,7 +207,12 @@ export default function RestaurantInfo() {
                                 ref={address2Ref}
                                 value={basicInfo.address2}
                                 onChange={e => {
-                                    setBasicInfo(prev => ({ ...prev, address2: e.target.value, restaurantAddress: `${basicInfo.address1} ${e.target.value}` }))
+                                    setBasicInfo(prev =>
+                                    ({
+                                        ...prev,
+                                        address2: e.target.value,
+                                        restaurantAddress: e.target.value ? `${basicInfo.address1} ${e.target.value}` : basicInfo.address1
+                                    }))
                                 }}
                             />
 
@@ -220,12 +224,12 @@ export default function RestaurantInfo() {
                             ></div>
                         </div>
                     </div>
-                        {/* 식당 소개 */}
+                    {/* 식당 소개 */}
                     <div className="row mt-4">
-                                <label className="col-sm-3 col-form-label">식당 소개글</label>
-                                <div className="col-sm-9 text-end">
-                                    <textarea type="text" name="restaurantDescription" className="form-control" value={basicInfo.restaurantDescription} onChange={changeStrValue}style={{resize : "none"}} rows={15}/>
-                                </div>
+                        <label className="col-sm-3 col-form-label">식당 소개글</label>
+                        <div className="col-sm-9 text-end">
+                            <textarea type="text" name="restaurantDescription" className="form-control" value={basicInfo.restaurantDescription} onChange={changeStrValue} style={{ resize: "none" }} rows={15} />
+                        </div>
                     </div>
 
                 </div>
