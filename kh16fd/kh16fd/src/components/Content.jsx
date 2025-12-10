@@ -15,6 +15,7 @@ import ReviewList from "./review/ReviewList";
 import ReviewWrite from "./review/ReviewWrite";
 import ReviewEdit from "./review/ReviewEdit";
 import MemberJoinFinish from "./member/MemberJoinFinish";
+import BannerList from "./banner/bannerList";
 
 export default function Content() {
 
@@ -51,6 +52,7 @@ export default function Content() {
 
                         {/* 배너 페이지 */}
                         <Route path="/banner/add" element={<BannerAdd />} />
+                        <Route path="/banner/list" element={<BannerList />} />
 
                         {/* 리뷰 관련 */}
                         <Route path="/restaurant/:restaurantId/review" element={<ReviewList />} />

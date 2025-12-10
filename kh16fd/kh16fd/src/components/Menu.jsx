@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { FaBookOpen, FaCommentDollar, FaGear, FaGraduationCap, FaMagnifyingGlass, FaRightToBracket, FaUserPlus } from "react-icons/fa6";
+import { FaBookOpen, FaCommentDollar, FaGear, FaGraduationCap, FaMagnifyingGlass, FaRightToBracket, FaTag, FaUserPlus } from "react-icons/fa6";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { accessTokenState, adminState, clearLoginState, loginCompleteState, loginIdState, loginLevelState, loginState, refreshTokenState } from "../utils/jotai";
@@ -141,7 +141,12 @@ export default function Menu() {
 
                                     <div className="dropdown-menu">
                                         <Link className="dropdown-item" to="/category/list" onClick={closeMenu}>
-                                            <FaGear className="me-2" /><span>카테고리 관리</span>
+                                            <FaTag className="me-2" />
+                                            <span>카테고리 관리</span>
+                                        </Link>
+                                        <Link className="dropdown-item" to="/banner/list" onClick={closeMenu}>
+                                            <FaTag className="me-2" />
+                                            <span>배너 관리</span>
                                         </Link>
                                     </div>
                                 </li>
