@@ -61,28 +61,16 @@ export default function ReservationInfo() {
     const navigate = useNavigate();
 
     //식당 데이터 전송
-    const sendData = useCallback(async () => {
-        try {
-            console.log(basicInfo);
-
-            const { data } = await axios.post(
-                "/restaurant/",
-                basicInfo,
-                {
-                    headers: {
-                        Authorization: localStorage.getItem("token")
-                    }
-                }
-            );
-
-            const id = data.restaurantId;
+   const sendData = useCallback(async ()=>{
+       try {
+            const {data} = await axios.post("/restaurant/", basicInfo);
+            const id = data.restaurantId
             navigate(`/restaurant/add/info/${id}`);
         }
-        catch (err) {
-            console.log(err);
+        catch(err){
             toast.error("요청이 정상적으로 처리되지 않았습니다");
         }
-    }, [basicInfo]);
+    },[]);
 
     const clearData = useCallback(() => {
         setBasicInfo({
