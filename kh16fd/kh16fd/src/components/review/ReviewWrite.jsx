@@ -19,6 +19,7 @@ export default function ReviewWrite() {
 
     const [reviewContent, setReviewContent] = useState('');
     const [reviewRating, setReviewRating] = useState(0.0);
+    const [attachFile, setAttachFile] = useState(null);
 
     const handleSubmit = useCallback(async () => {
 
@@ -35,22 +36,51 @@ export default function ReviewWrite() {
             toast.error("별점을 0.5점 이상 선택해주세요");
             return;
         }
-        const payload = {
-            restaurantId: parseInt(restaurantId),
-            memberId: currentMemberId,
-            reviewContent: reviewContent,
-            reviewRating: reviewRating
-        };
+
+        // ⭐⭐ JSON 대신 FormData 객체 생성
+        const formData = new FormData();
+
+        // 1. DTO 필드를 FormData에 추가 (백엔드 ReviewDto 필드와 이름 일치)
+        formData.append('restaurantId', parseInt(restaurantId));
+        formData.append('memberId', currentMemberId);
+        formData.append('reviewContent', reviewContent);
+        formData.append('reviewRating', reviewRating);
+
+        // 2. 파일이 있다면 'attach' 키로 추가 (백엔드 @RequestParam 'attach'와 이름 일치)
+        if (attachFile) {
+            formData.append('attach', attachFile);
+        }
 
         try {
-            await axios.post(`http://localhost:8080/restaurant/detail/${restaurantId}/review/`, payload);
+            // ⭐⭐ FormData를 전송. axios가 Content-Type을 multipart/form-data로 자동 설정.
+            await axios.post(
+                `http://localhost:8080/restaurant/detail/${restaurantId}/review/`, 
+                formData
+            );
+            
             toast.success("리뷰 작성이 완료되었습니다");
-            navigate(`/restaurant/detail/${restaurantId}/review/`);
+            navigate(`/restaurant/detail/${restaurantId}/review/`); // 리뷰 목록이나 상세 페이지로 이동
         }
         catch (error) {
             console.error("리뷰 작성 실패 : ", error);
             toast.error("리뷰 작성에 실패했습니다");
         }
+        // const payload = {
+        //     restaurantId: parseInt(restaurantId),
+        //     memberId: currentMemberId,
+        //     reviewContent: reviewContent,
+        //     reviewRating: reviewRating
+        // };
+
+        // try {
+        //     await axios.post(`http://localhost:8080/restaurant/detail/${restaurantId}/review/`, payload);
+        //     toast.success("리뷰 작성이 완료되었습니다");
+        //     navigate(`/restaurant/detail/${restaurantId}/review/`);
+        // }
+        // catch (error) {
+        //     console.error("리뷰 작성 실패 : ", error);
+        //     toast.error("리뷰 작성에 실패했습니다");
+        // }
 
 
     }, [restaurantId, reviewContent, reviewRating, navigate, currentMemberId]);
@@ -94,6 +124,24 @@ export default function ReviewWrite() {
                             onChange={(e) => setReviewContent(e.target.value)}
                             placeholder="이 식당에 대한 솔직한 의견을 남겨주세요."
                             required
+                            disabled={!currentMemberId}
+                        />
+                    </div>
+                </div>
+
+                {/* ⭐⭐ 2. 파일 입력 요소 추가 */}
+                <div className="row mb-3">
+                    <div className="col-12">
+                        <label htmlFor="attach" className="form-label">
+                            📸 이미지 첨부 (선택)
+                        </label>
+                        <input
+                            type="file"
+                            id="attach"
+                            className="form-control"
+                            // ⭐ 파일 선택 시 상태 업데이트
+                            onChange={(e) => setAttachFile(e.target.files[0] || null)}
+                            accept="image/*" // 이미지 파일만 선택 가능
                             disabled={!currentMemberId}
                         />
                     </div>
