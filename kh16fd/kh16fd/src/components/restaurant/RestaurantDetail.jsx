@@ -8,7 +8,6 @@ import { IoIosArrowDown, IoIosCall } from "react-icons/io";
 
 export default function RestaurantDetail() {
     const [restaurant, setRestaurant] = useState(null);
-
     const { restaurantId } = useParams();
 
     //오늘 표시
@@ -136,9 +135,6 @@ export default function RestaurantDetail() {
         }, option);
     }, [restaurant]);
 
-
-
-
     const loadData = useCallback(async () => {
         try {
             const { data } = await axios.get(`/restaurant/${restaurantId}`);
@@ -182,7 +178,7 @@ export default function RestaurantDetail() {
         <>  <div className="container">
             <div className="row border mb-4 p-3">
                 <div className="col">
-                    <img src="https://www.dummyimage.com/300X150/ddd/000&text=profile" className="w-100 mb-4" />
+                    <img src={`http://localhost:8080/restaurant/image/${restaurantId}`} className="w-100 mb-4" />
                     <h1>{restaurant.restaurantName}</h1>
                     <div className="review-info-wrapper d-flex">
                         <span className="d-flex align-items-center"><FaStar className="text-warning me-2" />{restaurant.restaurantAvgRating.toFixed(1)}</span>

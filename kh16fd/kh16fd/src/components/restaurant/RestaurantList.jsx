@@ -22,7 +22,7 @@ export default function RestaurantList() {
     const tomorrow = days[index + 1];
     //state
     const [slotList, setSlotList] = useState([]);
-    const [restaurantSlot, setRestaurantSlot] = useState([]);
+    const [restaurantSlot, setRestaurantSlot] = useState({});
 
     //callback
     const loadSlotList = useCallback(async () => {
@@ -43,7 +43,7 @@ export default function RestaurantList() {
                 }
             }
 
-            setSlotList(allSlots);
+            setSlotList(allSlots); 
         }
         catch (err) {
             toast.error("요청이 정상적으로 처리되지 않았습니다");
@@ -91,7 +91,9 @@ export default function RestaurantList() {
 
     //effect
     useEffect(() => {
+        if (restaurantList?.length > 0) {
         loadSlotList();
+    }
     }, [restaurantList]);
 
     useEffect(() => {
@@ -112,8 +114,6 @@ export default function RestaurantList() {
         });
     }, [today, restaurantList]);
 
-    console.log(restaurantSlot);
-
     return (
         <>
             <div className="row mt-4">
@@ -126,7 +126,7 @@ export default function RestaurantList() {
                                     <li className="list-group-item">
                                         <div className="row">
                                             <div className="col">
-                                                <img className="rounded mt-2 clickable w-100" src="https://dummyimage.com/500x200/" />
+                                                <img className="d-flex rounded mt-2 clickable w-100" src={`http://localhost:8080/restaurant/image/${restaurant.restaurantId}`} style={{height : "250px", objectFit : "cover"}} />
                                                 <h3 className="mt-2">{restaurant.restaurantName}</h3>
                                                 <div className="mt-2">{restaurant.isOpenToday ? `영업중 ${restaurant.restaurantOpen} ~ ${restaurant.restaurantClose}` : `${today}요일 휴무`}</div>
                                                 <div className="badge-wrapper mt-2">
@@ -153,12 +153,12 @@ export default function RestaurantList() {
                                                         {restaurantSlot[restaurant.restaurantId]?.map(slot => (
                                                             <SwiperSlide key={slot.date}>
                                                                 <div
-                                                                    className={`btn d-flex flex-column align-items-center ${slot.status === "휴무" ? "btn-light border" : "btn-outline-primary"} w-100 ${slot.status === "예약 마감" || slot.status === "휴무일" ? "disabled" : ""}`}
+                                                                    className={`btn p-1 d-flex flex-column align-items-center ${slot.status === "휴무" ? "btn-light" : "btn-outline-primary"} w-100 ${slot.status === "예약 마감" || slot.status === "휴무일" ? "disabled" : ""}`}
                                                                 >
-                                                                    {slot.dayName === today && (<span>오늘 ({slot.dayName})</span>)}
-                                                                    {slot.dayName === tomorrow && (<span>내일 ({slot.dayName})</span>)}
-                                                                    {slot.dayName !== today && slot.dayName !== tomorrow && (<span>{slot.dateStr} ({slot.dayName})</span>)}
-                                                                    <small className={`text-${slot.status === "휴무" ? "dark" : "primary"} fw-bold mt-1`}>{slot.status}</small>
+                                                                    {slot.dayName === today && (<span className={`text-${slot.status === "휴무" ? "dark" : ""} mt-1`}>오늘 ({slot.dayName})</span>)}
+                                                                    {slot.dayName === tomorrow && (<span className={`text-${slot.status === "휴무" ? "dark" : ""} mt-1`}>내일 ({slot.dayName})</span>)}
+                                                                    {slot.dayName !== today && slot.dayName !== tomorrow && (<span className={`text-${slot.status === "휴무" ? "dark" : ""} mt-1`}>{slot.dateStr} ({slot.dayName})</span>)}
+                                                                    <small className={`text-${slot.status === "휴무" ? "dark" : ""} fw-bold mt-1`}>{slot.status}</small>
                                                                 </div>
                                                             </SwiperSlide>
                                                         ))}
