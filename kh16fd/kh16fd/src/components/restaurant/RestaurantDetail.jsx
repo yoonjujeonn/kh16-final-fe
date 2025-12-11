@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useCallback, useEffect, useMemo, useState } from "react"
-import { useParams } from "react-router-dom";
+import { Link, Outlet, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { ScaleLoader } from "react-spinners";
 import { FaPhone, FaPhoneAlt, FaPhoneSlash, FaRegBookmark, FaStar } from "react-icons/fa";
@@ -185,7 +185,7 @@ export default function RestaurantDetail() {
                     <img src="https://www.dummyimage.com/300X150/ddd/000&text=profile" className="w-100 mb-4" />
                     <h1>{restaurant.restaurantName}</h1>
                     <div className="review-info-wrapper d-flex">
-                        <span className="d-flex align-items-center"><FaStar className="text-warning me-2" />{restaurant.restaurantAvgRating}</span>
+                        <span className="d-flex align-items-center"><FaStar className="text-warning me-2" />{restaurant.restaurantAvgRating.toFixed(1)}</span>
                         <span className="ms-2">  ·  리뷰 0개 ＞</span>
                     </div>
                     <div className="mt-2">{restaurant.restaurantDescription}</div>
@@ -222,10 +222,11 @@ export default function RestaurantDetail() {
                         <div className="divst-group-item">소식</div> 
                         <div className="divst-group-item">메뉴</div> 
                         <div className="divst-group-item">사진</div> 
-                        <div className="divst-group-item">리뷰</div>
+                        <Link to={`/restaurant/detail/${restaurantId}/review`}>리뷰</Link>
                         <div className="divst-group-item">매장정보</div> 
                     </div>    
             </div>
+            <Outlet />
             <div className="row p-4 border">
                 <div className="col">
                     <h1>예약</h1>
