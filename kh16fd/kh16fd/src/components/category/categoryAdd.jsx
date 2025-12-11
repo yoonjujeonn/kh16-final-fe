@@ -9,10 +9,9 @@ export default function CategoryAdd() {
 
     const navigate = useNavigate();
 
-    //state
     const [category, setCategory] = useState({
         categoryName: "",
-        parentCategoryNo: ""  // "" → 상위 카테고리 없음
+        parentCategoryNo: ""
     });
 
     const [parentList, setParentList] = useState([]);
@@ -21,7 +20,6 @@ export default function CategoryAdd() {
         axios.get("http://localhost:8080/category/")
             .then(response => {
                 const list = Array.isArray(response.data) ? response.data : [];
-                // 🔥 parentCategoryNo == null 인 애들만 상위 카테고리로 사용
                 const parents = list.filter(item => item.parentCategoryNo == null);
                 setParentList(parents);
             })
@@ -31,7 +29,6 @@ export default function CategoryAdd() {
             });
     }, []);
 
-    //callback
     const changeValue = useCallback((e) => {
         const { name, value } = e.target;
         setCategory(prev => ({ ...prev, [name]: value }));
@@ -52,8 +49,17 @@ export default function CategoryAdd() {
         }
 
         const payload = buildPayload();
+        const token = localStorage.getItem("token");
 
-        axios.post("http://localhost:8080/category/", payload)
+        axios.post(
+            "http://localhost:8080/category/",
+            payload,
+            {
+                headers: token
+                    ? { Authorization: token } // ✔ 토큰 있으면 추가
+                    : {}                        // ✔ 토큰 없으면 헤더 삭제
+            }
+        )
             .then(() => {
                 toast.success("카테고리 등록 완료");
                 navigate("/category/list");
@@ -71,7 +77,6 @@ export default function CategoryAdd() {
                 detail="새로운 카테고리를 등록합니다."
             />
 
-            {/* 카테고리명 */}
             <div className="row mt-4">
                 <label className="col-sm-3 col-form-label">카테고리명</label>
                 <div className="col-sm-9">
@@ -85,7 +90,6 @@ export default function CategoryAdd() {
                 </div>
             </div>
 
-            {/* 상위 카테고리 선택 (상위만 표시) */}
             <div className="row mt-4">
                 <label className="col-sm-3 col-form-label">상위 카테고리</label>
                 <div className="col-sm-9">
@@ -108,7 +112,6 @@ export default function CategoryAdd() {
                 </div>
             </div>
 
-            {/* 버튼 영역 */}
             <div className="row mt-4">
                 <div className="col text-end">
                     <button
