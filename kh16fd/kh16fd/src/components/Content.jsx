@@ -20,7 +20,7 @@ import ReviewEdit from "./review/ReviewEdit";
 import MemberJoinFinish from "./member/MemberJoinFinish";
 import BizMemberJoin from "./member/BizMemberJoin";
 import BizMemberJoinFinish from "./member/BizMemberJoinFinish";
-import MemberInfo from "./member/Memberinfo";
+import MemberInfo from "./member/MemberInfo";
 import MemberChange from "./member/MemberChange";
 import BannerList from "./banner/bannerList";
 import RestaurantCategorySelect from "./restaurant/RestaurantCategorySelect";

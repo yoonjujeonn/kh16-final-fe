@@ -27,6 +27,9 @@ export default function MemberInfo() {
 
     useEffect(() => {
         if (loginId?.length === 0) return;
+        // 추후에 비회원이 멤버 페이지로 못들어오게 하려면 쓸것
+        // if (loginId?.length === 0) navigate("/");
+        console.log(loginId.length);
 
         axios({
             url: `/member/${loginId}`,
