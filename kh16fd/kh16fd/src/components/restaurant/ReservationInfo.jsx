@@ -16,7 +16,7 @@ export default function ReservationInfo() {
     const [basicInfo, setBasicInfo] = useAtom(restaurantInfoState);
 
     const weekdays = ["월", "화", "수", "목", "금", "토", "일"];
-    
+
     // 체크박스 토글 시 바로 DB 저장용 문자열로 업데이트
     const handleWeekdayToggle = useCallback((day) => {
         const currentString = basicInfo.restaurantOpeningDays || "";
@@ -33,7 +33,7 @@ export default function ReservationInfo() {
             restaurantOpeningDays: updatedString
         }));
     }, [basicInfo]);
-    
+
     // 체크박스 체크 여부 확인
     const isChecked = useCallback((day) => {
         const currentString = basicInfo.restaurantOpeningDays || "";
@@ -46,7 +46,7 @@ export default function ReservationInfo() {
         console.log(time)
         setBasicInfo(prev => ({
             ...prev,
-            [field] : time
+            [field]: time
         }));
     }, []);
 
@@ -61,25 +61,36 @@ export default function ReservationInfo() {
     const navigate = useNavigate();
 
     //식당 데이터 전송
-    const sendData = useCallback(async ()=>{
+    const sendData = useCallback(async () => {
         try {
             console.log(basicInfo);
-            const {data} = await axios.post("/restaurant/", basicInfo);
-            const id = data.restaurantId
+
+            const { data } = await axios.post(
+                "/restaurant/",
+                basicInfo,
+                {
+                    headers: {
+                        Authorization: localStorage.getItem("token")
+                    }
+                }
+            );
+
+            const id = data.restaurantId;
             navigate(`/restaurant/add/info/${id}`);
         }
-        catch(err){
+        catch (err) {
+            console.log(err);
             toast.error("요청이 정상적으로 처리되지 않았습니다");
         }
-    },[basicInfo]);
+    }, [basicInfo]);
 
-    const clearData = useCallback(()=>{
+    const clearData = useCallback(() => {
         setBasicInfo({
             restaurantName: "",
             restaurantContact: "",
             restaurantAddress: "",
-            address1 : "",
-            address2 : "",
+            address1: "",
+            address2: "",
             restaurantAddressX: "",
             restaurantAddressY: "",
             restaurantOpen: "",
@@ -92,8 +103,8 @@ export default function ReservationInfo() {
             restaurantReservationPrice: "",
             restaurantDescription: ""
         });
-    },[]);
-    
+    }, []);
+
     return (
         <>
             <div className="progress">
@@ -103,17 +114,17 @@ export default function ReservationInfo() {
             <div className="row mt-4">
                 <label className="col-sm-3 col-form-label">영업일</label>
                 <div className="col-sm-9 d-flex flex-wrap">
-                {weekdays.map(day => (
-                    <label key={day} className="form-check me-2">
-                        <input
-                            type="checkbox" className="form-check-input"
-                            checked={isChecked(day)}
-                            onChange={() => handleWeekdayToggle(day)}
-                        />
-                        {day}
-                    </label>
-                ))}
-            </div>
+                    {weekdays.map(day => (
+                        <label key={day} className="form-check me-2">
+                            <input
+                                type="checkbox" className="form-check-input"
+                                checked={isChecked(day)}
+                                onChange={() => handleWeekdayToggle(day)}
+                            />
+                            {day}
+                        </label>
+                    ))}
+                </div>
             </div>
             <div className="row mt-4">
                 <label className="col-sm-3 col-form-label">오픈 시간</label>
@@ -169,7 +180,7 @@ export default function ReservationInfo() {
                         <Link to="/restaurant/add" className="btn btn-secondary">이전으로</Link>
                     </div>
                     <div className="btn-wrapper">
-                        <button type="button" className="btn btn-success" onClick={sendData}>추가 정보 설정</button>
+                        <button type="button" className="btn btn-success" onClick={sendData}>등록 완료</button>
                     </div>
                 </div>
             </div>
