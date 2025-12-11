@@ -33,7 +33,7 @@ export default function ReviewList() {
         setLoading(true);
         setError(null);
         try {
-            const response = await axios.get(`http://localhost:8080/restaurant/${restaurantId}/review/`);
+            const response = await axios.get(`http://localhost:8080/restaurant/detail/${restaurantId}/review/`);
             setReviews(response.data);
         }
         catch (err) {
@@ -57,7 +57,7 @@ export default function ReviewList() {
         });
         if (result.isConfirmed) {
             try {
-                await axios.delete(`http://localhost:8080/restaurant/${restaurantId}/review/${reviewNo}`);
+                await axios.delete(`http://localhost:8080/restaurant/detail/${restaurantId}/review/${reviewNo}`);
                 Swal.fire({
                     title: "삭제 완료!",
                     text: "리뷰가 성공적으로 삭제되었습니다.",
@@ -87,15 +87,20 @@ export default function ReviewList() {
 
     // render
     return (<>
-        <Jumbotron subject={`${restaurantId}번 식당의 리뷰 목록`} />
-        <div className="text-end">
-            <Link to={`/restaurant/${restaurantId}/review/write`} className="btn btn-success mt-4">리뷰 작성하기</Link>
-        </div>
+        {/* <Jumbotron subject={`${restaurantId}번 식당의 리뷰 목록`} /> */}
+        {/* 로그인 상태일 때만 리뷰 작성하기 버튼 표시 */}
+        {loginId && (
+            <div className="text-end">
+                <Link to={`/restaurant/detail/${restaurantId}/review/write`} className="btn btn-success mt-4">
+                    리뷰 작성하기
+                </Link>
+            </div>
+        )}
         {reviews.length === 0 ? (
             <div className="alert alert-warning">아직 등록된 리뷰가 없습니다.</div>
         ) : (
             <ul className="list-unstyled">
-                {reviews.map((review) => {
+                {reviews.map((review, index) => {
                     // 현재 리뷰가 확장 상태인지 확인
                     const isExpanded = expandedReviews[review.reviewNo];
                     const content = review.reviewContent;
@@ -109,11 +114,15 @@ export default function ReviewList() {
                     const rawDate = review.reviewCreatedAt ? review.reviewCreatedAt.substring(0, 10) : '날짜정보 없음';
                     const formattedCreatedAt = rawDate.replace(/-/g, '.'); // 모든 '-'를 '.'으로 치환
 
+                    const isLast = index === reviews.length - 1;
+
                     return (
 
                         <li key={review.reviewNo}
                             className="py-3" // 상하 패딩 (구분선과의 간격 확보)
-                            style={{ borderBottom: '1px solid #e0e0e0' }} // 얇은 회색 구분선 추가
+                            style={{
+                                borderBottom: isLast ? 'none' : '1px solid #e0e0e0'
+                            }} // 얇은 회색 구분선 추가
                         >
                             <div>
                                 {/* 닉네임과 버튼을 묶는 d-flex 컨테이너 (이전에 <h5>였던 부분을 div로 감싸고, 버튼을 안에 넣음) */}
@@ -129,7 +138,7 @@ export default function ReviewList() {
                                         <div className="d-flex gap-2">
                                             <button
                                                 className="btn btn-sm btn-outline-secondary"
-                                                onClick={() => navigate(`/restaurant/${restaurantId}/review/edit/${review.reviewNo}`)}
+                                                onClick={() => navigate(`/restaurant/detail/${restaurantId}/review/edit/${review.reviewNo}`)}
                                             >
                                                 수정
                                             </button>
@@ -149,16 +158,17 @@ export default function ReviewList() {
 
                                 {/* [추가] 더보기/접기 버튼을 오른쪽 끝에 배치하기 위한 <div> */}
                                 {isLong && (
-                                    <div className="text-end mt-4 mb-2">
+                                    <div className="text-end mt-2">
                                         <button
-                                            className="btn btn-sm btn-outline-secondary" // 사진처럼 버튼 형태로 변경
+                                            className="text-secondary" 
+                                            style={{ background: 'none', border: 'none', cursor: 'pointer' }} 
                                             onClick={() => toggleExpand(review.reviewNo)}
                                         >
                                             {isExpanded ? '접기' : '더보기'}
                                             <span className="ms-1">
-                                                {isExpanded ? 
+                                                {isExpanded ?
                                                     <MdExpandLess /> : // 위쪽 화살표 (접기 상태)
-                                                    <MdExpandMore/>  // 아래쪽 화살표 (더보기 상태)
+                                                    <MdExpandMore />  // 아래쪽 화살표 (더보기 상태)
                                                 }
                                             </span>
                                         </button>

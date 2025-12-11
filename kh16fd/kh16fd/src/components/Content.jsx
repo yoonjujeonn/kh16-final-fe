@@ -57,7 +57,12 @@ export default function Content() {
                         
                         {/* 식당 페이지 */}
                          <Route path="/restaurant/list" element={<RestaurantList />}></Route>
-                         <Route path="/restaurant/detail/:restaurantId" element={<RestaurantDetail />}></Route>
+                         <Route path="/restaurant/detail/:restaurantId" element={<RestaurantDetail />}>
+                         {/* 리뷰 탭 */}
+                            <Route path="review" element={<ReviewList />} /> 
+                            <Route path="review/write" element={<ReviewWrite />} />
+                            <Route path="review/edit/:reviewNo" element={<ReviewEdit />} />
+                         </Route>
                         
                         {/* 예약 페이지 */}
                         <Route path="/reservation/add" element={<ReservationAdd />} />
@@ -73,11 +78,6 @@ export default function Content() {
                         {/* 배너 페이지 */}
                         <Route path="/banner/add" element={<BannerAdd />} />
                         <Route path="/banner/list" element={<BannerList />} />
-
-                        {/* 리뷰 관련 */}
-                        <Route path="/restaurant/:restaurantId/review" element={<ReviewList />} />
-                        <Route path="/restaurant/:restaurantId/review/write" element={<ReviewWrite />} />
-                        <Route path="/restaurant/:restaurantId/review/edit/:reviewNo" element={<ReviewEdit />} />
 
                     </Routes>
 
