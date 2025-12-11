@@ -42,6 +42,7 @@ export default function Content() {
                         <Route path="/member/joinFinish" element={<MemberJoinFinish />} />
                         <Route path="/member/bizJoin" element={<BizMemberJoin />} />
                         <Route path="/member/bizJoinFinish" element={<BizMemberJoinFinish />} />
+                        
                         {/*일반회원 페이지 가드 예정 */}
                         {/* 회원 결제가 이루어지면 여기다가 주소를 넣으면 될거같아요 */}
                         <Route path="/member/info/" element={<MemberInfo />} />
@@ -61,7 +62,7 @@ export default function Content() {
                         
                         {/* 예약 페이지 */}
                         <Route path="/reservation/add" element={<ReservationAdd />} />
-
+                        
                         {/* 관리자 메뉴 */}
                         <Route path="/admin/setting" element={<AdminSetting />} />
 
