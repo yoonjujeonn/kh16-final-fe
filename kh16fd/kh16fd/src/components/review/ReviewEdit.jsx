@@ -22,11 +22,11 @@ export default function ReviewEdit() {
     const loadData = useCallback(async () => {
         setLoading(true);
         try {
-            const response = await axios.get(`http://localhost:8080/restaurant/${restaurantId}/review/${reviewNo}`);
+            const response = await axios.get(`http://localhost:8080/restaurant/detail/${restaurantId}/review/${reviewNo}`);
             const data = response.data;
             if (data.memberId !== currentMemberId) {
                 toast.error("수정 권한이 없습니다");
-                navigate(`/restaurant/${restaurantId}/review`);
+                navigate(`/restaurant/detail/${restaurantId}/review`);
                 return;
             }
             setReviewContent(data.reviewContent);
@@ -34,7 +34,7 @@ export default function ReviewEdit() {
         } catch (error) {
             console.error("리뷰 로딩 실패 : ", error);
             toast.error("리뷰 데이터를 불러오는데 실패했습니다");
-            navigate(`/restaurant/${restaurantId}/review`);
+            navigate(`/restaurant/detail/${restaurantId}/review`);
         } finally {
             setLoading(false);
         }
@@ -73,10 +73,10 @@ export default function ReviewEdit() {
         };
 
         try {
-            await axios.put(`/restaurant/${restaurantId}/review/${reviewNo}`, payload);
+            await axios.put(`/restaurant/detail/${restaurantId}/review/${reviewNo}`, payload);
 
             toast.success("리뷰 수정이 완료되었습니다");
-            navigate(`/restaurant/${restaurantId}/review`);
+            navigate(`/restaurant/detail/${restaurantId}/review`);
 
         } catch (error) {
             console.error("리뷰 수정 실패:", error);
@@ -131,7 +131,7 @@ export default function ReviewEdit() {
                     </div>
                 </div>
 
-                <div className="row">
+                <div className="row mb-4">
                     <div className="col-12 d-flex justify-content-between">
                         <button
                             type="button"

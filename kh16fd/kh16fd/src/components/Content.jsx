@@ -34,58 +34,58 @@ export default function Content() {
 
                     <Routes>
 
-                        {/* 메인 페이지 */}
+                        {/* 메인 */}
                         <Route path="/" element={<Home />} />
 
-                        {/* 회원 관련 메뉴 */}
+                        {/* 회원 */}
                         <Route path="/member/login" element={<MemberLogin />} />
                         <Route path="/member/join" element={<MemberJoin />} />
                         <Route path="/member/joinFinish" element={<MemberJoinFinish />} />
                         <Route path="/member/bizJoin" element={<BizMemberJoin />} />
                         <Route path="/member/bizJoinFinish" element={<BizMemberJoinFinish />} />
-                        {/*일반회원 페이지 가드 예정 */}
-                        {/* 회원 결제가 이루어지면 여기다가 주소를 넣으면 될거같아요 */}
-                        <Route path="/member/info/" element={<MemberInfo />} />
-                        <Route path="/member/info/Change" element={<MemberChange />} />
+                        <Route path="/member/info" element={<MemberInfo />} />
+                        <Route path="/member/info/change" element={<MemberChange />} />
 
-                        {/* 식당 등록 페이지 */}
+                        {/* 식당 등록 */}
                         <Route path="/restaurant/add" element={<RestaurantAdd />}>
-                            <Route index element={<RestaurantInfo />} />   
-                            <Route path="category" element={<RestaurantCategorySelect />} /> 
-                            <Route path="info" element={<ReservationInfo />} /> 
-                            <Route path="info/:restaurantId" element={<ReservationMoreInfo />} /> 
+                            <Route index element={<RestaurantInfo />} />
+                            <Route path="category" element={<RestaurantCategorySelect />} />
+                            <Route path="info" element={<ReservationInfo />} />
+                            <Route path="info/:restaurantId" element={<ReservationMoreInfo />} />
+                        </Route>
+                        <Route path="/restaurant/add/finish" element={<RestaurantAddFinish />} />
 
-                    </Route>
-                    <Route path="/restaurant/add/finish" element={<RestaurantAddFinish />}></Route>
+                        {/* 식당 페이지 */}
+                        <Route path="/restaurant/list" element={<RestaurantList />} />
+                        <Route path="/restaurant/detail/:restaurantId" element={<RestaurantDetail />}>
+                            <Route path="review" element={<ReviewList />} />
+                            <Route path="review/write" element={<ReviewWrite />} />
+                            <Route path="review/edit/:reviewNo" element={<ReviewEdit />} />
+                        </Route>
 
-                    {/* 식당 페이지 */}
-                    <Route path="/restaurant/list" element={<RestaurantList />}></Route>
-                    <Route path="/restaurant/detail/:restaurantId" element={<RestaurantDetail />}></Route>
+                        {/* 예약 */}
+                        <Route path="/reservation/add" element={<ReservationAdd />} />
 
-                    {/* 예약 페이지 */}
-                    <Route path="/reservation/add" element={<ReservationAdd />} />
+                        {/* 관리자 */}
+                        <Route path="/admin/setting" element={<AdminSetting />} />
 
-                    {/* 관리자 메뉴 */}
-                    <Route path="/admin/setting" element={<AdminSetting />} />
+                        {/* 카테고리 */}
+                        <Route path="/category/add" element={<CategoryAdd />} />
+                        <Route path="/category/list" element={<CategoryList />} />
 
-                    {/* 카테고리 페이지 */}
-                    <Route path="/category/add" element={<CategoryAdd />} />
-                    <Route path="/category/list" element={<CategoryList />} />
+                        {/* 배너 */}
+                        <Route path="/banner/add" element={<BannerAdd />} />
+                        <Route path="/banner/list" element={<BannerList />} />
 
+                        {/* 리뷰 */}
+                        <Route path="/restaurant/:restaurantId/review" element={<ReviewList />} />
+                        <Route path="/restaurant/:restaurantId/review/write" element={<ReviewWrite />} />
+                        <Route path="/restaurant/:restaurantId/review/edit/:reviewNo" element={<ReviewEdit />} />
 
-                    {/* 배너 페이지 */}
-                    <Route path="/banner/add" element={<BannerAdd />} />
-                    <Route path="/banner/list" element={<BannerList />} />
+                    </Routes>
 
-                    {/* 리뷰 관련 */}
-                    <Route path="/restaurant/:restaurantId/review" element={<ReviewList />} />
-                    <Route path="/restaurant/:restaurantId/review/write" element={<ReviewWrite />} />
-                    <Route path="/restaurant/:restaurantId/review/edit/:reviewNo" element={<ReviewEdit />} />
-
-                </Routes>
-
+                </div>
             </div>
-        </div >
         </>
     );
 }

@@ -43,9 +43,9 @@ export default function ReviewWrite() {
         };
 
         try {
-            await axios.post(`http://localhost:8080/restaurant/${restaurantId}/review/`, payload);
+            await axios.post(`http://localhost:8080/restaurant/detail/${restaurantId}/review/`, payload);
             toast.success("리뷰 작성이 완료되었습니다");
-            navigate(`/restaurant/${restaurantId}/review/`);
+            navigate(`/restaurant/detail/${restaurantId}/review/`);
         }
         catch (error) {
             console.error("리뷰 작성 실패 : ", error);
@@ -57,7 +57,7 @@ export default function ReviewWrite() {
 
     // render
     return (<>
-        <Jumbotron subject={`${restaurantId}번 식당 리뷰 작성`} />
+        {/* <Jumbotron subject={`${restaurantId}번 식당 리뷰 작성`} /> */}
         <div className="container mt-5">
 
             <div className="form-container">
@@ -99,7 +99,7 @@ export default function ReviewWrite() {
                     </div>
                 </div>
 
-                <div className="row">
+                <div className="row mb-4">
                     <div className="col-12 d-flex justify-content-between">
                         <button
                             type="button"

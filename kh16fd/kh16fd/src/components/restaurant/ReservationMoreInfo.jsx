@@ -90,6 +90,7 @@ export default function ReservationMoreInfo() {
         console.log(request);
         try {
             const response = await axios.post("/slot/seat", request);
+            toast.success("좌석이 정상적으로 등록되었습니다");
             clearAndCloseModal();
             loadSeatList();
         }
@@ -108,6 +109,7 @@ export default function ReservationMoreInfo() {
         console.log(request);
         try {
             const response = await axios.post("/restaurant/holiday", request);
+            toast.success("휴무일이 정상적으로 등록되었습니다");
         }
         catch(err){
             toast.error("요청이 정상적으로 처리되지 않았습니다");
