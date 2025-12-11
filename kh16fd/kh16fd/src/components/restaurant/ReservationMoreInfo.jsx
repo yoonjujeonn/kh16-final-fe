@@ -25,6 +25,46 @@ export default function ReservationMoreInfo() {
 
     const [seatList, setSeatList] = useState([]);
 
+    const [file, setFile] = useState(null);
+    const [preview, setPreview] = useState(null);
+
+    const fileInput = useRef();
+
+    //미리보기용
+    const fileChange = useCallback(e => {
+        const selectedFile = e.target.files[0];
+        if (!selectedFile) return;
+
+        setFile(selectedFile);
+
+        //미리보기 생성
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setPreview(reader.result);
+        };
+        reader.readAsDataURL(selectedFile);
+    }, []);
+
+    const fileUpload = useCallback(async () => {
+        if (!file) {
+            toast.warning("대표 이미지는 필수항목입니다");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("restaurantId", id);
+        formData.append("attach", file);
+
+        try {
+            const response = await axios.post("/restaurant/image", formData, { headers: { "Content-Type": "multipart/form-data" } });
+            toast.success("대표 이미지가 등록되었습니다");
+        }
+        catch (err) {
+            toast.error("업로드에 실패했습니다. 다시 한번 시도해주세요")
+        }
+    }, [file, id]);
+
+
     const modal = useRef();
 
     const openModal = useCallback(() => {
@@ -101,17 +141,17 @@ export default function ReservationMoreInfo() {
 
     //휴무일 생성
     const creatHolidays = useCallback(async () => {
-        
+
         const request = holidays.map(day => ({
-            restaurantId : id,
-            restaurantHolidayDate : day.toISOString().slice(0, 10)
+            restaurantId: id,
+            restaurantHolidayDate: day.toISOString().slice(0, 10)
         }));
         console.log(request);
         try {
             const response = await axios.post("/restaurant/holiday", request);
             toast.success("휴무일이 정상적으로 등록되었습니다");
         }
-        catch(err){
+        catch (err) {
             toast.error("요청이 정상적으로 처리되지 않았습니다");
         }
     }, [holidays]);
@@ -148,21 +188,21 @@ export default function ReservationMoreInfo() {
                 <div className="col-sm-9">
                     {hasSeat ? (
                         <>
-                        <ul className="list-group">
-                            {seatList.map(seat => (
-                                <li className="list-group-item" key={seat.seatId}>
-                                    좌석 종류: {seat.seatType}, 수용 인원: {seat.seatMaxPeople}명, 좌석 수: {seat.count} 개
+                            <ul className="list-group">
+                                {seatList.map(seat => (
+                                    <li className="list-group-item" key={seat.seatId}>
+                                        좌석 종류: {seat.seatType}, 수용 인원: {seat.seatMaxPeople}명, 좌석 수: {seat.count} 개
+                                    </li>
+                                ))}
+                                <li className="list-group-item">
+                                    총 좌석 수: {seatList.length}개
                                 </li>
-                            ))}
-                            <li className="list-group-item">
-                                총 좌석 수: {seatList.length}개
-                            </li>
-                            <div className="col btn-wrapper text-end">
-                             <button className="ms-2 mt-2 btn btn-outline-info" onClick={openModal}>
-                            신규 좌석 등록
-                            </button>
-                            </div>
-                        </ul>
+                                <div className="col btn-wrapper text-end">
+                                    <button className="ms-2 mt-2 btn btn-outline-info" onClick={openModal}>
+                                        신규 좌석 등록
+                                    </button>
+                                </div>
+                            </ul>
                         </>
                     ) : (
                         <button className="ms-2 btn btn-primary" onClick={openModal}>
@@ -178,16 +218,28 @@ export default function ReservationMoreInfo() {
                     <DayPicker mode="multiple" selected={holidays} onSelect={setHolidays} />
                 </div>
                 <div className="col btn-wrapper text-end">
-                <button className="btn btn-outline-info" onClick={creatHolidays}>휴무일 등록</button>
+                    <button className="btn btn-outline-info" onClick={creatHolidays}>휴무일 등록</button>
                 </div>
             </div>
             {/* 대표 이미지 */}
             <div className="row mt-4">
                 <label className="col-sm-3 col-form-label">대표 이미지</label>
                 <div className="col-sm-9">
-                    <input type="file" className="form-control" />
+                    <input type="file" accept="image/*" className="form-control" ref={fileInput} onChange={fileChange} />
                 </div>
+                {preview && (
+                    <>
+                        <div className="preview-wrapper text-center mt-4">
+                            {/*미리보기 영역*/}
+                            <img src={preview} alt="미리보기" style={{ width: "300px", height: "auto" }} onClick={() => fileInput.current.click()} />
+                        </div>
+                        <div className="btn-wrapper mt-2 text-end">
+                            <button className="btn btn-outline-info" onClick={fileUpload}>이미지 등록</button>
+                        </div>
+                    </>
+                )}
             </div>
+
             <div className="row mt-4">
                 <div className="col d-flex justify-content-between">
                     <div className="btn-wrapper">
