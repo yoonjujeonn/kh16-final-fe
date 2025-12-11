@@ -42,8 +42,7 @@ export default function ReservationInfo() {
     }, [basicInfo]);
 
     const changeTimeValue = useCallback((field) => (value) => {
-        if(value === null) return;
-        const time = value.toString();
+        const time = value === null ? "" : value.toString();
         console.log(time)
         setBasicInfo(prev => ({
             ...prev,
