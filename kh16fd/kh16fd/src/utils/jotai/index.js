@@ -40,7 +40,9 @@ const restaurantInfo = {
         restaurantOpeningDays: "",
         restaurantLastOrder: "",
         restaurantReservationPrice: "",
-        restaurantDescription: ""
+        restaurantDescription: "",
+        categoryIdList: [],
+        preview : []
 };
 
 export const restaurantInfoState = atomWithStorage(

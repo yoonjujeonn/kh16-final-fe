@@ -26,7 +26,7 @@ export default function RestaurantCategorySelect() {
     }, []);
 
     // 하위 카테고리 불러오기
-    const loadChild = useCallback((no) => {
+    const loadChild = useCallback(async (no) => {
         setParentNo(no);
 
         if (!no) {
@@ -34,104 +34,140 @@ export default function RestaurantCategorySelect() {
             return;
         }
 
-        axios.get(`http://localhost:8080/category/child/${no}`)
-            .then(res => setChildList(res.data))
-            .catch(err => console.log("하위 카테고리 불러오기 실패", err));
-    }, []);
+        const res = await axios.get(`http://localhost:8080/category/child/${no}`)
+        setChildList(res.data);
+
+    }, [parentList]);
 
     const toggleCategory = useCallback((categoryId) => {
+        const id = parseInt(categoryId);
 
-        const currentList = basicInfo.categoryIdList || [];
+            setBasicInfo(prev => {
+                const currentList = prev.categoryIdList || [];
+                const isSelected = currentList.includes(id);
+                const currentPreview = prev.preview || [];
 
-        let updated;
+                let updated;
+                let updatedPreview;
 
-        if (currentList.includes(categoryId)) {
-            updated = currentList.filter(id => id !== categoryId);
-        }
-        else {
-            updated = [...currentList, categoryId];
-        }
+                if (isSelected) {
+                    updated = currentList.filter(item => item !== id);
+                    updatedPreview = currentPreview.filter(p => p.childId !== id);
+                } else {
+                    updated = [...currentList, id];
 
-        setBasicInfo(prev => ({
-            ...prev,
-            categoryIdList: updated
-        }));
+                    const child = childList.find(c => c.categoryNo === id);
+                    const parent = parentList.find(p => p.categoryNo === child?.parentCategoryNo);
 
-    }, [basicInfo]);
+                    const newItems = {
+                        childId: id,
+                        childName: child?.categoryName || "",
+                        parentId: parent?.categoryNo || null,
+                        parentName: parent?.categoryName || ""
+                    };
 
-    // 체크 여부
-    const isChecked = useCallback((id) => {
-        return basicInfo.categoryIdList?.includes(id) || false;
-    }, [basicInfo]);
+                    updatedPreview = [...currentPreview, newItems];
+                }
 
-    const goNext = () => {
-        if (!basicInfo.categoryIdList || basicInfo.categoryIdList.length === 0) {
-            alert("하나 이상의 카테고리를 선택해주세요.");
-            return;
-        }
-        navigate("/restaurant/add/info"); 
-    };
+                return {
+                    ...prev,
+                    categoryIdList: updated,
+                    preview : updatedPreview
+                };
+            });
 
-    return (
-        <>
-            <div className="progress">
-                <div className="progress-bar" role="progressbar" style={{ width: "20%" }}>
-                </div>
-            </div>
+        }, [basicInfo, childList, parentList]);
 
-            <h4 className="mt-4">카테고리 선택</h4>
-            <p className="text-muted">식당이 속할 카테고리를 선택해주세요.</p>
+        // 체크 여부
+        const isChecked = useCallback((id) => {
+            return basicInfo.categoryIdList?.includes(id) || false;
+        }, [basicInfo]);
 
-            {/* 상위 카테고리 */}
-            <div className="row mt-3">
-                <label className="col-sm-3 col-form-label">상위 카테고리</label>
-                <div className="col-sm-9">
-                    <select
-                        className="form-select"
-                        value={parentNo}
-                        onChange={(e) => loadChild(e.target.value)}
-                    >
-                        <option value="">상위 카테고리 선택</option>
-                        {parentList.map(item => (
-                            <option key={item.categoryNo} value={item.categoryNo}>
-                                {item.categoryName}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-            </div>
+        const goNext = () => {
+            if (!basicInfo.categoryIdList || basicInfo.categoryIdList.length === 0) {
+                alert("하나 이상의 카테고리를 선택해주세요.");
+                return;
+            }
+            navigate("/restaurant/add/info");
+        };
 
-            {/* 하위 카테고리 */}
-            {childList.length > 0 && (
-                <div className="row mt-4">
-                    <label className="col-sm-3 col-form-label">하위 카테고리</label>
-                    <div className="col-sm-9 d-flex flex-wrap">
-
-                        {childList.map(child => (
-                            <label
-                                key={child.categoryNo}
-                                className="form-check me-3"
-                            >
-                                <input
-                                    type="checkbox"
-                                    className="form-check-input"
-                                    checked={isChecked(child.categoryNo)}
-                                    onChange={() => toggleCategory(child.categoryNo)}
-                                />
-                                {child.categoryName}
-                            </label>
-                        ))}
-
+        return (
+            <>
+                <div className="progress">
+                    <div className="progress-bar" role="progressbar" style={{ width: "20%" }}>
                     </div>
                 </div>
-            )}
 
-            <div className="row mt-4">
-                <div className="col d-flex justify-content-between">
-                    <Link to="/restaurant/add/category" className="btn btn-secondary">취소</Link>
-                    <button className="btn btn-success" onClick={goNext}>다음 단계</button>
+                <h4 className="mt-4">카테고리 선택</h4>
+                <p className="text-muted">식당이 속할 카테고리를 선택해주세요.</p>
+
+                {/* 상위 카테고리 */}
+                <div className="row mt-3">
+                    <label className="col-sm-3 col-form-label">상위 카테고리</label>
+                    <div className="col-sm-9">
+                        <select
+                            className="form-select"
+                            value={parentNo}
+                            onChange={(e) => loadChild(e.target.value)}
+                        >
+                            <option value="">상위 카테고리 선택</option>
+                            {parentList.map(item => (
+                                <option key={item.categoryNo} value={item.categoryNo}>
+                                    {item.categoryName}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
                 </div>
-            </div>
-        </>
-    );
-}
+
+                {/* 하위 카테고리 */}
+                {childList.length > 0 && (
+                    <div className="row mt-4">
+                        <label className="col-sm-3 col-form-label">하위 카테고리</label>
+                        <div className="col-sm-9 d-flex flex-wrap">
+
+                            {childList.map(child => (
+                                <label
+                                    key={child.categoryNo}
+                                    className="form-check me-3"
+                                >
+                                    <input
+                                        type="checkbox"
+                                        className="form-check-input"
+                                        checked={isChecked(child.categoryNo)}
+                                        onChange={() => toggleCategory(child.categoryNo)}
+                                    />
+                                    {child.categoryName}
+                                </label>
+                            ))}
+
+                        </div>
+                    </div>
+                )}
+
+                {/* 선택 항목 보여주기 */}
+                <div className="row-mt-4">
+                    <div className="col">
+                        {basicInfo.preview.length > 0 &&
+                            (<ul className="list-group mt-4">
+                                <li className="list-group-item list-group-item-primary">선택한 카테고리</li>
+                                {basicInfo.preview.map(p => (
+                                    <li className="list-group-item" key={p.childId}>
+                                        {p.childName} ({p.parentName}) &nbsp;
+                                    </li>
+                                ))}
+                            </ul>
+                            )
+                        }
+                    </div>
+                </div>
+
+                <div className="row mt-4">
+                    <div className="col d-flex justify-content-between">
+                        <Link to="/restaurant/add" className="btn btn-secondary">이전으로</Link>
+                        <button className="btn btn-success" onClick={goNext}>다음으로</button>
+                    </div>
+                </div>
+            </>
+        );
+    }

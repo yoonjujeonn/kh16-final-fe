@@ -20,19 +20,33 @@ export default function RestaurantList() {
     const days = ["일", "월", "화", "수", "목", "금", "토"];
     const today = days[index];
     const tomorrow = days[index + 1];
+    
     //state
     const [slotList, setSlotList] = useState([]);
     const [restaurantSlot, setRestaurantSlot] = useState({});
+
+    //effect
+    useEffect(() => {
+        if (restaurantList?.length > 0) {
+            loadSlotList();
+        }
+    }, [restaurantList]);
+
+    useEffect(() => {
+        if (slotList.length > 0) weekSlots();
+    }, [slotList]);
 
     //callback
     const loadSlotList = useCallback(async () => {
         if (!restaurantList) return;
 
         try {
+            console.log("restaurantList", restaurantList);
             const requests = restaurantList.map(r => axios.get(`/slot/${r.restaurantId}`));
 
             // Promise.all로 모든 요청 병렬 실행
             const results = await Promise.all(requests);
+            console.log("results", results);
 
             // for문으로 결과 순차 처리
             const allSlots = [];
@@ -42,8 +56,9 @@ export default function RestaurantList() {
                     allSlots.push(slot);
                 }
             }
+            console.log("allSlots", allSlots);
 
-            setSlotList(allSlots); 
+            setSlotList(allSlots);
         }
         catch (err) {
             toast.error("요청이 정상적으로 처리되지 않았습니다");
@@ -89,17 +104,6 @@ export default function RestaurantList() {
         setRestaurantSlot(slotsByRestaurant);
     }, [restaurantList, slotList]);
 
-    //effect
-    useEffect(() => {
-        if (restaurantList?.length > 0) {
-        loadSlotList();
-    }
-    }, [restaurantList]);
-
-    useEffect(() => {
-        if (slotList.length > 0) weekSlots();
-    }, [slotList]);
-
     //memo
     //오늘 기준 영업 유무 계산
     const statusWithRestaurantList = useMemo(() => {
@@ -122,11 +126,11 @@ export default function RestaurantList() {
                     <div className="d-flex mb-4 flex-wrap justify-content-center">
                         {statusWithRestaurantList.map(restaurant =>
                             <div className="mt-3 d-flex flex-column align-items-center w-100">
-                                <ul className="list-group w-100" key={restaurant.restaurantId}>
+                                <ul className="list-group w-75" key={restaurant.restaurantId}>
                                     <li className="list-group-item">
                                         <div className="row">
                                             <div className="col">
-                                                <img className="d-flex rounded mt-2 clickable w-100" src={`http://localhost:8080/restaurant/image/${restaurant.restaurantId}`} style={{height : "250px", objectFit : "cover"}} />
+                                                <img className="d-flex rounded mt-2 clickable w-100" src={`http://localhost:8080/restaurant/image/${restaurant.restaurantId}`} style={{ height: "250px", objectFit: "cover" }} />
                                                 <h3 className="mt-2">{restaurant.restaurantName}</h3>
                                                 <div className="mt-2">{restaurant.isOpenToday ? `영업중 ${restaurant.restaurantOpen} ~ ${restaurant.restaurantClose}` : `${today}요일 휴무`}</div>
                                                 <div className="badge-wrapper mt-2">
@@ -171,6 +175,8 @@ export default function RestaurantList() {
                             </div>
                         )}
                     </div>
+
+
                 </div>
             </div>
         </>

@@ -6,7 +6,6 @@ import { throttle } from "lodash";
 export default function usePagingByScroll(url) {
     const [list, setList] = useState([]);
     const [page, setPage] = useState(1);
-    
     const loading = useRef(false);
 
     // 페이지 불러오기
@@ -14,10 +13,10 @@ export default function usePagingByScroll(url) {
         try {
             loading.current = true;
             const response = await axios.get(`${url}/page/${page}`);
-            
+            const data = response.data;
             if (page === 1) setList(response.data.list);
             else setList(prev => ([...prev, ...response.data.list]));
-
+            
             loading.current = false;
         } catch (err) {
             toast.error("불러올 데이터가 없습니다");

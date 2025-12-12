@@ -25,7 +25,8 @@ export default function RestaurantAdd() {
         restaurantLastOrder: "",
         restaurantReservationPrice: "",
         restaurantDescription: "",
-        categoryIdList: []
+        categoryIdList: [],
+        preview : []
         });
     }, []);
 

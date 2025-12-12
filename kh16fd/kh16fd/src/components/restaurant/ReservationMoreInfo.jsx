@@ -182,6 +182,7 @@ export default function ReservationMoreInfo() {
                 <div className="progress-bar" role="progressbar" style={{ width: "90%" }}>
                 </div>
             </div>
+            
             {/* 좌석 정보 */}
             <div className="row mt-4">
                 <label className="col-sm-3 col-form-label">좌석 정보</label>
