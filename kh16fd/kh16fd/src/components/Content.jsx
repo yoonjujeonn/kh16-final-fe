@@ -24,6 +24,7 @@ import MemberInfo from "./member/MemberInfo";
 import MemberChange from "./member/MemberChange";
 import BannerList from "./banner/bannerList";
 import RestaurantCategorySelect from "./restaurant/RestaurantCategorySelect";
+import MyReviewList from "./review/MyReviewList";
 
 export default function Content() {
 
@@ -45,6 +46,7 @@ export default function Content() {
                         <Route path="/member/bizJoinFinish" element={<BizMemberJoinFinish />} />
                         <Route path="/member/info" element={<MemberInfo />} />
                         <Route path="/member/info/change" element={<MemberChange />} />
+                        <Route path="/member/info/review" element={<MyReviewList />} />
 
                         {/* 식당 등록 */}
                         <Route path="/restaurant/add" element={<RestaurantAdd />}>
