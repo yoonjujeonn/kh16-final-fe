@@ -238,7 +238,7 @@ export default function RestaurantInfo() {
             <div className="row mt-4">
                 <div className="col text-end">
                     <Link to="/restaurant/add/category" className="btn btn-success">
-                        카테고리 설정
+                        다음으로
                     </Link>
                 </div>
             </div>

@@ -89,7 +89,8 @@ export default function ReservationInfo() {
             restaurantOpeningDays: "",
             restaurantLastOrder: "",
             restaurantReservationPrice: "",
-            restaurantDescription: ""
+            restaurantDescription: "",
+            categoryList : []
         });
     }, []);
 
@@ -99,6 +100,7 @@ export default function ReservationInfo() {
                 <div className="progress-bar" role="progressbar" style={{ width: "60%" }}>
                 </div>
             </div>
+            
             <div className="row mt-4">
                 <label className="col-sm-3 col-form-label">영업일</label>
                 <div className="col-sm-9 d-flex flex-wrap">
@@ -114,6 +116,7 @@ export default function ReservationInfo() {
                     ))}
                 </div>
             </div>
+
             <div className="row mt-4">
                 <label className="col-sm-3 col-form-label">오픈 시간</label>
                 <div className="col-sm-9 react-time-picker">
@@ -130,6 +133,7 @@ export default function ReservationInfo() {
                     />
                 </div>
             </div>
+
             <div className="row mt-4">
                 <label className="col-sm-3 col-form-label">브레이크 타임</label>
                 <div className="col-sm-9 react-time-picker align-items-center">
@@ -165,7 +169,7 @@ export default function ReservationInfo() {
             <div className="row mt-4">
                 <div className="col d-flex justify-content-between">
                     <div className="btn-wrapper">
-                        <Link to="/restaurant/add" className="btn btn-secondary">이전으로</Link>
+                        <Link to="/restaurant/add/category" className="btn btn-secondary">이전으로</Link>
                     </div>
                     <div className="btn-wrapper">
                         <button type="button" className="btn btn-success" onClick={sendData}>등록 완료</button>
