@@ -51,7 +51,7 @@ export default function MemberInfo() {
                 <Link className="btn btn-secondary me-2" to="/member/info/change">내정보 변경</Link>
                 {/* 이거는 조건 따져서 가리면 됨 */}
                 <Link className="btn btn-secondary me-2" to="/member/info/pay/:paymentNo">결제내역</Link>
-                <Link className="btn btn-secondary me-2" to="/restaurant/:restaurantId/review">나의 리뷰</Link>
+                <Link className="btn btn-secondary me-2" to="/member/info/review">나의 리뷰</Link>
             </div>
         </div>
 
