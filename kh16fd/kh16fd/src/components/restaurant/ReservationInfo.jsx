@@ -70,7 +70,7 @@ export default function ReservationInfo() {
         catch(err){
             toast.error("요청이 정상적으로 처리되지 않았습니다");
         }
-    },[]);
+    },[basicInfo]);
 
     const clearData = useCallback(() => {
         setBasicInfo({
