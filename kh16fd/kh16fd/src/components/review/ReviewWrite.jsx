@@ -21,6 +21,10 @@ export default function ReviewWrite() {
     const [reviewRating, setReviewRating] = useState(0.0);
     const [attachFile, setAttachFile] = useState(null);
 
+    const changeFile = useCallback((e) => {
+        setAttachFile(e.target.files[0] || null);
+    }, []);
+
     const handleSubmit = useCallback(async () => {
 
         if (!currentMemberId) {
@@ -52,12 +56,18 @@ export default function ReviewWrite() {
         }
 
         try {
-            // ⭐⭐ FormData를 전송. axios가 Content-Type을 multipart/form-data로 자동 설정.
+            // ⭐ Content-Type 헤더를 명시하여 멀티파트 데이터 전송을 확실히 합니다.
             await axios.post(
-                `http://localhost:8080/restaurant/detail/${restaurantId}/review/`, 
-                formData
+                `http://localhost:8080/restaurant/detail/${restaurantId}/review/`,
+                formData,
+                {
+                    headers: {
+                        // 파일(FormData) 전송 시 필수적으로 명시하는 것이 좋습니다.
+                        "Content-Type": "multipart/form-data"
+                    }
+                }
             );
-            
+
             toast.success("리뷰 작성이 완료되었습니다");
             navigate(`/restaurant/detail/${restaurantId}/review/`); // 리뷰 목록이나 상세 페이지로 이동
         }
@@ -83,7 +93,7 @@ export default function ReviewWrite() {
         // }
 
 
-    }, [restaurantId, reviewContent, reviewRating, navigate, currentMemberId]);
+    }, [restaurantId, reviewContent, reviewRating, navigate, currentMemberId, attachFile]);
 
     // render
     return (<>
@@ -139,9 +149,9 @@ export default function ReviewWrite() {
                             type="file"
                             id="attach"
                             className="form-control"
-                            // ⭐ 파일 선택 시 상태 업데이트
-                            onChange={(e) => setAttachFile(e.target.files[0] || null)}
-                            accept="image/*" // 이미지 파일만 선택 가능
+                            // ⭐ 파일 선택 시 changeFile 콜백 함수 호출
+                            onChange={changeFile}
+                            accept="image/*"
                             disabled={!currentMemberId}
                         />
                     </div>
