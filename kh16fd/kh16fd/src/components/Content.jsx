@@ -27,6 +27,7 @@ import RestaurantCategorySelect from "./restaurant/RestaurantCategorySelect";
 import Admin from "./guard/Admin";
 import NeedPermission from "./error/NeedPermission";
 import TargetNoutfound from "./error/TargetNotfound";
+import MyReviewList from "./review/MyReviewList";
 
 export default function Content() {
 
@@ -48,6 +49,7 @@ export default function Content() {
                         <Route path="/member/bizJoinFinish" element={<BizMemberJoinFinish />} />
                         <Route path="/member/info" element={<MemberInfo />} />
                         <Route path="/member/info/change" element={<MemberChange />} />
+                        <Route path="/member/info/review" element={<MyReviewList />} />
 
                         {/* 식당 등록 */}
                         <Route path="/restaurant/add" element={<RestaurantAdd />}>

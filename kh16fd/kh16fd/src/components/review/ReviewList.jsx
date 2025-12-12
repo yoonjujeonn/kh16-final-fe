@@ -11,6 +11,7 @@ import { MdExpandLess, MdExpandMore } from "react-icons/md";
 
 
 export default function ReviewList() {
+    
     const { restaurantId } = useParams();
     const navigate = useNavigate();
 
@@ -80,6 +81,11 @@ export default function ReviewList() {
         loadData();
     }, [loadData]);
 
+    const getImageUrl = (attachmentNo) => {
+        // 백엔드에서 '/attachment/{파일번호}'로 이미지 파일을 제공한다고 가정합니다.
+        return `http://localhost:8080/attachment/${attachmentNo}`; 
+    };
+
     if (loading) {
         return <div className="text-center p-5">리뷰 목록을 불러오는 중...</div>;
     }
@@ -115,6 +121,9 @@ export default function ReviewList() {
                     const formattedCreatedAt = rawDate.replace(/-/g, '.'); // 모든 '-'를 '.'으로 치환
 
                     const isLast = index === reviews.length - 1;
+
+                    const attachmentNo = review.reviewAttachmentNo; 
+                    const hasAttachment = attachmentNo && attachmentNo > 0;
 
                     return (
 
@@ -155,6 +164,19 @@ export default function ReviewList() {
                                 <p className="mt-2 mb-0">
                                     {displayContent}
                                 </p>
+
+                                {/* ⭐ [추가] 3. 이미지가 있을 경우 렌더링 (BannerList.jsx 방식 적용) */}
+                                {hasAttachment && (
+                                    <div className="mb-3">
+                                        <img
+                                            src={getImageUrl(attachmentNo)}
+                                            alt={`리뷰 이미지 ${review.reviewNo}`}
+                                            className="img-fluid rounded shadow-sm"
+                                            style={{ maxWidth: "150px", height: "auto" }} // 크기 제한 설정
+                                        />
+                                    </div>
+                                )}
+                                {/* ⭐ [추가] 3. 이미지 렌더링 영역 끝 */}
 
                                 {/* [추가] 더보기/접기 버튼을 오른쪽 끝에 배치하기 위한 <div> */}
                                 {isLong && (
