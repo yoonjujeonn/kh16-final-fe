@@ -24,6 +24,9 @@ import MemberInfo from "./member/MemberInfo";
 import MemberChange from "./member/MemberChange";
 import BannerList from "./banner/bannerList";
 import RestaurantCategorySelect from "./restaurant/RestaurantCategorySelect";
+import Admin from "./guard/Admin";
+import NeedPermission from "./error/NeedPermission";
+import TargetNoutfound from "./error/TargetNotfound";
 
 export default function Content() {
 
@@ -67,15 +70,19 @@ export default function Content() {
                         <Route path="/reservation/add" element={<ReservationAdd />} />
 
                         {/* 관리자 */}
-                        <Route path="/admin/setting" element={<AdminSetting />} />
-
+                        <Route path="/admin/setting" element={<Admin><AdminSetting /></Admin>} />
                         {/* 카테고리 */}
-                        <Route path="/category/add" element={<CategoryAdd />} />
-                        <Route path="/category/list" element={<CategoryList />} />
-
+                        <Route path="/category/add" element={<Admin><CategoryAdd /></Admin>} />
+                        <Route path="/category/list" element={<Admin><CategoryList /></Admin>} />
                         {/* 배너 */}
-                        <Route path="/banner/add" element={<BannerAdd />} />
-                        <Route path="/banner/list" element={<BannerList />} />
+                        <Route path="/banner/add" element={<Admin><BannerAdd /></Admin>} />
+                        <Route path="/banner/list" element={<Admin><BannerList /></Admin>} />
+
+
+                        {/* 에러 페이지들 */}
+                        <Route path="/error/403" element={<NeedPermission />}></Route>
+                        {/* 페이지를 못찾은 경우 보여줄 에러페이지는 맨 마지막에 와일드카드를 사용 */}
+                        <Route path="*" element={<TargetNoutfound />}></Route>
 
                         {/* 리뷰 */}
                         <Route path="/restaurant/:restaurantId/review" element={<ReviewList />} />
