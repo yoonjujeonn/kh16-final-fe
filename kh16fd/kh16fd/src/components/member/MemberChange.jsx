@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 import { FaAsterisk, FaCheck, FaXmark } from "react-icons/fa6";
 import { FaEdit } from "react-icons/fa";
 
-export default function MemberChange() {
+export default function MemberChange() { 
 
     //state
     const [loginId, setloginId] = useAtom(loginIdState);
