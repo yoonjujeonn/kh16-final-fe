@@ -72,6 +72,23 @@ export default function ReservationInfo() {
         }
     },[basicInfo]);
 
+    //검색
+    const search = useCallback(async () => {
+    if (!keyword.trim()) return;
+
+    try {
+        const resp = await axios.post(
+            "http://localhost:8080/restaurant/search",
+            { keyword }
+        );
+
+        console.log(resp.data); 
+    }
+    catch (e) {
+        toast.error("검색 실패");
+    }
+}, [keyword]);
+
     const clearData = useCallback(() => {
         setBasicInfo({
             restaurantName: "",
