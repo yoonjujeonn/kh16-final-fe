@@ -1,198 +1,247 @@
-import { useCallback, useRef, useState } from "react";
-import { FaAsterisk } from "react-icons/fa";
-import { TbTilde } from "react-icons/tb";
-import TimePicker from 'react-time-picker';
-import '/src/custom-css/timepicker-custom.css';
-import { DayPicker } from "react-day-picker";
-import "react-day-picker/dist/style.css";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { FaMagnifyingGlass, FaX, FaXmark } from "react-icons/fa6";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useDaumPostcodePopup } from "react-daum-postcode";
 import { useAtom } from "jotai";
 import { restaurantInfoState } from "../../utils/jotai";
-import axios from "axios";
-import { toast } from "react-toastify";
 
-export default function ReservationInfo() {
+export default function RestaurantInfo() {
+    const mapRef = useRef(null);         // 지도 DOM
+    const mapInstance = useRef(null);    // kakao map 객체
+    const markersRef = useRef([]);       // 마커 히스토리
+    const address2Ref = useRef(null);    // 상세주소 input
 
     const [basicInfo, setBasicInfo] = useAtom(restaurantInfoState);
 
-    const weekdays = ["월", "화", "수", "목", "금", "토", "일"];
+    // 페이지 이동 시에도 마커 복원
+    useEffect(() => {
+        if (!window.kakao) return;
+        mapInstance.current = new window.kakao.maps.Map(mapRef.current, {
+            center: new window.kakao.maps.LatLng(37.499002, 127.032842),
+            level: 2
+        });
 
-    // 체크박스 토글 시 바로 DB 저장용 문자열로 업데이트
-    const handleWeekdayToggle = useCallback((day) => {
-        const currentString = basicInfo.restaurantOpeningDays || "";
-        const current = currentString ? currentString.split(",") : [];
+        // 기존 마커 제거
+        markersRef.current.forEach(m => m.setMap(null));
+        markersRef.current = [];
 
-        const updated = current.includes(day)
-            ? current.filter(d => d !== day)  // 해제
-            : [...current, day];             // 선택
+        // 좌표가 있으면 마커 생성
+        if (basicInfo.restaurantAddressX && basicInfo.restaurantAddressY) {
+            const position = new window.kakao.maps.LatLng(
+                basicInfo.restaurantAddressY,
+                basicInfo.restaurantAddressX
+            );
 
-        const updatedString = updated.join(","); // "월,화,수" 형태
+            const markerImage = new window.kakao.maps.MarkerImage(
+                "http://t1.daumcdn.net/localimg/localimages/07/2018/pc/img/marker_spot.png",
+                new window.kakao.maps.Size(40, 45)
+            );
 
-        setBasicInfo(prev => ({
-            ...prev,
-            restaurantOpeningDays: updatedString
-        }));
-    }, [basicInfo]);
+            const marker = new window.kakao.maps.Marker({
+                position,
+                image: markerImage,
+                draggable: false,
+                clickable: true
+            });
 
-    // 체크박스 체크 여부 확인
-    const isChecked = useCallback((day) => {
-        const currentString = basicInfo.restaurantOpeningDays || "";
-        const current = currentString ? currentString.split(",") : [];
-        return current.includes(day);
-    }, [basicInfo]);
+            marker.setMap(mapInstance.current);
+            markersRef.current.push(marker);
 
-    const changeTimeValue = useCallback((field) => (value) => {
-        const time = value === null ? "" : value.toString();
-        console.log(time)
-        setBasicInfo(prev => ({
-            ...prev,
-            [field]: time
-        }));
+            // 지도 중심 이동
+            mapInstance.current.setCenter(position);
+        }
     }, []);
+
+
 
     const changeStrValue = useCallback(e => {
         const { name, value } = e.target;
+
         setBasicInfo(prev => ({
             ...prev,
             [name]: value
         }));
     }, []);
 
-    const navigate = useNavigate();
+    const hasAnyCharacter = useMemo(() => {
+        if (basicInfo.address1.length > 0) return true;
+        if (basicInfo.address2.length > 0) return true;
+        return false;
+    }, [basicInfo]);
 
-    //식당 데이터 전송
-   const sendData = useCallback(async ()=>{
-       try {
-            const {data} = await axios.post("/restaurant/", basicInfo);
-            const id = data.restaurantId
-            navigate(`/restaurant/add/info/${id}`);
-        }
-        catch(err){
-            toast.error("요청이 정상적으로 처리되지 않았습니다");
-        }
-    },[basicInfo]);
-
-    //검색
-    const search = useCallback(async () => {
-    if (!keyword.trim()) return;
-
-    try {
-        const resp = await axios.post(
-            "http://localhost:8080/restaurant/search",
-            { keyword }
-        );
-
-        console.log(resp.data); 
-    }
-    catch (e) {
-        toast.error("검색 실패");
-    }
-}, [keyword]);
-
-    const clearData = useCallback(() => {
-        setBasicInfo({
-            restaurantName: "",
-            restaurantContact: "",
-            restaurantAddress: "",
+    const clearAddress = useCallback(() => {
+        setBasicInfo(prev => ({
+            ...prev,
             address1: "",
             address2: "",
+            restaurantAddress: "",
             restaurantAddressX: "",
-            restaurantAddressY: "",
-            restaurantOpen: "",
-            restaurantClose: "",
-            restaurantBreakStart: "",
-            restaurantBreakEnd: "",
-            reservationInterval: "",
-            restaurantOpeningDays: "",
-            restaurantLastOrder: "",
-            restaurantReservationPrice: "",
-            restaurantDescription: "",
-            categoryList : []
+            restaurantAddressY: ""
+        }));
+
+        if (!window.kakao) return;
+        mapInstance.current = new window.kakao.maps.Map(mapRef.current, {
+            center: new window.kakao.maps.LatLng(37.499002, 127.032842),
+            level: 2
+        });
+
+    }, []);
+
+    // Daum 우편번호 팝업
+    const openPostcode = useDaumPostcodePopup("https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js");
+
+    const searchAddress = useCallback(() => {
+        openPostcode({
+            onComplete: (data) => {
+                const addr = data.jibunAddress || data.autoJibunAddress;
+                setBasicInfo(prev => ({ ...prev, address1: addr, address2: "", restaurantAddress : addr}));
+
+                if (address2Ref.current) address2Ref.current.focus();
+
+                // --- 바로 지도에 마커 찍기 ---
+                if (!window.kakao) return;
+                const geocoder = new window.kakao.maps.services.Geocoder();
+
+                // 기존 마커 제거
+                markersRef.current.forEach(m => m.setMap(null));
+                markersRef.current = [];
+
+                geocoder.addressSearch(addr, (result, status) => {
+                    if (status !== window.kakao.maps.services.Status.OK) return;
+
+                    const lat = result[0].y;
+                    const lng = result[0].x;
+
+                    //state에 x,y 값 설정
+                    setBasicInfo(prev => ({
+                        ...prev,
+                        restaurantAddressX: lng,
+                        restaurantAddressY: lat
+                    }));
+
+                    const location = new window.kakao.maps.LatLng(lat, lng);
+
+                    // 지도 이동
+                    mapInstance.current.panTo(location);
+
+                    // 마커 생성
+                    const markerImage = new window.kakao.maps.MarkerImage(
+                        "http://t1.daumcdn.net/localimg/localimages/07/2018/pc/img/marker_spot.png",
+                        new window.kakao.maps.Size(40, 45)
+                    );
+
+                    const marker = new window.kakao.maps.Marker({
+                        position: location,
+                        image: markerImage,
+                        draggable: false,
+                        clickable: true
+                    });
+
+                    marker.setMap(mapInstance.current);
+                    markersRef.current.push(marker);
+                });
+            }
         });
     }, []);
 
     return (
         <>
             <div className="progress">
-                <div className="progress-bar" role="progressbar" style={{ width: "60%" }}>
-                </div>
+                <div className="progress-bar" role="progressbar" style={{ width: "30%" }}></div>
             </div>
-            
+
             <div className="row mt-4">
-                <label className="col-sm-3 col-form-label">영업일</label>
-                <div className="col-sm-9 d-flex flex-wrap">
-                    {weekdays.map(day => (
-                        <label key={day} className="form-check me-2">
+                <div className="col">
+                    {/* 식당명 */}
+                    <div className="row mt-4">
+                        <label className="col-sm-3 col-form-label">식당명</label>
+                        <div className="col-sm-9">
+                            <input type="text" className="form-control"
+                                name="restaurantName"
+                                value={basicInfo.restaurantName}
+                                onChange={changeStrValue}
+                                placeholder="식당명 입력" />
+                        </div>
+                    </div>
+
+                    {/* 연락처 */}
+                    <div className="row mt-4">
+                        <label className="col-sm-3 col-form-label">식당 연락처</label>
+                        <div className="col-sm-9">
+                            <input type="text" name="restaurantContact" className="form-control"
+                                value={basicInfo.restaurantContact}
+                                onChange={changeStrValue}
+                                placeholder="- 제외하고 작성" />
+                        </div>
+                    </div>
+
+                    {/* 주소 검색 */}
+                    <div className="row mt-4">
+                        <label className="col-sm-3 col-form-label">식당 주소</label>
+                        <div className="col-sm-9">
+                            <div className="input-group mb-2">
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    placeholder="기본 주소 입력"
+                                    value={basicInfo.address1}
+                                    readOnly
+                                    onClick={searchAddress}
+                                />
+                                {hasAnyCharacter ?
+                                    (<button className="btn btn-danger" onClick={clearAddress}>
+                                        <FaXmark />
+                                    </button>)
+                                    :
+                                    (<button className="btn btn-info" onClick={searchAddress}>
+                                        <FaMagnifyingGlass />
+                                    </button>)
+                                }
+                            </div>
+
                             <input
-                                type="checkbox" className="form-check-input"
-                                checked={isChecked(day)}
-                                onChange={() => handleWeekdayToggle(day)}
+                                type="text"
+                                className="form-control"
+                                placeholder="상세 주소 입력"
+                                name="restaurantAddress"
+                                ref={address2Ref}
+                                value={basicInfo.address2}
+                                onChange={e => {
+                                    setBasicInfo(prev =>
+                                    ({
+                                        ...prev,
+                                        address2: e.target.value,
+                                        restaurantAddress: e.target.value ? `${basicInfo.address1} ${e.target.value}` : basicInfo.address1
+                                    }))
+                                }}
                             />
-                            {day}
-                        </label>
-                    ))}
+
+                            {/* 지도 */}
+                            <div
+                                className="kakao-map mt-3"
+                                ref={mapRef}
+                                style={{ width: "100%", height: "350px", border: "1px solid #ddd" }}
+                            ></div>
+                        </div>
+                    </div>
+                    {/* 식당 소개 */}
+                    <div className="row mt-4">
+                        <label className="col-sm-3 col-form-label">식당 소개글</label>
+                        <div className="col-sm-9 text-end">
+                            <textarea type="text" name="restaurantDescription" className="form-control" value={basicInfo.restaurantDescription} onChange={changeStrValue} style={{ resize: "none" }} rows={15} />
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
             <div className="row mt-4">
-                <label className="col-sm-3 col-form-label">오픈 시간</label>
-                <div className="col-sm-9 react-time-picker">
-                    <TimePicker onChange={changeTimeValue("restaurantOpen")} value={basicInfo.restaurantOpen} disableClock={true}
-                        format="HH:mm" clearIcon={null}
-                    />
-                </div>
-            </div>
-            <div className="row mt-4">
-                <label className="col-sm-3 col-form-label">마감 시간</label>
-                <div className="col-sm-9 react-time-picker">
-                    <TimePicker onChange={changeTimeValue("restaurantClose")} value={basicInfo.restaurantClose} disableClock={true}
-                        format="HH:mm" clearIcon={null}
-                    />
-                </div>
-            </div>
-
-            <div className="row mt-4">
-                <label className="col-sm-3 col-form-label">브레이크 타임</label>
-                <div className="col-sm-9 react-time-picker align-items-center">
-                    <TimePicker onChange={changeTimeValue("restaurantBreakStart")} value={basicInfo.restaurantBreakStart} disableClock={true}
-                        format="HH:mm" clearIcon={null}
-                    />
-                    <TbTilde className="mx-2" />
-                    <TimePicker onChange={changeTimeValue("restaurantBreakEnd")} value={basicInfo.restaurantBreakEnd} disableClock={true}
-                        format="HH:mm" clearIcon={null}
-                    />
-                </div>
-            </div>
-            <div className="row mt-4">
-                <label className="col-sm-3 col-form-label">라스트오더</label>
-                <div className="col-sm-9 react-time-picker">
-                    <TimePicker onChange={changeTimeValue("restaurantLastOrder")} value={basicInfo.restaurantLastOrder} disableClock={true}
-                        format="HH:mm" clearIcon={null}
-                    />
-                </div>
-            </div>
-            <div className="row mt-4">
-                <label className="col-sm-3 col-form-label">예약 시간 간격</label>
-                <div className="col-sm-9">
-                    <input type="text" name="reservationInterval" className="form-control w-50" value={basicInfo.reservationInterval} placeholder="미설정 시 30분" onChange={changeStrValue} />
-                </div>
-            </div>
-            <div className="row mt-4">
-                <label className="col-sm-3 col-form-label">예약금</label>
-                <div className="col-sm-9">
-                    <input type="text" name="restaurantReservationPrice" className="form-control w-50" value={basicInfo.restaurantReservationPrice} placeholder="미설정 시 5000원 " onChange={changeStrValue} />
-                </div>
-            </div>
-            <div className="row mt-4">
-                <div className="col d-flex justify-content-between">
-                    <div className="btn-wrapper">
-                        <Link to="/restaurant/add/category" className="btn btn-secondary">이전으로</Link>
-                    </div>
-                    <div className="btn-wrapper">
-                        <button type="button" className="btn btn-success" onClick={sendData}>등록 완료</button>
-                    </div>
+                <div className="col text-end">
+                    <Link to="/restaurant/add/category" className="btn btn-success">
+                        다음으로
+                    </Link>
                 </div>
             </div>
         </>
-    )
+    );
 }
