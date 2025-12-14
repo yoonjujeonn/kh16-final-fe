@@ -23,30 +23,6 @@ export const refreshTokenState = atomWithStorage("refreshTokenState", "", sessio
 //         return loginId !== null && loginLevel !== null;
 //     }
 // }); --- recoil
-const restaurantInfo = {
-        ownerId: "",
-        restaurantName: "",
-        restaurantContact: "",
-        restaurantAddress: "",
-        restaurantAddressX: "",
-        restaurantAddressY: "",
-        address1 : "",
-        address2 : "", 
-        restaurantOpen: "",
-        restaurantClose: "",
-        restaurantBreakStart: "",
-        restaurantBreakEnd: "",
-        reservationInterval: "",
-        restaurantOpeningDays: "",
-        restaurantLastOrder: "",
-        restaurantReservationPrice: "",
-        restaurantDescription: "",
-        categoryIdList: [],
-        preview : []
-};
-
-export const restaurantInfoState = atomWithStorage(
-    "restaurantInfoState", restaurantInfo, sessionStorage);
 
 export const loginState = atom(get => {
     const loginId = get(loginIdState);
@@ -86,4 +62,3 @@ adminState.debugLabel = "adminState";
 accessTokenState.debugLabel = "accessTokenState";
 refreshTokenState.debugLabel = "refreshTokenState";
 loginCompleteState.debugLabel = "loginCompleteState";
-restaurantInfoState.debugLabel = "restaurantInfoState";

@@ -1,10 +1,6 @@
 import { Route, Routes } from "react-router-dom";
 import Home from "./Home";
 import AdminSetting from "./admin/AdminSetting";
-import RestaurantAdd from "./restaurant/RestaurantAdd";
-import RestaurantInfo from "./restaurant/RestaurantInfo";
-import ReservationInfo from "./restaurant/ReservationInfo";
-import ReservationMoreInfo from "./restaurant/ReservationMoreInfo";
 import CategoryList from "./category/CategoryList";
 import MemberLogin from "./member/MemberLogin";
 import RestaurantAddFinish from "./restaurant/RestaurantAddFinish";
@@ -23,11 +19,13 @@ import BizMemberJoinFinish from "./member/BizMemberJoinFinish";
 import MemberInfo from "./member/MemberInfo";
 import MemberChange from "./member/MemberChange";
 import BannerList from "./banner/bannerList";
-import RestaurantCategorySelect from "./restaurant/RestaurantCategorySelect";
 import Admin from "./guard/Admin";
 import NeedPermission from "./error/NeedPermission";
 import TargetNoutfound from "./error/TargetNotfound";
 import MyReviewList from "./review/MyReviewList";
+
+import RestaurantAddByStep from "./restaurant/RestaurantAddByStep";
+import RestaurantEdit from "./restaurant/RestaurantEdit";
 
 export default function Content() {
 
@@ -52,15 +50,11 @@ export default function Content() {
                         <Route path="/member/info/review" element={<MyReviewList />} />
 
                         {/* 식당 등록 */}
-                        <Route path="/restaurant/add" element={<RestaurantAdd />}>
-                            <Route index element={<RestaurantInfo />} />
-                            <Route path="category" element={<RestaurantCategorySelect />} />
-                            <Route path="info" element={<ReservationInfo />} />
-                            <Route path="info/:restaurantId" element={<ReservationMoreInfo />} />
-                        </Route>
-                        <Route path="/restaurant/add/finish" element={<RestaurantAddFinish />} />
+                        <Route path="/restaurant/add" element={<RestaurantAddByStep />}></Route>
+                        <Route path="/restaurant/add/finish/:restaurantId" element={<RestaurantAddFinish />} />
 
                         {/* 식당 페이지 */}
+                        <Route path="/restaurant/edit/:restaurantId" element={<RestaurantEdit />}></Route>
                         <Route path="/restaurant/list" element={<RestaurantList />} />
                         <Route path="/restaurant/detail/:restaurantId" element={<RestaurantDetail />}>
                             <Route path="review" element={<ReviewList />} />
