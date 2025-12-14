@@ -1,5 +1,5 @@
 import { useAtom } from "jotai";
-import { loginIdState, loginLevelState } from "../../utils/jotai";
+import { accessTokenState, loginIdState, loginLevelState } from "../../utils/jotai";
 import Jumbotron from "../templates/Jumbotron";
 import { useNavigate, useParams } from "react-router-dom";
 import { useCallback, useEffect, useState } from "react";
@@ -8,11 +8,12 @@ import { toast } from "react-toastify";
 import { FaAsterisk, FaCheck, FaXmark } from "react-icons/fa6";
 import { FaEdit } from "react-icons/fa";
 
-export default function MemberChange() {
+export default function MemberChange() { 
 
     //state
     const [loginId, setloginId] = useAtom(loginIdState);
     const [loginLevel, setLoginLevel] = useAtom(loginLevelState);
+    const [accessToken, setAccessToken] = useAtom(accessTokenState);
 
     //여기 수정해서 변경할 값들 다 정의해둘것 그러면 비어도 표시될듯?
     const [member, setMember] = useState(null);
@@ -27,16 +28,16 @@ export default function MemberChange() {
         memberPost: "", memberAddress1: "", memberAddress2: ""
     });
 
-const [editable, setEditable] = useState({
-    memberNickname: false,
-    memberEmail: false,
-    memberBirth: false,
-    memberContact: false,
-    memberAddress: false
-    // memberPost: false,
-    // memberAddress1: false,
-    // memberAddress2: false
-});
+    const [editable, setEditable] = useState({
+        memberNickname: false,
+        memberEmail: false,
+        memberBirth: false,
+        memberContact: false,
+        memberAddress: false
+        // memberPost: false,
+        // memberAddress1: false,
+        // memberAddress2: false
+    });
 
 
     //닉네임이 문제될 경우 출력하는 피드백
@@ -52,6 +53,9 @@ const [editable, setEditable] = useState({
             method: "get"
         }).then(response => {
             setMember(response.data);
+            setBackup(response.data);
+            setloginId(loginId);
+            // setToken()
         }).catch(err => {
             toast.error(`${loginId}회원은 존재하지 않습니다`);
             navigate("/");
@@ -66,11 +70,11 @@ const [editable, setEditable] = useState({
         setMember({ ...member, [name]: value });
 
         //이메일 입력 발생 시 관련 상태 초기화
-        if (name === "memberEmail") {
-            //이메일 관련 상태 모두 초기화
-            resetMemberEmail();
-        }
-    });
+        // if (name === "memberEmail") {
+        //     //이메일 관련 상태 모두 초기화
+        //     resetMemberEmail();
+        // }
+    }, [member]);
 
     const changeMemberNicknameEditable = useCallback(isEdit => {
         setEditable(prev => ({
@@ -82,30 +86,51 @@ const [editable, setEditable] = useState({
     const cancelMemberNickname = useCallback(() => {
         setMember({
             ...member,
-            memberNickname: backup.memberNickname
+            memberNickname: backup?.memberNickname
         });
         changeMemberNicknameEditable(false);
     }, [member, backup]);
 
-    const saveMemberNickname = useCallback(async (e) => {
-        onblur(checkMemberNickname);
 
-        try{
+    const saveMemberNickname = useCallback(async (e) => {
+        e.preventDefault(); // 필수
+
+        console.log("로그인 아이디는 " + loginId);
+        console.log("토큰 값 확인: ", accessToken);
+
+        // checkMemberNickname();
+        console.log("axios.patch 실행 직전");
+        setBackup({
+            ...backup,
+            memberNickname: member.memberNickname
+        });
+        try {
+
+            console.log("테스트 PATCH 요청 시도");
+            console.log(`/member/${loginId}`);
             const { member } = await axios.patch(`/member/${loginId}`, {
-                memberNickname: newNickname
-            });
-            changeMemberNicknameEditable(false);
+                memberNickname: member.memberNickname},
+                { 
+                headers: {
+                    Authorization: accessToken 
+                } 
+            }
+            
+            );
             toast.success("변경사항이 적용되었습니다");
         }
         catch (err) {
             toast.error("변경과정에서 오류가 발생");
             setMember({
                 ...member,
-                memberNikcname : backup.memberNickname
+                memberNikcname: backup.memberNickname
             });
+            changeMemberNicknameEditable(false);
         }
+
+
         changeMemberNicknameEditable(false);
-    }, [member, backup]);
+    }, [member, backup, loginId, accessToken]);
 
 
 
@@ -138,7 +163,7 @@ const [editable, setEditable] = useState({
         <Jumbotron subject={`안녕하세요 ${loginLevel}님`} detail={`${loginId}님의 정보 수정을 진행해 주세요`} />
 
         {/* 닉네임 */}
-        <div className="row mt-4">
+        {/* <div className="row mt-4">
             <label className="col-sm-3 col-form-label">
                 닉네임 <FaAsterisk className="text-danger" />
             </label>
@@ -149,29 +174,39 @@ const [editable, setEditable] = useState({
                 <div className="valid-feedback">멋진 닉네임이네요!</div>
                 <div className="invalid-feedback">{memberNicknameFeedback}</div>
             </div>
-        </div>
+        </div> */}
 
-        <div className="row mt-4 fs-2">
+        {/* <div className="row mt-4 fs-2">
             <div className="col-sm-3 text-primary">닉네임</div>
             <div className="col-sm-9">{member?.memberNickname}</div>
-        </div>
+        </div> */}
         <div className="row mt-4 fs-2">
             <div className="col-sm-3 text-primary">닉네임</div>
             <div className="col-sm-9">
                 {editable.memberNickname ? (<>
-                    {/* 수정화면 */}
-                    <input type="text" name="memberNickname" className="form-control"
-                        value={member.memberNickname} onChange={changeStrValue} />
-                    {/* 취소 버튼 */}
-                    <FaXmark className="ms-4" onClick={cancelMemberNickname} />
-                    {/* 수정 버튼 */}
-                    <FaCheck className="ms-2" onClick={saveMemberNickname} />
+                    <div className="d-flex flex-row">
+                        <div>
+                            {/* 수정화면 */}
+                            <input type="text" name="memberNickname" className={`form-control ${memberClass.memberNickname}`}
+                                value={member.memberNickname} onChange={changeStrValue} />
+                            {/* onBlur={checkMemberNickname} */}
+                            <div className="valid-feedback fs-6">멋진 닉네임이네요!</div>
+                            <div className="invalid-feedback fs-6">{memberNicknameFeedback}</div>
+                        </div>
+                        <div className="">
+                            {/* 취소 버튼 */}
+                            <FaXmark className="ms-4" onClick={cancelMemberNickname} />
+                            {/* 수정 버튼 */}
+                            <FaCheck className="ms-2" onClick={saveMemberNickname} />
+                        </div>
+                    </div>
+
                 </>) : (<>
                     {/* 일반화면 */}
                     {member?.memberNickname}
                     <FaEdit className="ms-4" onClick={e => {
                         //setEditable({...editable, pokemonName: true});
-                        changeMember(true);
+                        changeMemberNicknameEditable(true);
                     }} />
 
                 </>)}
