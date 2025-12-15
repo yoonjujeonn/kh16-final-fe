@@ -6,14 +6,21 @@ import { FaStar } from "react-icons/fa6";
 import { addDays, format } from "date-fns";
 import { ko } from "date-fns/locale";
 import { Swiper, SwiperSlide } from "swiper/react";
+
 import "./RestaurantList.css";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 
 export default function RestaurantSearch() {
-  const { state } = useLocation();
-  const keyword = state?.keyword;
+
+  const location = useLocation();
+
+  const params = new URLSearchParams(location.search);
+  const queryKeyword = params.get("keyword");
+  const stateKeyword = location.state?.keyword;
+
+  const keyword = (queryKeyword ?? stateKeyword ?? "").trim();
 
   const [restaurantList, setRestaurantList] = useState([]);
   const [slotList, setSlotList] = useState([]);
@@ -21,7 +28,6 @@ export default function RestaurantSearch() {
   const today = format(new Date(), "eee", { locale: ko });
   const tomorrow = format(addDays(new Date(), 1), "eee", { locale: ko });
 
-  // 🔍 검색 결과 조회
   useEffect(() => {
     if (!keyword) return;
 
@@ -35,14 +41,16 @@ export default function RestaurantSearch() {
       });
   }, [keyword]);
 
-  // 슬롯 조회
   const loadSlotList = useCallback(async () => {
     if (!restaurantList.length) return;
 
     try {
       const results = await Promise.all(
-        restaurantList.map(r => axios.get(`/slot/${r.restaurantId}`))
+        restaurantList.map(r =>
+          axios.get(`/slot/${r.restaurantId}`)
+        )
       );
+
       const allSlots = results.flatMap(res => res.data);
       setSlotList(allSlots);
     } catch {
@@ -54,7 +62,6 @@ export default function RestaurantSearch() {
     loadSlotList();
   }, [restaurantList]);
 
-  // 슬롯 계산
   const restaurantSlot = useMemo(() => {
     if (!restaurantList.length) return {};
 
@@ -107,7 +114,7 @@ export default function RestaurantSearch() {
   return (
     <>
       <h4 className="text-center mt-4">
-        "{keyword}" 검색 결과
+        "{keyword || "전체"}" 검색 결과
       </h4>
 
       <div className="row mt-4">
@@ -121,13 +128,16 @@ export default function RestaurantSearch() {
               >
                 <ul className="list-group w-75">
                   <li className="list-group-item">
+
                     <img
                       className="rounded mt-2 w-100"
                       src={`http://localhost:8080/restaurant/image/${restaurant.restaurantId}`}
                       style={{ height: "250px", objectFit: "cover" }}
                     />
 
-                    <h3 className="mt-2">{restaurant.restaurantName}</h3>
+                    <h3 className="mt-2">
+                      {restaurant.restaurantName}
+                    </h3>
 
                     <div className="mt-2">
                       {restaurant.isOpenToday
