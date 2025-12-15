@@ -5,6 +5,7 @@ import "react-day-picker/dist/style.css";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 
 export default function RestaurantAddFinish(){
     const { restaurantId } = useParams();
@@ -98,6 +99,23 @@ export default function RestaurantAddFinish(){
 
     }, [file ,holidays]);
 
+    const goToMain = useCallback(async () => {
+        const choice = await Swal.fire({
+            title: "메인페이지로 이동하시겠습니까?",
+            text: "대표이미지가 설정되어야 승인 시 리스트에 출력됩니다",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#00b894",
+            cancelButtonColor: "#ff7675",
+            confirmButtonText: "메인으로",
+            cancelButtonText: "취소",
+            allowOutsideClick: false,
+        });
+
+        if (choice.isConfirmed === false) return;
+
+    }, []);
+
     return (
     <>
         {isComplete === false ? (
@@ -150,9 +168,9 @@ export default function RestaurantAddFinish(){
                 <div className="row mt-4">
                     <div className="col d-flex justify-content-between">
                         <div className="btn-wrapper">
-                            <Link to={`/restaurant/edit/${id}`} className="btn btn-secondary">
-                                등록 정보 수정
-                            </Link>
+                            <button className="btn btn-outline-secondary" onClick={goToMain}>
+                                나중에 등록하기
+                            </button>
                         </div>
                         <button className={`btn btn-${fileValid ? "success" : "danger"}`} disabled={!fileValid} onClick={sendDataAndSetComplete}>
                             {fileValid ? "등록하기" : "필수 항목 작성"}
