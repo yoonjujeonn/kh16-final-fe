@@ -26,6 +26,7 @@ import MyReviewList from "./review/MyReviewList";
 
 import RestaurantAddByStep from "./restaurant/RestaurantAddByStep";
 import RestaurantEdit from "./restaurant/RestaurantEdit";
+import RestaurantSearch from "./restaurant/RestaurantSearch";
 
 export default function Content() {
 
@@ -61,6 +62,9 @@ export default function Content() {
                             <Route path="review/write" element={<ReviewWrite />} />
                             <Route path="review/edit/:reviewNo" element={<ReviewEdit />} />
                         </Route>
+
+                        {/* 검색 */}
+                        <Route path="/restaurant/search" element={<RestaurantSearch />} />
 
                         {/* 예약 */}
                         <Route path="/reservation/add" element={<ReservationAdd />} />

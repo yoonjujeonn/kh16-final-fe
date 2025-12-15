@@ -1,3 +1,4 @@
+
 import axios from "axios";
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { toast } from "react-toastify";
@@ -18,7 +19,7 @@ export default function RestaurantList() {
     //날짜 변수
     const today = format(new Date(), "eee", { locale: ko });
     const tomorrow = format(addDays(new Date(), 1), "eee", { locale: ko });
-    
+
     //state
     const [slotList, setSlotList] = useState([]);
 
@@ -30,7 +31,7 @@ export default function RestaurantList() {
     //callback
     const loadSlotList = useCallback(async () => {
         if (!restaurantList?.length) return;
-        
+
         try {
             const results = await Promise.all(
                 restaurantList.map(r => axios.get(`/slot/${r.restaurantId}`))
@@ -46,34 +47,45 @@ export default function RestaurantList() {
 
     //날짜 계산 후 반환
     const restaurantSlot = useMemo(() => {
-        if (!restaurantList || slotList.length === 0) return {};
+        if (!restaurantList) return {};
 
         const slotsByRestaurant = {};
         const todayDate = new Date();
 
         restaurantList.forEach(restaurant => {
-            const openingDays = restaurant.restaurantOpeningDays?.split(",");
+            const openingDays = restaurant.restaurantOpeningDays?.split(",") ?? [];
+            const holidayDates = restaurant.restaurantHolidayDate ?? [];
 
             const weekDays = Array.from({ length: 14 }).map((_, i) => {
                 const date = addDays(todayDate, i);
                 const formattedDate = format(date, "yyyy-MM-dd");
+                const dayName = format(date, "eee", { locale: ko });
 
+                // 날짜 + 식당 기준 slot 찾기
                 const slot = slotList.find(
-                    s => s.restaurantId === restaurant.restaurantId && s.reservationDate === formattedDate
+                    s =>
+                        s.restaurantId === restaurant.restaurantId &&
+                        s.reservationDate === formattedDate
                 );
 
-                const isHoliday = restaurant.restaurantHolidayDate?.includes(formattedDate);
-                const isOpenDay = openingDays.includes(format(date, "eee", { locale: ko }));
+                const isHoliday = holidayDates.includes(formattedDate);
+                const isOpenDay = openingDays.includes(dayName);
 
-                let status;
-                if (isHoliday || !isOpenDay) status = "휴무";
-                else if (slot?.reservationStatus === "예약완료") status = "예약 마감";
-                else status = "예약 가능";
+                let status = "예약 가능";
+
+                if (!isOpenDay || isHoliday) {
+                    status = "휴무";
+                } else if (
+                    slot &&
+                    slot.reservedSeatCount >= slot.totalSeatCount
+                ) {
+                    status = "예약 마감";
+                }
 
                 return {
                     date: formattedDate,
                     dateStr: format(date, "MM.dd"),
-                    dayName: format(date, "eee", { locale: ko }),
+                    dayName,
                     status
                 };
             });
