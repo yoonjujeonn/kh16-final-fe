@@ -1,0 +1,21 @@
+.place-btn {
+    padding: 10px 18px;
+    border-radius: 20px;
+    border: 1px solid #ddd;
+    background: white;
+    cursor: pointer;
+}
+
+.place-btn.active {
+    background: #007bff;
+    color: white;
+}
+
+.place-sub-btn {
+    padding: 6px 14px;
+    border-radius: 16px;
+    border: 1px solid #ccc;
+    background: #f8f8f8;
+    cursor: pointer;
+    font-size: 14px;
+}

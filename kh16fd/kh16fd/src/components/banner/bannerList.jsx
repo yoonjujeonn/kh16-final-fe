@@ -9,7 +9,7 @@ export default function BannerList() {
     const [list, setList] = useState([]);
 
     const loadData = useCallback(() => {
-        axios.get("http://localhost:8080/banner/list") 
+        axios.get("http://localhost:8080/banner/list")
             .then(res => {
                 setList(res.data);
             })
@@ -23,19 +23,17 @@ export default function BannerList() {
         loadData();
     }, [loadData]);
 
-    const deleteBanner = useCallback((bannerNo) => {
-        if (!window.confirm("정말 삭제하시겠습니까?")) return;
+    const deleteBanner = async (bannerNo) => {
+    if (!window.confirm("정말 삭제하시겠습니까?")) return;
 
-        axios.delete(`http://localhost:8080/banner/${bannerNo}`) 
-            .then(() => {
-                toast.success("삭제 완료");
-                loadData();
-            })
-            .catch(err => {
-                console.error(err);
-                toast.error("삭제 실패");
-            });
-    }, [loadData]);
+    try {
+        await axios.delete(`http://localhost:8080/banner/${bannerNo}`);
+        toast.success("삭제 완료");
+        loadData();
+    } catch (err) {
+        toast.error("삭제 실패");
+    }
+};
 
     const getImageUrl = (attachmentNo) => {
         return `http://localhost:8080/attachment/${attachmentNo}`;
