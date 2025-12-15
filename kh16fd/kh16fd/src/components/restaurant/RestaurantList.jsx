@@ -33,6 +33,7 @@ export default function RestaurantList() {
     const [peopleCount, setPeopleCount] = useState(1);
     const [message, setMessage] = useState("");
     const [availableSeatList, setAvailableSeatList] = useState([]);
+    
     //effect
     useEffect(() => {
         loadSlotList();
