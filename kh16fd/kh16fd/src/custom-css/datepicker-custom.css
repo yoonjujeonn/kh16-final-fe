@@ -1,0 +1,78 @@
+/* 전체 달력 */
+.react-datepicker {
+  border: 1px solid #ced4da;
+  border-radius: 0.5rem;
+  font-size: 14px;
+}
+
+/* header */
+.react-datepicker__header {
+  background-color: #8fc9b371;
+  border-bottom: 1px solid #edfff8;
+  padding: 1em;
+}
+
+/* 요일 */
+.react-datepicker__day-name {
+  color: #6c757d;
+  font-weight: 600;
+}
+
+/* 날짜 */
+.react-datepicker__day {
+  border-radius: 0.375rem;
+}
+
+/* hover */
+.react-datepicker__day:hover {
+  background-color: #f8f9fa;
+}
+
+/* 오늘 날짜 */
+.react-datepicker__day--today {
+  color: #54ac8ab9;
+  border: 1px solid #77bda285;
+  background-color: #f0fff8;
+}
+
+/* 선택 날짜 */
+.react-datepicker__day--selected {
+  background-color: #77ceac;
+  color: #fff;
+}
+
+/* disabled */
+.react-datepicker__day--disabled {
+  color: #adb5bd;
+}
+
+/* select 창 */
+.react-datepicker__year-select,
+.react-datepicker__month-select {
+  width: 100%;
+  padding: .335rem .75rem;
+  font-size: 1em;
+  line-height: 1.5;
+  color: #80a891;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid #ced4da;
+  border-radius: .375rem;
+  margin-top: 0.5em;
+}
+
+/* 공통 스타일 */
+.react-datepicker__current-month {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #80a891; /* Bootstrap 기본 텍스트 색 */
+  padding: 0.5rem 0;
+  text-align: center;
+}
+
+/* 년/월 드롭다운이 있는 경우 좀 더 위아래 여백 */
+.react-datepicker__current-month--hasYearDropdown,
+.react-datepicker__current-month--hasMonthDropdown {
+  padding: 0.75rem 0;
+  font-size: 1.05rem;
+}

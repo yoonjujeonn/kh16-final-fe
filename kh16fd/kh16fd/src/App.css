@@ -9,3 +9,32 @@
     justify-content: center;
     align-items: center;
 }
+
+.circle {
+    display: flex;              /* 내부 중앙 정렬 */
+    justify-content: center;
+    align-items: center;
+    width: 50px;                /* 너비 */
+    height: 50px;               /* 높이 */
+    border-radius: 50%;         /* 원형 */
+    padding: 0;                 /* 버튼 기본 패딩 제거 */
+    line-height: 1;             /* 높이 조정 */
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    text-align: center;
+    background-color: white;
+    border: 1px solid #ffa3a3;
+    color: #ffa3a3;
+}
+
+.circle:hover {
+    background-color: rgba(255, 192, 203, 0.342);
+}
+
+.circle.selected {
+    background-color: #ffc0c0;
+    color: white;
+}
+
