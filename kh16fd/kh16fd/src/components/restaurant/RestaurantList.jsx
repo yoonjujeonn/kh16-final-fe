@@ -3,7 +3,8 @@ import axios from "axios";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { toast } from "react-toastify";
 import usePagingByScroll from "../../hooks/usePagingByScroll";
-import { FaStar } from "react-icons/fa6";
+import { FaStar, FaUser } from "react-icons/fa6";
+import { FaPhoneAlt } from "react-icons/fa";
 import { addDays, addMinutes, format, isAfter, parse } from "date-fns";
 import { ko } from "date-fns/locale";
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -22,22 +23,40 @@ export default function RestaurantList() {
     //hook 호출(스크롤 페이징)
     const { list: restaurantList, page, setPage, loadList } = usePagingByScroll("/restaurant");
 
-    //날짜 변수
-    const today = format(new Date(), "eee", { locale: ko });
-    const tomorrow = format(addDays(new Date(), 1), "eee", { locale: ko });
-
     //state
     const [slotList, setSlotList] = useState([]);
     const [selectedRestaurant, setSelectedRestaurant] = useState("");
     const [slotDate, setSlotDate] = useState(null);
-    const [peopleCount, setPeopleCount] = useState(1);
+    const [peopleCount, setPeopleCount] = useState(0);
     const [message, setMessage] = useState("");
     const [availableSeatList, setAvailableSeatList] = useState([]);
-    
+    const [slotTime, setSlotTime] = useState(null);
+
     //effect
     useEffect(() => {
         loadSlotList();
     }, []);
+
+    useEffect(() => {
+        if (!selectedRestaurant || !slotDate || !peopleCount) return;
+
+        const load = async () => {
+            try {
+                const request = {
+                    restaurantId: selectedRestaurant.restaurantId,
+                    slotDate: format(slotDate, "yyyy-MM-dd"),
+                    peopleCount: peopleCount
+                };
+                const { data } = await axios.post("/slot/seat", request);
+                setAvailableSeatList(data);
+            } catch (err) {
+                console.error(err);
+                toast.error("요청이 정상적으로 처리되지 않았습니다");
+            }
+        };
+
+        load();
+    }, [selectedRestaurant, slotDate, peopleCount]);
 
     //callback
     const loadSlotList = useCallback(async () => {
@@ -61,33 +80,90 @@ export default function RestaurantList() {
     const restaurantSlot = useMemo(() => {
         if (!restaurantList) return {};
 
+        const now = new Date();
+        const todayDateStr = now.toDateString();
+        const tomorrowDateStr = addDays(now, 1).toDateString();
+
         const result = {};
 
         restaurantList.forEach(restaurant => {
-            result[restaurant.restaurantId] = buildRestaurantSlots({
+            const slots = buildRestaurantSlots({
                 restaurant,
                 slotList
             });
+
+            // 각 슬롯에 today/tomorrow 여부 추가
+            const slotsWithTodayFlag = slots.map(slot => {
+                const slotDateObj = new Date(slot.date);
+                return {
+                    ...slot,
+                    isToday: slotDateObj.toDateString() === todayDateStr,
+                    isTomorrow: slotDateObj.toDateString() === tomorrowDateStr
+                };
+            });
+
+            result[restaurant.restaurantId] = slotsWithTodayFlag;
         });
 
         return result;
     }, [restaurantList, slotList]);
 
+
     // 오늘 기준 영업 여부 계산
     const statusWithRestaurantList = useMemo(() => {
         if (!restaurantList) return [];
-        return restaurantList.map(r => ({
-            ...r,
-            isOpenToday: r.restaurantOpeningDays?.split(",").includes(today)
-        }));
-    }, [restaurantList, today]);
 
+        const now = new Date();
+        const todayName = format(now, "eee", { locale: ko });
+        const todayDateStr = format(now, "yyyy-MM-dd");
+
+        return restaurantList.map(r => {
+            const openingDays = r.restaurantOpeningDays?.split(",") ?? [];
+            const holidayDates = r.holiday_dates ? r.holiday_dates.split(",") : [];
+
+            const isOpenToday = openingDays.includes(todayName);
+
+            // 오늘 휴무
+            if (!isOpenToday || holidayDates.includes(todayDateStr)) {
+                return { ...r, statusText: `${todayName}요일 휴무` };
+            }
+
+            const openTime = new Date(`${todayDateStr}T${r.restaurantOpen}`);
+            const closeTime = new Date(`${todayDateStr}T${r.restaurantClose}`);
+
+            let statusText;
+
+            if (now < openTime) {
+                statusText = `영업 전  ·  ${r.restaurantOpen} 영업 시작`;
+            } else if (now > closeTime) {
+                // 다음 날 체크
+                let nextDate = addDays(now, 1);
+                let nextDayName = format(nextDate, "eee", { locale: ko });
+                const nextDateStr = format(nextDate, "yyyy-MM-dd");
+
+                if (!openingDays.includes(nextDayName) || holidayDates.includes(nextDateStr)) {
+                    statusText = `영업 종료  ·  내일 휴무`; // 내일 휴무
+                } else {
+                    statusText = `영업 종료  ·  내일 ${r.restaurantOpen} 영업 시작`; // 정상 다음 영업일
+                }
+            } else {
+                statusText = `영업중 ${r.restaurantOpen} ~ ${r.restaurantClose}`;
+            }
+
+            return { ...r, isOpenToday, statusText };
+        });
+    }, [restaurantList]);
+
+
+
+    //예약 가능 인원 및 인원 수 리스트 계산
     const peopleCountList = useMemo(() => {
         if (!selectedRestaurant) return [];
 
         const list = [];
-        const maxPeople = selectedRestaurant.seatMaxPeople;
+        const maxPeople = selectedRestaurant.restaurantMaxPeople;
 
+        console.log(maxPeople);
         for (let i = 1; i <= 20; i++) {
             list.push({
                 number: i,
@@ -137,8 +213,9 @@ export default function RestaurantList() {
     const selectAndSetMessage = useCallback((number, isDisabled) => {
         if (!isDisabled) {
             setPeopleCount(number);
-            setMessage(""); // 안내문 초기화
+            setMessage("");
         } else {
+            setPeopleCount(number);
             setMessage(`${number}명 이상의 인원 예약은 가게로 연락주세요`);
         }
     }, []);
@@ -147,16 +224,11 @@ export default function RestaurantList() {
     const availableSlots = useMemo(() => {
         if (!selectedRestaurant || !peopleCount || !slotDate) return [];
 
-        console.log("selectedRestaurant", selectedRestaurant);
-        console.log("slotDate", slotDate);
-
         const slots = buildAvailableSlots({
             restaurant: selectedRestaurant,
             slotDate,        // slotList가 아니라 slotDate 기준으로
             peopleCount
         });
-
-        console.log(selectedRestaurant);
 
         return slots;
 
@@ -173,8 +245,7 @@ export default function RestaurantList() {
         const instance = Modal.getInstance(modal.current);
         instance.hide();
     }, [modal]);
-    
-    console.log(selectedRestaurant);
+
     return (
         <>
             <div className="row mt-4">
@@ -189,13 +260,13 @@ export default function RestaurantList() {
                                             <div className="col">
                                                 <img className="d-flex rounded mt-2 clickable w-100" src={`http://localhost:8080/restaurant/image/${restaurant.restaurantId}`} style={{ height: "250px", objectFit: "cover" }} />
                                                 <h3 className="mt-2">{restaurant.restaurantName}</h3>
-                                                <div className="mt-2">{restaurant.isOpenToday ? `영업중 ${restaurant.restaurantOpen} ~ ${restaurant.restaurantClose}` : `${today}요일 휴무`}</div>
+                                                <div className="mt-2">{restaurant.statusText}  ·  <FaUser className="me-2" />최대 {restaurant.restaurantMaxPeople}명 예약 가능</div>
                                                 <div className="badge-wrapper mt-2">
                                                     <span className="badge bg-secondary me-2">{restaurant.placeGroupName}</span>
                                                     <span className="badge bg-primary">{restaurant.categoryName}</span>
                                                 </div>
                                                 <div className="review-info-wrapper mt-2 d-flex">
-                                                    <span className="d-flex align-items-center"><FaStar className="text-warning me-1" /><span className="fw-bold me-1">{restaurant.restaurantAvgRating}.0</span>({restaurant.reviewCount})</span>
+                                                    <span className="d-flex align-items-center"><FaStar className="text-warning me-1" /><span className="fw-bold me-1">{restaurant.restaurantAvgRating}</span>({restaurant.reviewCount})</span>
                                                 </div>
                                                 <div className="price-wrapper mt-2">
                                                     <span>점심 ? 원</span>  ·  <span>저녁 ? 원 </span>
@@ -214,14 +285,14 @@ export default function RestaurantList() {
                                                         {restaurantSlot[restaurant.restaurantId]?.map(slot => (
                                                             <SwiperSlide key={slot.date}>
                                                                 <button
-                                                                    className={`btn p-1 d-flex flex-column align-items-center ${slot.status === "휴무" ? "btn-light" : "btn-outline-primary"} w-100`}
-                                                                    disabled={slot.status === "예약 마감" || slot.status === "휴무"}
+                                                                    className={`btn p-1 d-flex flex-column align-items-center ${slot.status === "휴무" || slot.status === "예약 마감" || slot.status === "영업 마감" ? "btn-light" : "btn-outline-primary"} w-100`}
+                                                                    disabled={slot.status === "예약 마감" || slot.status === "휴무" || slot.status === "영업 마감"}
                                                                     onClick={() => selectSlot(restaurant, slot)}
                                                                 >
-                                                                    {slot.dayName === today && (<span className={`text-${slot.status === "휴무" ? "dark" : ""} mt-1`}>오늘 ({slot.dayName})</span>)}
-                                                                    {slot.dayName === tomorrow && (<span className={`text-${slot.status === "휴무" ? "dark" : ""} mt-1`}>내일 ({slot.dayName})</span>)}
-                                                                    {slot.dayName !== today && slot.dayName !== tomorrow && (<span className={`text-${slot.status === "휴무" ? "dark" : ""} mt-1`}>{slot.dateStr} ({slot.dayName})</span>)}
-                                                                    <small className={`text-${slot.status === "휴무" ? "dark" : ""} fw-bold mt-1`}>{slot.status}</small>
+                                                                    {slot.isToday && (<span className={`text-${slot.status === "휴무" ? "dark" : ""} mt-1`}>오늘 ({slot.dayName})</span>)}
+                                                                    {slot.isTomorrow && (<span className={`text-${slot.status === "휴무" ? "dark" : ""} mt-1`}>내일 ({slot.dayName})</span>)}
+                                                                    {!slot.isToday && !slot.isTomorrow && (<span className={`text-${slot.status === "휴무" ? "dark" : ""} mt-1`}>{slot.dateStr} ({slot.dayName})</span>)}
+                                                                    <small className={`text-${slot.status === "휴무" || slot.status === "예약 마감" || slot.status === "영업 마감" ? "dark" : ""} fw-bold mt-1`}>{slot.status}</small>
                                                                 </button>
                                                             </SwiperSlide>
                                                         ))}
@@ -257,31 +328,35 @@ export default function RestaurantList() {
                                         >
                                             {peopleCountList.map(p => (
                                                 <SwiperSlide key={p.number}>
-                                                    <span className="circle" onClick={() => selectAndSetMessage(p.number, p.isDisabled)}>{p.number}명</span>
-                                                    {message !== "" && <span>{message}</span>}
+                                                    <span className={`circle ${peopleCount === p.number ? "selected" : ""}`} onClick={() => selectAndSetMessage(p.number, p.isDisabled)}>{p.number}명</span>
                                                 </SwiperSlide>
                                             ))}
                                         </Swiper>
                                     </div>
+                                </div>
+                            </div>
+                            <div className="row mt-4">
+                                <div className="col">
                                     {/* 인원이 선택되었을 때만 슬롯 렌더링 */}
-                                    {peopleCount && (
-                                        <div className="time-slot-wrapper mt-3">
-                                            {availableSlots.length > 0 && (
-                                                <Swiper key={peopleCount} spaceBetween={1} slidesPerView={5} pagination={false}>
-                                                    {availableSlots.map(slot => (
-                                                        <SwiperSlide key={slot.timeStr}>
-                                                            <div
-                                                                className={`btn btn-secondary ${slot.isAvailable ? "" : "disabled"}`}
-                                                                onClick={() => slot.isAvailable && selectSlot(selectedRestaurant, slot)}
-                                                            >
-                                                                {slot.timeStr}
-                                                            </div>
-                                                        </SwiperSlide>
-                                                    ))}
-                                                </Swiper>
-                                            )}
+                                    {peopleCount <= selectedRestaurant.restaurantMaxPeople ? (
+                                        <div className="slot-wrapper d-flex">
+                                            <Swiper key={peopleCount} spaceBetween={5} slidesPerView={6} pagination={false}>
+                                                {availableSlots.map(slot => (
+                                                    <SwiperSlide key={slot.timeStr}>
+                                                        <span className={`btn btn-outline-secondary`}>
+                                                            {slot.timeStr}
+                                                        </span>
+                                                    </SwiperSlide>
+                                                ))
+                                                }
+                                            </Swiper>
                                         </div>
-                                    )}
+                                    ) :
+                                        (
+                                            <div className="text-center p-3 border rounded bg-light">
+                                                <span className="text-muted"><FaPhoneAlt className="me-3" />{message}</span>
+                                            </div>
+                                        )}
                                 </div>
                             </div>
                         </div>

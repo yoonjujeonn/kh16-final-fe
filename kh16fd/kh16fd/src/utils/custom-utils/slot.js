@@ -39,11 +39,15 @@ export function buildRestaurantSlots({ restaurant, slotList }) {
     const isOpenDay = openingDays.length === 0 || openingDays.includes(dayName);
     const isHoliday = holidayDates.includes(formattedDate);
 
+     const closeTime = parseTimeWithDate(restaurant.restaurantClose, formattedDate, true);
     let status = "예약 가능";
     if (!isOpenDay || isHoliday) {
       status = "휴무";
     } else if (slot && slot.reservedSeatCount >= slot.totalSeatCount) {
       status = "예약 마감";
+    } else if (format(date, "yyyy-MM-dd") === format(now, "yyyy-MM-dd") && now > closeTime) {
+      // 오늘 날짜이고 현재 시각이 라스트 오더 이후면
+      status = "영업 마감";
     }
 
     const slots = [];
@@ -88,11 +92,14 @@ export function buildAvailableSlots({ restaurant, slotDate, peopleCount }) {
 
   while (currentTime < endTime) {
     // 오늘 날짜이면 현재 시각 이전은 건너뛰기
-    if (format(slotDate, "yyyy-MM-dd") === format(now, "yyyy-MM-dd") && currentTime <= now) {
+    if (
+      format(slotDate, "yyyy-MM-dd") === format(now, "yyyy-MM-dd") &&
+      currentTime.getTime() <= now.getTime()
+    ) {
       currentTime = addMinutes(currentTime, restaurant.reservationInterval || 30);
       continue;
     }
-    
+
     slots.push({
       timeStr: format(currentTime, "HH:mm"),
       isAvailable: peopleCount <= restaurant.seatMaxPeople,
