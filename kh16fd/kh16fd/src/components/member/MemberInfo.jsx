@@ -89,7 +89,7 @@ export default function MemberInfo() {
         </div>
         <div className="row mt-4 fs-2">
             <div className="col-sm-3 text-primary">상세주소</div>
-            <div className="col-sm-9">{member?.memberAdderss2}</div>
+            <div className="col-sm-9">{member?.memberAddress2}</div>
         </div>        
     </>)
 }
