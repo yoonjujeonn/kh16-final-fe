@@ -137,7 +137,7 @@ export default function RestaurantDetail() {
 
     const loadData = useCallback(async () => {
         try {
-            const { data } = await axios.get(`/restaurant/${restaurantId}`);
+            const { data } = await axios.get(`/restaurant/detail/${restaurantId}`);
             console.log(data);
             setRestaurant(data);
         }
