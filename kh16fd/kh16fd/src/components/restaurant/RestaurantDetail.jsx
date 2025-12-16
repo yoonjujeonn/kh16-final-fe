@@ -3,12 +3,19 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 import { Link, Outlet, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { ScaleLoader } from "react-spinners";
-import { FaPhone, FaPhoneAlt, FaPhoneSlash, FaRegBookmark, FaStar } from "react-icons/fa";
+import { FaBookmark, FaPhone, FaPhoneAlt, FaPhoneSlash, FaRegBookmark, FaStar } from "react-icons/fa";
 import { IoIosArrowDown, IoIosCall } from "react-icons/io";
+import { useAtom } from "jotai";
+import { loginIdState } from "../../utils/jotai";
 
 export default function RestaurantDetail() {
     const [restaurant, setRestaurant] = useState(null);
     const { restaurantId } = useParams();
+
+    // wishlist 관련 state
+    const[loginId] = useAtom(loginIdState);
+    const [isWish, setIsWish] = useState(false);
+    const [wishCount, setWishCount] = useState(0);
 
     //오늘 표시
     const index = new Date().getDay();
@@ -43,9 +50,54 @@ export default function RestaurantDetail() {
         "대전1호선": "#0052A4"
     };
 
+    const checkWish = useCallback(async () => {
+        try {
+            const response = await axios.post("/rest/wishlist/check", {
+                memberId: loginId,
+                restaurantId: restaurantId
+            });
+            // 서버에서 받은 isWish와 count로 상태 업데이트
+            setIsWish(response.data.isWish);
+            setWishCount(response.data.count);
+        } catch (error) {
+            console.error("위시리스트 확인 실패", error);
+        }
+    }, [loginId, restaurantId]);
+
+
+    // 2. 하트 클릭 시 토글 실행
+    const toggleWish = async () => {
+        // 비로그인 상태일 경우 경고
+        if (!loginId) {
+            toast.warning("로그인 후 이용 가능합니다.");
+            return;
+        }
+
+        try {
+            const response = await axios.post("/rest/wishlist/toggle", {
+                memberId: loginId,
+                restaurantId: restaurantId
+            });
+            
+            // 서버에서 받은 최신 상태와 개수로 UI 업데이트
+            setIsWish(response.data.isWish);
+            setWishCount(response.data.count);
+            
+            if (response.data.isWish) {
+                toast.success("저장되었습니다.");
+            } else {
+                toast.info("저장이 취소되었습니다.");
+            }
+        } catch (error) {
+            toast.error("위시리스트 처리 중 오류가 발생했습니다.");
+            console.error("위시리스트 토글 실패", error);
+        }
+    };
+
     useEffect(() => {
         loadData();
-    }, []);
+        checkWish();
+    }, [checkWish]);
 
     useEffect(() => {
         if (!restaurant) return;
@@ -265,9 +317,20 @@ export default function RestaurantDetail() {
             <div className="row mt-4 p-2">
                 <div className="col d-flex">
                     <div className="more-info-wrapper d-flex mt-2">
-                        <span className="d-flex flex-column align-items-center"><FaRegBookmark className="fs-4" />
-                        0
-                        </span>
+                        <span 
+                            className="d-flex flex-column align-items-center" 
+                            onClick={toggleWish} 
+                            style={{ cursor: "pointer", userSelect: "none" }}
+                        >
+                            {isWish ? (
+                                <FaBookmark className="fs-4 text-danger" /> // 저장됨: 채워진 아이콘
+                            ) : (
+                                <FaRegBookmark className="fs-4 text-secondary" /> // 미저장: 빈 아이콘
+                            )}
+                            <span style={{ fontSize: "0.8rem", marginTop: "2px" }}>
+                                {wishCount} {/* 실시간 저장 개수 */}
+                            </span>
+                         </span>
                         <span className="ms-3 d-flex flex-column align-items-center"><FaPhoneAlt className="fs-4" />전화</span>
                     </div>
                         <button className="ms-4 btn btn-primary rounded-pill" style={{width : "80%"}}>예약하기</button>

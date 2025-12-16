@@ -14,6 +14,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { FaUser } from "react-icons/fa";
 import { IoRestaurant } from "react-icons/io5";
+import { useLogout } from "../hooks/useLogout";
 
 export default function Menu() {
     const [loginId] = useAtom(loginIdState);
@@ -49,18 +50,18 @@ export default function Menu() {
         setLoginComplete(true);
     }, [accessToken]);
 
-
-    const logout = useCallback(async (e) => {
-        e.preventDefault();
-        try {
-            await axios.delete("/member/logout");
-            clearLogin();
-            delete axios.defaults.headers.common["Authorization"];
-            navigate("/");
-        } catch {
-            toast.error("잘못된 요청입니다");
-        }
-    }, []);
+    const logout = useLogout();
+    // const logout = useCallback(async (e) => {
+    //     e.preventDefault();
+    //     try {
+    //         await axios.delete("/member/logout");
+    //         clearLogin();
+    //         delete axios.defaults.headers.common["Authorization"];
+    //         navigate("/");
+    //     } catch {
+    //         toast.error("잘못된 요청입니다");
+    //     }
+    // }, []);
 
     const [keyword, setKeyword] = useState("");
 
@@ -134,6 +135,9 @@ export default function Menu() {
                                     </Link>
                                     <Link className="dropdown-item" to="/banner/list">
                                         <FaTag className="me-2" />배너 관리
+                                    </Link>
+                                    <Link className="dropdown-item" to="/admin/review/list">
+                                        <FaTag className="me-2" />리뷰 관리
                                     </Link>
                                 </div>
                             </li>
