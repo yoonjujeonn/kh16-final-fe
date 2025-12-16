@@ -8,6 +8,7 @@ import { FaPhoneAlt } from "react-icons/fa";
 import { addDays, addMinutes, format, isAfter, parse } from "date-fns";
 import { ko } from "date-fns/locale";
 import { Swiper, SwiperSlide } from 'swiper/react';
+import Swal from "sweetalert2";
 import './RestaurantList.css';
 import 'swiper/css';
 import 'swiper/css/navigation';
@@ -18,6 +19,7 @@ import { buildRestaurantSlots, buildAvailableSlots } from "../../utils/custom-ut
 
 import "react-day-picker/dist/style.css";
 import "/src/custom-css/daypicker-custom.css";
+import { useNavigate } from "react-router-dom";
 
 export default function RestaurantList() {
     //hook 호출(스크롤 페이징)
@@ -31,6 +33,7 @@ export default function RestaurantList() {
     const [message, setMessage] = useState("");
     const [availableSeatList, setAvailableSeatList] = useState([]);
     const [slotTime, setSlotTime] = useState(null);
+    const [selectedSeat, setSelectedSeat] = useState(null);
 
     //effect
     useEffect(() => {
@@ -38,25 +41,8 @@ export default function RestaurantList() {
     }, []);
 
     useEffect(() => {
-        if (!selectedRestaurant || !slotDate || !peopleCount) return;
-
-        const load = async () => {
-            try {
-                const request = {
-                    restaurantId: selectedRestaurant.restaurantId,
-                    slotDate: format(slotDate, "yyyy-MM-dd"),
-                    peopleCount: peopleCount
-                };
-                const { data } = await axios.post("/slot/seat", request);
-                setAvailableSeatList(data);
-            } catch (err) {
-                console.error(err);
-                toast.error("요청이 정상적으로 처리되지 않았습니다");
-            }
-        };
-
-        load();
-    }, [selectedRestaurant, slotDate, peopleCount]);
+        loadData();
+    }, [slotTime, peopleCount, selectedRestaurant]);
 
     //callback
     const loadSlotList = useCallback(async () => {
@@ -163,7 +149,6 @@ export default function RestaurantList() {
         const list = [];
         const maxPeople = selectedRestaurant.restaurantMaxPeople;
 
-        console.log(maxPeople);
         for (let i = 1; i <= 20; i++) {
             list.push({
                 number: i,
@@ -174,6 +159,7 @@ export default function RestaurantList() {
 
     }, [selectedRestaurant, peopleCount]);
 
+    //callback
     const disabledDays = useCallback(
         (date) => {
             if (!selectedRestaurant) return true;
@@ -234,6 +220,36 @@ export default function RestaurantList() {
 
     }, [selectedRestaurant, peopleCount, slotDate]);
 
+    //좌석 정보 로드
+    const loadData = useCallback(async () => {
+        if (!selectedRestaurant || !slotTime || !peopleCount) return;
+
+        try {
+            const request = {
+                restaurantId: selectedRestaurant.restaurantId,
+                slotTime: slotTime,
+                peopleCount: peopleCount
+            };
+            const { data } = await axios.post("/slot/seat", request);
+            console.log(slotTime, `"${slotTime}"`);
+            console.log(slotTime);
+            console.log(data);
+            setAvailableSeatList(data);
+
+        } catch (err) {
+            console.error(err);
+            toast.error("요청이 정상적으로 처리되지 않았습니다");
+        }
+    }, [selectedRestaurant, slotTime, peopleCount]);
+
+    const seatTypeList = useMemo(() => {
+        if (!availableSeatList) return;
+        const types = availableSeatList.map(s => s.seatType);
+        const typeGroups = [...new Set(types)];
+        return typeGroups;
+
+    }, [availableSeatList]);
+
     const modal = useRef();
 
     const openModal = useCallback(() => {
@@ -245,6 +261,66 @@ export default function RestaurantList() {
         const instance = Modal.getInstance(modal.current);
         instance.hide();
     }, [modal]);
+
+    const changeSlotTime = useCallback(async (e) => {
+        const text = e.target.textContent;
+        const date = format(slotDate, "yyyy-MM-dd");
+        const dateStr = `${date} ${text}`;
+
+        const choice = await Swal.fire({
+            title: "예약 날짜 확인",
+            text: `${dateStr} 에 방문하시는게 맞나요?`,
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonText: "확인",
+            cancelButtonText: "취소",
+            confirmButtonColor: "#00b894",
+            cancelButtonColor: "#ff7675",
+        });
+
+        if (choice.isConfirmed) {
+            setSlotTime(dateStr);
+        }
+
+    }, [slotDate]);
+
+    const navigate = useNavigate();
+
+    const selectSeatByType = useCallback((type) => {
+        if (!availableSeatList) return;
+        const seat = availableSeatList.find(s => s.seatType === type);
+
+        if (seat) {
+            setSelectedSeat(seat);
+        }
+    }, [availableSeatList]);
+
+    const sendData = useCallback(async () => {
+
+        const choice = await Swal.fire({
+            title: "예약 정보를 확인해주세요",
+            text: `${selectedRestaurant.restaurantName} · ${slotTime} · ${selectedSeat.seatType} · ${peopleCount}명`,
+            icon: "info",
+            showCancelButton: true,
+            confirmButtonText: "예약 페이지로 이동",
+            cancelButtonText: "정보 변경",
+            confirmButtonColor: "#00b894",
+            cancelButtonColor: "#ff7675",
+        });
+        const info = {
+            reservationTarget : selectedSeat.seatRestaurantId,
+            reservationSeat : selectedSeat.seatId,
+            reservationPeopleCount : peopleCount,
+            reservationTime : slotTime,
+            selectedRestaurant : selectedRestaurant.restaurantName,
+            selectedSeat : selectedSeat.seatType
+        }
+        if(choice.isConfirmed) {
+            closeModal();
+            navigate("/reservation/add", { state : info});
+        }
+
+    }, [slotTime, selectedSeat, peopleCount, selectedRestaurant]);
 
     return (
         <>
@@ -311,6 +387,9 @@ export default function RestaurantList() {
             <div className="modal fade" tabIndex={-1} data-bs-backdrop="static" ref={modal} data-bs-keyboard="false">
                 <div className="modal-dialog">
                     <div className="modal-content">
+                        <div className="modal-header">
+                            <button className="btn-close" onClick={closeModal}></button>
+                        </div>
                         <div className="modal-body">
                             <div className="row">
                                 <div className="col d-flex flex-column align-items-center">
@@ -343,9 +422,9 @@ export default function RestaurantList() {
                                             <Swiper key={peopleCount} spaceBetween={5} slidesPerView={6} pagination={false}>
                                                 {availableSlots.map(slot => (
                                                     <SwiperSlide key={slot.timeStr}>
-                                                        <span className={`btn btn-outline-secondary`}>
+                                                        <button className={`btn btn-outline-secondary`} onClick={changeSlotTime}>
                                                             {slot.timeStr}
-                                                        </span>
+                                                        </button>
                                                     </SwiperSlide>
                                                 ))
                                                 }
@@ -359,6 +438,29 @@ export default function RestaurantList() {
                                         )}
                                 </div>
                             </div>
+                            {availableSeatList.length > 0 && (
+                                <div className="row mt-4">
+                                    <div className="col d-flex justify-content-center">
+                                        {seatTypeList.map(type => (
+                                            <button
+                                                className="btn btn-light border py-4 w-25 mx-3"
+                                                key={type}
+                                                onClick={() => selectSeatByType(type)}
+                                            >
+                                                {type}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                            {selectedSeat && (
+                                <div className="row mt-4">
+                                    <div className="col">
+                                        <div className="btn-wrapper d-flex justify-content-center">
+                                            <button className="btn btn-outline-primary w-100" onClick={sendData}>예약하기</button>
+                                        </div>
+                                    </div>
+                                </div>)}
                         </div>
                         <div className="modal-footer">
                             <button className={`ms-2 btn btn-primary`} onClick={closeModal}>닫기</button>
