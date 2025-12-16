@@ -27,6 +27,7 @@ import MyReviewList from "./review/MyReviewList";
 import RestaurantAddByStep from "./restaurant/RestaurantAddByStep";
 import RestaurantEdit from "./restaurant/RestaurantEdit";
 import RestaurantSearch from "./restaurant/RestaurantSearch";
+import ReservationDetail from "./reservation/ReservationDetail";
 import MyWishList from "./wishlist/MyWishList";
 import ReviewManager from "./admin/ReviewManager";
 
@@ -71,6 +72,7 @@ export default function Content() {
 
                         {/* 예약 */}
                         <Route path="/reservation/add" element={<ReservationAdd />} />
+                        <Route path="/reservation/add/success" element={<ReservationDetail />} />
 
                         {/* 관리자 */}
                         <Route path="/admin/setting" element={<Admin><AdminSetting /></Admin>} />
