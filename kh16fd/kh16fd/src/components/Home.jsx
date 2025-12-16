@@ -33,7 +33,7 @@ export default function Home() {
     }, []);
 
     useEffect(() => {
-        axios.get("http://localhost:8080/category/parent")
+        axios.get("http://localhost:8080/category/top")
             .then(res => setCategoryList(res.data));
     }, []);
 
@@ -61,11 +61,9 @@ export default function Home() {
     return (
         <>
             <div className="row mt-4">
-                <div className="col d-flex justify-content-center">
+                <div className="col sm-9 d-flex justify-content-center">
                     {bannerList.length === 0 ? (
-                        <img
-                            src="https://www.dummyimage.com/430x280/000/fff&text=Banner"
-                            className="border rounded"
+                        <img src="https://www.dummyimage.com/430x280/000/fff&text=Banner" className="border rounded"
                         />
                     ) : (
                         <Swiper
@@ -77,10 +75,7 @@ export default function Home() {
                         >
                             {bannerList.map(banner => (
                                 <SwiperSlide key={banner.bannerNo}>
-                                    <img
-                                        src={`http://localhost:8080/attachment/${banner.bannerAttachmentNo}`}
-                                        alt=""
-                                    />
+                                    <img src={`http://localhost:8080/attachment/${banner.bannerAttachmentNo}`} alt=""/>
                                 </SwiperSlide>
                             ))}
                         </Swiper>
@@ -89,12 +84,13 @@ export default function Home() {
             </div>
 
             <div className="row mt-4">
-                <div className="col">
+                <div className="col sm-9">
                     <h3 className="mb-3 text-center">지역</h3>
 
                     <div className="d-flex justify-content-center gap-3 flex-wrap">
                         {depth1List.map(depth1 => (
-                            <button key={depth1} className={selectedDepth1 === depth1 ? "place-btn active" : "place-btn"} onClick={() => clickDepth1(depth1)}>
+                            <button key={depth1} className={selectedDepth1 === depth1 ? "place-btn active" : "place-btn"} 
+                            onClick={() => clickDepth1(depth1)}>
                                 {depth1}
                             </button>
                         ))}
@@ -113,19 +109,27 @@ export default function Home() {
                 </div>
             </div>
 
-            <div className="row mt-4">
-                <div className="col">
-                    <h3 className="mb-3 text-center">카테고리</h3>
+            <div className="row mt-5">
+                <div className="col sm-9">
+                    <h3 className="mt-3 text-center">종류</h3>
 
-                    <div className="d-flex justify-content-center gap-3 flex-wrap">
+                    <div className="d-flex justify-content-center gap-4 flex-wrap category-section">
                         {categoryList.map(category => (
-                            <button key={category.categoryNo} className="place-btn" onClick={() => goSearch(category.categoryName)}>
-                                {category.categoryName}
-                            </button>
+                            <div key={category.categoryNo} className="category-card" onClick={() => goSearch(category.categoryName)}
+                            >
+                                <img
+                                    src={category.attachmentNo ? `http://localhost:8080/attachment/${category.attachmentNo}`
+                                            : "/default-category.png"}
+                                    alt={category.categoryName}
+                                    className="category-image"
+                                />
+                                <div className="category-name">{category.categoryName}</div>
+                            </div>
                         ))}
                     </div>
                 </div>
             </div>
+
         </>
     );
 }

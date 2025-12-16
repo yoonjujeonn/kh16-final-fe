@@ -1,12 +1,12 @@
 import { Route, Routes } from "react-router-dom";
 import Home from "./Home";
 import AdminSetting from "./admin/AdminSetting";
-import CategoryList from "./category/CategoryList";
+import CategoryList from "./admin/category/CategoryList";
 import MemberLogin from "./member/MemberLogin";
 import RestaurantAddFinish from "./restaurant/RestaurantAddFinish";
 import MemberJoin from "./member/MemberJoin";
-import CategoryAdd from "./category/categoryAdd";
-import BannerAdd from "./banner/bannerAdd";
+import CategoryAdd from "./admin/category/categoryAdd";
+import BannerAdd from "./admin/banner/bannerAdd";
 import ReviewList from "./review/ReviewList";
 import ReservationAdd from "./reservation/ReservationAdd";
 import RestaurantDetail from "./restaurant/RestaurantDetail";
@@ -18,7 +18,7 @@ import BizMemberJoin from "./member/BizMemberJoin";
 import BizMemberJoinFinish from "./member/BizMemberJoinFinish";
 import MemberInfo from "./member/MemberInfo";
 import MemberChange from "./member/MemberChange";
-import BannerList from "./banner/bannerList";
+import BannerList from "./admin/banner/bannerList";
 import Admin from "./guard/Admin";
 import NeedPermission from "./error/NeedPermission";
 import TargetNoutfound from "./error/TargetNotfound";
@@ -27,6 +27,8 @@ import MyReviewList from "./review/MyReviewList";
 import RestaurantAddByStep from "./restaurant/RestaurantAddByStep";
 import RestaurantEdit from "./restaurant/RestaurantEdit";
 import RestaurantSearch from "./restaurant/RestaurantSearch";
+import CategoryImageAdd from "./admin/category/CategoryImageAdd";
+import CategoryImageList from "./admin/category/CategoryImageList";
 import ReservationDetail from "./reservation/ReservationDetail";
 import MyWishList from "./wishlist/MyWishList";
 import ReviewManager from "./admin/ReviewManager";
@@ -80,6 +82,8 @@ export default function Content() {
                         {/* 카테고리 */}
                         <Route path="/category/add" element={<Admin><CategoryAdd /></Admin>} />
                         <Route path="/category/list" element={<Admin><CategoryList /></Admin>} />
+                        <Route path="/category/image/add" element={<Admin><CategoryImageAdd /></Admin>} />
+                        <Route path="/category/image/list" element={<Admin><CategoryImageList /></Admin>} />
                         {/* 배너 */}
                         <Route path="/banner/add" element={<Admin><BannerAdd /></Admin>} />
                         <Route path="/banner/list" element={<Admin><BannerList /></Admin>} />
