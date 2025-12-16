@@ -136,6 +136,9 @@ export default function Menu() {
                                     <Link className="dropdown-item" to="/banner/list">
                                         <FaTag className="me-2" />배너 관리
                                     </Link>
+                                    <Link className="dropdown-item" to="/admin/review/list">
+                                        <FaTag className="me-2" />리뷰 관리
+                                    </Link>
                                 </div>
                             </li>
                         )}
