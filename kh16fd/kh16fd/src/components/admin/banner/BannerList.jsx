@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
-import { FaTrash, FaPlus, FaPen } from "react-icons/fa6";
+import { FaTrash, FaPlus } from "react-icons/fa6";
 
 export default function BannerList() {
 
@@ -10,13 +10,8 @@ export default function BannerList() {
 
     const loadData = useCallback(() => {
         axios.get("http://localhost:8080/banner/list")
-            .then(res => {
-                setList(res.data);
-            })
-            .catch(err => {
-                console.error(err);
-                toast.error("배너 목록 불러오기 실패");
-            });
+            .then(res => setList(res.data))
+            .catch(() => toast.error("배너 목록 불러오기 실패"));
     }, []);
 
     useEffect(() => {
@@ -24,24 +19,26 @@ export default function BannerList() {
     }, [loadData]);
 
     const deleteBanner = async (bannerNo) => {
-    if (!window.confirm("정말 삭제하시겠습니까?")) return;
+        if (!window.confirm("정말 삭제하시겠습니까?")) return;
 
-    try {
-        await axios.delete(`http://localhost:8080/banner/${bannerNo}`);
-        toast.success("삭제 완료");
-        loadData();
-    } catch (err) {
-        toast.error("삭제 실패");
-    }
-};
-
-    const getImageUrl = (attachmentNo) => {
-        return `http://localhost:8080/attachment/${attachmentNo}`;
+        try {
+            await axios.delete(
+                `http://localhost:8080/admin/banner/${bannerNo}`,
+                { withCredentials: true }
+            );
+            toast.success("삭제 완료");
+            loadData();
+        } catch (err) {
+            console.error(err);
+            toast.error("삭제 실패");
+        }
     };
+
+    const getImageUrl = (attachmentNo) =>
+        `http://localhost:8080/attachment/${attachmentNo}`;
 
     return (
         <>
-            {/* 제목 + 신규등록 버튼 */}
             <div className="d-flex justify-content-between align-items-center my-4">
                 <h2>배너 목록</h2>
                 <Link to="/banner/add" className="btn btn-primary">
@@ -49,7 +46,6 @@ export default function BannerList() {
                 </Link>
             </div>
 
-            {/* 테이블 */}
             <table className="table table-bordered table-hover text-center">
                 <thead>
                     <tr>
@@ -71,25 +67,21 @@ export default function BannerList() {
                         list.map(banner => (
                             <tr key={banner.bannerNo}>
                                 <td>{banner.bannerNo}</td>
-
                                 <td>
                                     {banner.bannerAttachmentNo ? (
                                         <img
                                             src={getImageUrl(banner.bannerAttachmentNo)}
-                                            alt="banner"
-                                            style={{ width: "150px", height: "auto", borderRadius: "8px" }}
+                                            alt=""
+                                            style={{ width: 150, borderRadius: 8 }}
                                         />
                                     ) : (
                                         <span className="text-muted">이미지 없음</span>
                                     )}
                                 </td>
-
                                 <td>{banner.bannerTitle}</td>
                                 <td>{banner.bannerLink}</td>
                                 <td>{banner.bannerOrder}</td>
-
                                 <td>
-
                                     <button
                                         className="btn btn-danger btn-sm"
                                         onClick={() => deleteBanner(banner.bannerNo)}
