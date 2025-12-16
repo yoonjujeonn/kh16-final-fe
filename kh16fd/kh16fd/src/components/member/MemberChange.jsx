@@ -1,5 +1,5 @@
-import { useAtom } from "jotai";
-import { accessTokenState, loginIdState, loginLevelState } from "../../utils/jotai";
+import { useAtom, useSetAtom } from "jotai";
+import { accessTokenState, loginIdState, loginLevelState, refreshTokenState } from "../../utils/jotai";
 import Jumbotron from "../templates/Jumbotron";
 import { useNavigate, useParams } from "react-router-dom";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -10,6 +10,8 @@ import { FaEdit } from "react-icons/fa";
 import DatePicker from "react-datepicker";
 import { format } from "date-fns";
 import { useDaumPostcodePopup } from "react-daum-postcode";
+import Swal from "sweetalert2";
+import { useLogout } from "../../hooks/useLogout";
 
 export default function MemberChange() {
 
@@ -366,10 +368,10 @@ export default function MemberChange() {
         axios({
             url: `/member/${loginId}`,
             method: "patch",
-            data: { 
+            data: {
                 memberPost: member.memberPost,
                 memberAddress1: member.memberAddress1,
-                memberAddress2: member.memberAddress2 
+                memberAddress2: member.memberAddress2
             }
         }).then(response => {
             toast.success("변경사항이 적용되었습니다");
@@ -604,6 +606,56 @@ export default function MemberChange() {
     }, [member, memberClass]);
 
 
+    //jotai state (전체 화면에 영향을 미치는 데이터)
+    //커스텀 훅
+    const logout = useLogout();
+
+    // 회원탈퇴
+    const memberWithdraw = useCallback(async () => {
+
+        const result = await Swal.fire({
+            title: "탈퇴하시나요?",
+            text: "이 작업은 되돌릴 수 없습니다",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "탈퇴하기",
+            cancelButtonText: "취소하기",
+            allowOutsideClick: false
+        });
+
+        if (!result.isConfirmed) {
+            return;
+        }
+
+
+
+        try {
+            const response = await axios.patch(`/member/${loginId}/deactivate`);
+            console.log(response.data);
+            if (response.data === true) {
+                await logout();
+                await Swal.fire({
+                    title: "탈퇴완료",
+                    text: "성공적으로 탈퇴하셨습니다",
+                    icon: "success"
+                });
+            }
+            else {
+                toast.error("탈퇴 처리 중 문제가 발생했습니다");
+            }
+        }
+        catch (err) {
+            await Swal.fire({
+                title: "오류 발생",
+                text: "탈퇴 처리 중 문제가 발생했습니다.",
+                icon: "error"
+            });
+            toast.error("유효하지 않은 요청입니다");
+        }
+    }, [loginId, logout]);
+
     return (<>
         <Jumbotron subject={`안녕하세요 ${loginLevel}님`} detail={`${loginId}님의 정보 수정을 진행해 주세요`} />
 
@@ -625,6 +677,7 @@ export default function MemberChange() {
             <div className="col-sm-3 text-primary">닉네임</div>
             <div className="col-sm-9">{member?.memberNickname}</div>
         </div> */}
+
         {/* 닉네임 */}
         <div className="row mt-4 fs-2">
             <div className="col-sm-3 text-primary">닉네임</div>
@@ -669,7 +722,7 @@ export default function MemberChange() {
                 </>)}
             </div>
         </div>
-
+        {/* 생년월일 */}
         <div className="row mt-4 fs-2">
             <div className="col-sm-3 text-primary">생년월일</div>
 
@@ -934,7 +987,14 @@ export default function MemberChange() {
             </div>
         </div>
 
-
+        {/* 회원 탈퇴 버튼 */}
+        <div className="row mt-4">
+            <div className="col d-flex align-item-center">
+                <button className="btn btn-danger" type="button" onClick={memberWithdraw}>
+                    회원 탈퇴
+                </button>
+            </div>
+        </div>
 
     </>)
 }
