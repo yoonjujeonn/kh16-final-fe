@@ -111,7 +111,8 @@ export default function MyReviewList() {
 
     // render
     return (<>
-        <Jumbotron subject={`${loginId} 님이 작성한 리뷰 목록`} />
+        <Jumbotron subject={`${loginId} 님의 리뷰`} />
+        <h3 className="my-4">내리뷰 ({reviews.length})</h3>
 
         {reviews.length === 0 ? (
             <div className="alert alert-info mt-4">
@@ -140,10 +141,10 @@ export default function MyReviewList() {
                                 const displayContent = isLong && !isExpanded
                                     ? content.substring(0, max_length) + '...'
                                     : content;
-                                
+
                                 const rawDate = review.reviewCreatedAt ? review.reviewCreatedAt.substring(0, 10) : '날짜정보 없음';
                                 const formattedCreatedAt = rawDate.replace(/-/g, '.');
-                                
+
                                 // 첨부파일 확인
                                 const attachmentNo = review.reviewAttachmentNo;
                                 const hasAttachment = attachmentNo && attachmentNo > 0;
@@ -154,26 +155,26 @@ export default function MyReviewList() {
                                         {/* 식당 ID 링크 */}
                                         <td>
                                             <Link to={`/restaurant/detail/${review.restaurantId}`}>
-                                                식당 #{review.restaurantId}
+                                                {review.restaurantName}
                                             </Link>
                                         </td>
                                         {/* 리뷰 내용 및 더보기/접기 버튼 */}
                                         <td>
                                             <div className="d-flex justify-content-between align-items-start">
-                                            {displayContent}
+                                                {displayContent}
 
-                                            {/* 1. 글이 길거나 사진이 있는 경우 '더보기' 버튼 표시 */}
-                                            {(isLong || hasAttachment) && (
-                                                <button
-                                                    className="btn btn-link btn-sm p-0 ms-2 text-secondary"
-                                                    onClick={() => toggleExpand(review.reviewNo)}
-                                                    style={{ textDecoration: 'none' }}
-                                                >
-                                                    {isExpanded ? '접기' : '더보기'}
-                                                    {isExpanded ? <MdExpandLess /> : <MdExpandMore />}
-                                                </button>
-                                            )}
-                                        </div>
+                                                {/* 1. 글이 길거나 사진이 있는 경우 '더보기' 버튼 표시 */}
+                                                {(isLong || hasAttachment) && (
+                                                    <button
+                                                        className="btn btn-link btn-sm p-0 ms-2 text-secondary"
+                                                        onClick={() => toggleExpand(review.reviewNo)}
+                                                        style={{ textDecoration: 'none' }}
+                                                    >
+                                                        {isExpanded ? '접기' : '더보기'}
+                                                        {isExpanded ? <MdExpandLess /> : <MdExpandMore />}
+                                                    </button>
+                                                )}
+                                            </div>
 
                                             {/* 2. '더보기' 상태일 때만 사진 표시 */}
                                             {isExpanded && hasAttachment && (

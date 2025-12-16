@@ -11,7 +11,7 @@ import { MdExpandLess, MdExpandMore } from "react-icons/md";
 
 
 export default function ReviewList() {
-    
+
     const { restaurantId } = useParams();
     const navigate = useNavigate();
 
@@ -83,7 +83,7 @@ export default function ReviewList() {
 
     const getImageUrl = (attachmentNo) => {
         // 백엔드에서 '/attachment/{파일번호}'로 이미지 파일을 제공한다고 가정합니다.
-        return `http://localhost:8080/attachment/${attachmentNo}`; 
+        return `http://localhost:8080/attachment/${attachmentNo}`;
     };
 
     if (loading) {
@@ -103,7 +103,7 @@ export default function ReviewList() {
             </div>
         )}
         {reviews.length === 0 ? (
-            <div className="alert alert-warning">아직 등록된 리뷰가 없습니다.</div>
+            <div className="alert alert-warning mt-3">아직 등록된 리뷰가 없습니다.</div>
         ) : (
             <ul className="list-unstyled">
                 {reviews.map((review, index) => {
@@ -122,7 +122,7 @@ export default function ReviewList() {
 
                     const isLast = index === reviews.length - 1;
 
-                    const attachmentNo = review.reviewAttachmentNo; 
+                    const attachmentNo = review.reviewAttachmentNo;
                     const hasAttachment = attachmentNo && attachmentNo > 0;
 
                     return (
@@ -134,7 +134,6 @@ export default function ReviewList() {
                             }} // 얇은 회색 구분선 추가
                         >
                             <div>
-                                {/* 닉네임과 버튼을 묶는 d-flex 컨테이너 (이전에 <h5>였던 부분을 div로 감싸고, 버튼을 안에 넣음) */}
                                 <div className="d-flex align-items-center mb-1">
 
                                     {/* 닉네임, 별점 부분 */}
@@ -160,12 +159,10 @@ export default function ReviewList() {
                                         </div>
                                     )}
                                 </div>
-                                {/* [수정] 리뷰 내용: 더보기 버튼을 분리하기 위해 텍스트만 표시 */}
                                 <p className="mt-2 mb-0">
                                     {displayContent}
                                 </p>
 
-                                {/* ⭐ [추가] 3. 이미지가 있을 경우 렌더링 (BannerList.jsx 방식 적용) */}
                                 {hasAttachment && (
                                     <div className="mb-3">
                                         <img
@@ -176,14 +173,13 @@ export default function ReviewList() {
                                         />
                                     </div>
                                 )}
-                                {/* ⭐ [추가] 3. 이미지 렌더링 영역 끝 */}
 
                                 {/* [추가] 더보기/접기 버튼을 오른쪽 끝에 배치하기 위한 <div> */}
                                 {isLong && (
                                     <div className="text-end mt-2">
                                         <button
-                                            className="text-secondary" 
-                                            style={{ background: 'none', border: 'none', cursor: 'pointer' }} 
+                                            className="text-secondary"
+                                            style={{ background: 'none', border: 'none', cursor: 'pointer' }}
                                             onClick={() => toggleExpand(review.reviewNo)}
                                         >
                                             {isExpanded ? '접기' : '더보기'}

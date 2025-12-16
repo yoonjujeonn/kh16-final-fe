@@ -27,6 +27,8 @@ import MyReviewList from "./review/MyReviewList";
 import RestaurantAddByStep from "./restaurant/RestaurantAddByStep";
 import RestaurantEdit from "./restaurant/RestaurantEdit";
 import RestaurantSearch from "./restaurant/RestaurantSearch";
+import MyWishList from "./wishlist/MyWishList";
+import ReviewManager from "./admin/ReviewManager";
 
 export default function Content() {
 
@@ -49,6 +51,7 @@ export default function Content() {
                         <Route path="/member/info" element={<MemberInfo />} />
                         <Route path="/member/info/change" element={<MemberChange />} />
                         <Route path="/member/info/review" element={<MyReviewList />} />
+                        <Route path="/member/info/wishlist" element={<MyWishList />} />
 
                         {/* 식당 등록 */}
                         <Route path="/restaurant/add" element={<RestaurantAddByStep />}></Route>
@@ -71,6 +74,7 @@ export default function Content() {
 
                         {/* 관리자 */}
                         <Route path="/admin/setting" element={<Admin><AdminSetting /></Admin>} />
+                        <Route path="/admin/review/list" element={<Admin><ReviewManager /></Admin>} />
                         {/* 카테고리 */}
                         <Route path="/category/add" element={<Admin><CategoryAdd /></Admin>} />
                         <Route path="/category/list" element={<Admin><CategoryList /></Admin>} />
