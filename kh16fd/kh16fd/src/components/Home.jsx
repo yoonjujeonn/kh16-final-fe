@@ -75,7 +75,7 @@ export default function Home() {
                         >
                             {bannerList.map(banner => (
                                 <SwiperSlide key={banner.bannerNo}>
-                                    <img src={`http://localhost:8080/attachment/${banner.bannerAttachmentNo}`} alt=""/>
+                                    <img src={`http://localhost:8080/attachment/${banner.bannerAttachmentNo}`} alt="" />
                                 </SwiperSlide>
                             ))}
                         </Swiper>
@@ -89,8 +89,8 @@ export default function Home() {
 
                     <div className="d-flex justify-content-center gap-3 flex-wrap">
                         {depth1List.map(depth1 => (
-                            <button key={depth1} className={selectedDepth1 === depth1 ? "place-btn active" : "place-btn"} 
-                            onClick={() => clickDepth1(depth1)}>
+                            <button key={depth1} className={selectedDepth1 === depth1 ? "place-btn active" : "place-btn"}
+                                onClick={() => clickDepth1(depth1)}>
                                 {depth1}
                             </button>
                         ))}
@@ -117,12 +117,13 @@ export default function Home() {
                         {categoryList.map(category => (
                             <div key={category.categoryNo} className="category-card" onClick={() => goSearch(category.categoryName)}
                             >
-                                <img
-                                    src={category.attachmentNo ? `http://localhost:8080/attachment/${category.attachmentNo}`
-                                            : "/default-category.png"}
-                                    alt={category.categoryName}
-                                    className="category-image"
-                                />
+                                {category.attachmentNo && (
+                                    <img
+                                        src={`http://localhost:8080/attachment/${category.attachmentNo}`}
+                                        alt={category.categoryName}
+                                        className="category-image"
+                                    />
+                                )}
                                 <div className="category-name">{category.categoryName}</div>
                             </div>
                         ))}
