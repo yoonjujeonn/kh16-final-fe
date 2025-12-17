@@ -1,5 +1,5 @@
 // slot.js
-import { addDays, format, addMinutes, parse, isAfter } from "date-fns";
+import { addDays, format, addMinutes, parse, isAfter, addHours } from "date-fns";
 import { ko } from "date-fns/locale";
 
 const parseTimeWithDate = (timeStr, date, isLastOrder = false) => {
@@ -39,7 +39,7 @@ export function buildRestaurantSlots({ restaurant, slotList }) {
     const isOpenDay = openingDays.length === 0 || openingDays.includes(dayName);
     const isHoliday = holidayDates.includes(formattedDate);
 
-     const closeTime = parseTimeWithDate(restaurant.restaurantClose, formattedDate, true);
+    const closeTime = parseTimeWithDate(restaurant.restaurantClose, formattedDate, true);
     let status = "예약 가능";
     if (!isOpenDay || isHoliday) {
       status = "휴무";
@@ -87,16 +87,24 @@ export function buildAvailableSlots({ restaurant, slotDate, peopleCount }) {
   const now = new Date();
   const slots = [];
 
-  let currentTime = parseTimeWithDate(restaurant.restaurantOpen, slotDate, false);
+  let openTime = parseTimeWithDate(restaurant.restaurantOpen, slotDate, false);
   const endTime = parseTimeWithDate(restaurant.restaurantLastOrder, slotDate, true);
+
+  let currentTime = openTime;
+
+  const isToday = format(slotDate, "yyyy-MM-dd") === format(now, "yyyy-MM-dd");
+
+  const isAfterOpen = isToday && now >= openTime;
+
+  const limitTime = isAfterOpen ? addHours(now, 1) : null;
 
   while (currentTime < endTime) {
     // 오늘 날짜이면 현재 시각 이전은 건너뛰기
-    if (
-      format(slotDate, "yyyy-MM-dd") === format(now, "yyyy-MM-dd") &&
-      currentTime.getTime() <= now.getTime()
-    ) {
-      currentTime = addMinutes(currentTime, restaurant.reservationInterval || 30);
+    if (isToday && currentTime <= limitTime) {
+      currentTime = addMinutes(
+        currentTime,
+        restaurant.reservationInterval || 30
+      );
       continue;
     }
 
