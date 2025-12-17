@@ -22,6 +22,9 @@ export default function Home() {
 
     const [categoryList, setCategoryList] = useState([]);
 
+    // ⭐ [추가] depth1 대표 지역 + 이미지 목록
+    const [placeTopList, setPlaceTopList] = useState([]);
+
     useEffect(() => {
         axios.get("http://localhost:8080/banner/list")
             .then(res => setBannerList(res.data));
@@ -35,6 +38,12 @@ export default function Home() {
     useEffect(() => {
         axios.get("http://localhost:8080/category/top")
             .then(res => setCategoryList(res.data));
+    }, []);
+
+    // ⭐ [추가] 홈 화면용 지역 이미지 목록 조회
+    useEffect(() => {
+        axios.get("http://localhost:8080/place/top")
+            .then(res => setPlaceTopList(res.data));
     }, []);
 
     const clickDepth1 = async (depth1) => {
@@ -63,7 +72,9 @@ export default function Home() {
             <div className="row mt-4">
                 <div className="col sm-9 d-flex justify-content-center">
                     {bannerList.length === 0 ? (
-                        <img src="https://www.dummyimage.com/430x280/000/fff&text=Banner" className="border rounded"
+                        <img
+                            src="https://www.dummyimage.com/430x280/000/fff&text=Banner"
+                            className="border rounded"
                         />
                     ) : (
                         <Swiper
@@ -75,11 +86,42 @@ export default function Home() {
                         >
                             {bannerList.map(banner => (
                                 <SwiperSlide key={banner.bannerNo}>
-                                    <img src={`http://localhost:8080/attachment/${banner.bannerAttachmentNo}`} alt="" />
+                                    <img
+                                        src={`http://localhost:8080/attachment/${banner.bannerAttachmentNo}`}
+                                        alt=""
+                                    />
                                 </SwiperSlide>
                             ))}
                         </Swiper>
                     )}
+                </div>
+            </div>
+
+            <div className="row mt-5">
+                <div className="col sm-9">
+                    <h3 className="mb-4 text-center">지역으로 검색</h3>
+
+                    <div className="place-card-container">
+                        {placeTopList.map(place => (
+                            <div
+                                key={place.placeId}
+                                className="place-card"
+                                onClick={() => goSearch(place.placeDepth1)}
+                            >
+                                <img
+                                    src={
+                                        place.attachmentNo
+                                            ? `http://localhost:8080/attachment/${place.attachmentNo}`
+                                            : "/no-image.png"
+                                    }
+                                    alt={place.placeDepth1}
+                                />
+                                <div className="place-card-title">
+                                    {place.placeDepth1}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </div>
 
@@ -89,18 +131,24 @@ export default function Home() {
 
                     <div className="d-flex justify-content-center gap-3 flex-wrap">
                         {depth1List.map(depth1 => (
-                            <button key={depth1} className={selectedDepth1 === depth1 ? "place-btn active" : "place-btn"}
-                                onClick={() => clickDepth1(depth1)}>
+                            <button
+                                key={depth1}
+                                className={selectedDepth1 === depth1 ? "place-btn active" : "place-btn"}
+                                onClick={() => clickDepth1(depth1)}
+                            >
                                 {depth1}
                             </button>
                         ))}
-
                     </div>
 
                     {selectedDepth1 && depth2List.length > 0 && (
                         <div className="d-flex justify-content-center gap-2 flex-wrap mt-3">
                             {depth2List.map(depth2 => (
-                                <button key={depth2} className="place-sub-btn" onClick={() => goSearch(`${selectedDepth1} ${depth2}`)}>
+                                <button
+                                    key={depth2}
+                                    className="place-sub-btn"
+                                    onClick={() => goSearch(`${selectedDepth1} ${depth2}`)}
+                                >
                                     {depth2}
                                 </button>
                             ))}
@@ -115,7 +163,10 @@ export default function Home() {
 
                     <div className="d-flex justify-content-center gap-4 flex-wrap category-section">
                         {categoryList.map(category => (
-                            <div key={category.categoryNo} className="category-card" onClick={() => goSearch(category.categoryName)}
+                            <div
+                                key={category.categoryNo}
+                                className="category-card"
+                                onClick={() => goSearch(category.categoryName)}
                             >
                                 {category.attachmentNo && (
                                     <img
@@ -124,13 +175,14 @@ export default function Home() {
                                         className="category-image"
                                     />
                                 )}
-                                <div className="category-name">{category.categoryName}</div>
+                                <div className="category-name">
+                                    {category.categoryName}
+                                </div>
                             </div>
                         ))}
                     </div>
                 </div>
             </div>
-
         </>
     );
 }
