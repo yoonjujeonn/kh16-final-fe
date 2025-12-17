@@ -33,6 +33,8 @@ import ReservationDetail from "./reservation/ReservationDetail";
 import MyWishList from "./wishlist/MyWishList";
 import ReviewManager from "./admin/ReviewManager";
 import MyReservationList from "./reservation/MyReservationList";
+import PlaceImageAdd from "./admin/place/PlaceImageAdd";
+import PlaceImageList from "./admin/place/PlaceImageList";
 
 export default function Content() {
 
@@ -86,6 +88,9 @@ export default function Content() {
                         <Route path="/category/list" element={<Admin><CategoryList /></Admin>} />
                         <Route path="/category/image/add" element={<Admin><CategoryImageAdd /></Admin>} />
                         <Route path="/category/image/list" element={<Admin><CategoryImageList /></Admin>} />
+                        {/* 지역 */}
+                        <Route path="/place/image/add" element={<Admin><PlaceImageAdd /></Admin>} />
+                        <Route path="/place/image/list" element={<Admin><PlaceImageList /></Admin>} />
                         {/* 배너 */}
                         <Route path="/banner/add" element={<Admin><BannerAdd /></Admin>} />
                         <Route path="/banner/list" element={<Admin><BannerList /></Admin>} />
