@@ -352,15 +352,12 @@ export default function MemberChange() {
         // checkMemberNickname();
         // console.log("전화번호: ", editable.memberEmail);
         if (editable.memberPost === false) {
-            // toast.error("올바르지 않은 전화번호 형식");
             cancelMemberPost();
         }
         if (editable.memberAddress1 === false) {
-            // toast.error("올바르지 않은 전화번호 형식");
             cancelMemberPost();
         }
         if (editable.memberAddress2 === false) {
-            // toast.error("올바르지 않은 전화번호 형식");
             cancelMemberPost();
         }
         console.log("axios.patch 실행 직전");
@@ -377,14 +374,19 @@ export default function MemberChange() {
             toast.success("변경사항이 적용되었습니다");
             setBackup({
                 ...backup,
-                memberPost: member.memberPost
+                memberPost: member.memberPost,
+                memberAddress1: member.memberAddress1,
+                memberAddress2: member.memberAddress2
             });
             changeMemberPostEditable(false);
         }).catch(err => {
             toast.error("변경과정에서 오류가 발생");
             setMember({
                 ...member,
-                memberPost: backup.memberPost
+                memberPost: backup.memberPost,
+                memberAddress1: member.memberAddress1,
+                memberAddress2: member.memberAddress2
+
             });
             changeMemberPostEditable(false);
         });
@@ -661,8 +663,8 @@ export default function MemberChange() {
     const [memberProfile, setMemberProfile] = useState({
         memberId: "",
         attachmentNo: "",
-        profileName: "",
-        profileLink: ""
+        attachmentName: "",
+        attachmentType: ""
     });
 
     const changeFile = useCallback((e) => {
@@ -680,11 +682,13 @@ export default function MemberChange() {
     //     }
     //     return formData;
     // };
-    const buildFormData = useCallback( () => {
+    const buildFormData = useCallback(() => {
         const formData = new FormData();
         formData.append("memberId", member?.memberId);
         return formData;
     }, [member]);
+
+    // const [file, setFile] = useState(null);
 
     const sendData = useCallback(() => {
 
@@ -694,7 +698,8 @@ export default function MemberChange() {
         }
 
         const formData = buildFormData();
-
+        //파일추가
+        formData.append("attach", memberProfile.attach);
 
 
         axios.post("http://localhost:8080/memberProfile/add", formData, {
@@ -709,7 +714,7 @@ export default function MemberChange() {
                 console.error(err);
                 toast.error("프로필 등록 실패");
             });
-    }, [memberProfile, navigate]);
+    }, [memberProfile, buildFormData]);
 
 
     return (<>
