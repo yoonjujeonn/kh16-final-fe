@@ -1,15 +1,19 @@
 import { useCallback, useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { FaPlus } from "react-icons/fa6";
+import { useNavigate, useLocation } from "react-router-dom";
+import { FaPlus, FaPen } from "react-icons/fa6";
 
 export default function CategoryImageAdd() {
 
     const navigate = useNavigate();
+    const location = useLocation();
+
+    // 수정 모드 여부
+    const editCategoryNo = location.state?.categoryNo || "";
 
     const [categoryList, setCategoryList] = useState([]);
-    const [categoryNo, setCategoryNo] = useState("");
+    const [categoryNo, setCategoryNo] = useState(editCategoryNo);
     const [file, setFile] = useState(null);
 
     useEffect(() => {
@@ -37,15 +41,17 @@ export default function CategoryImageAdd() {
             withCredentials: true
         })
             .then(() => {
-                toast.success("카테고리 이미지 등록 완료");
+                toast.success(editCategoryNo ? "이미지 수정 완료" : "이미지 등록 완료");
                 navigate("/category/image/list");
             })
-            .catch(() => toast.error("카테고리 이미지 등록 실패"));
-    }, [categoryNo, file, navigate]);
+            .catch(() => toast.error("카테고리 이미지 처리 실패"));
+    }, [categoryNo, file, navigate, editCategoryNo]);
 
     return (
         <>
-            <h2 className="my-4">카테고리 이미지 등록</h2>
+            <h2 className="my-4">
+                {editCategoryNo ? "카테고리 이미지 수정" : "카테고리 이미지 등록"}
+            </h2>
 
             <div className="row mt-4">
                 <label className="col-sm-3 col-form-label">카테고리 *</label>
@@ -53,6 +59,7 @@ export default function CategoryImageAdd() {
                     <select
                         className="form-select"
                         value={categoryNo}
+                        disabled={!!editCategoryNo}
                         onChange={e => setCategoryNo(e.target.value)}
                     >
                         <option value="">선택</option>
@@ -80,7 +87,8 @@ export default function CategoryImageAdd() {
             <div className="row mt-4">
                 <div className="col text-end">
                     <button className="btn btn-success" onClick={sendData}>
-                        <FaPlus className="me-2" />등록
+                        {editCategoryNo ? <FaPen className="me-2" /> : <FaPlus className="me-2" />}
+                        {editCategoryNo ? "수정" : "등록"}
                     </button>
                 </div>
             </div>
