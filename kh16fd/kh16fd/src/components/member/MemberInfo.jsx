@@ -50,7 +50,7 @@ export default function MemberInfo() {
             <div className="col">
                 <Link className="btn btn-secondary me-2" to="/member/info/change">내정보 변경</Link>
                 {/* 이거는 조건 따져서 가리면 됨 */}
-                <Link className="btn btn-secondary me-2" to="/member/info/pay/:paymentNo">결제내역</Link>
+                <Link className="btn btn-secondary me-2" to="/member/info/reservation">나의 예약/결제</Link>
                 <Link className="btn btn-secondary me-2" to="/member/info/review">나의 리뷰</Link>
                 <Link className="btn btn-secondary me-2" to="/member/info/wishlist">위시리스트</Link>
             </div>

@@ -32,6 +32,7 @@ import CategoryImageList from "./admin/category/CategoryImageList";
 import ReservationDetail from "./reservation/ReservationDetail";
 import MyWishList from "./wishlist/MyWishList";
 import ReviewManager from "./admin/ReviewManager";
+import MyReservationList from "./reservation/MyReservationList";
 
 export default function Content() {
 
@@ -55,6 +56,7 @@ export default function Content() {
                         <Route path="/member/info/change" element={<MemberChange />} />
                         <Route path="/member/info/review" element={<MyReviewList />} />
                         <Route path="/member/info/wishlist" element={<MyWishList />} />
+                        <Route path="/member/info/reservation" element={<MyReservationList />} />
 
                         {/* 식당 등록 */}
                         <Route path="/restaurant/add" element={<RestaurantAddByStep />}></Route>
