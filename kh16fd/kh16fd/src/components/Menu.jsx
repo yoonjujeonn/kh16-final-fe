@@ -136,6 +136,9 @@ export default function Menu() {
                                     <Link className="dropdown-item" to="/category/image/list">
                                         <FaTag className="me-2" />카테고리 이미지 관리
                                     </Link>
+                                    <Link className="dropdown-item" to="/place/image/list">
+                                        <FaTag className="me-2" />지역 이미지 관리
+                                    </Link>
                                     <Link className="dropdown-item" to="/banner/list">
                                         <FaTag className="me-2" />배너 관리
                                     </Link>
