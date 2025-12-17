@@ -7,13 +7,15 @@ import { FaBookmark, FaPhone, FaPhoneAlt, FaPhoneSlash, FaRegBookmark, FaStar } 
 import { IoIosArrowDown, IoIosCall } from "react-icons/io";
 import { useAtom } from "jotai";
 import { loginIdState } from "../../utils/jotai";
+import { result } from "lodash";
 
 export default function RestaurantDetail() {
     const [restaurant, setRestaurant] = useState(null);
+    const [moreInfo, setMoreInfo] = useState(null);
     const { restaurantId } = useParams();
 
     // wishlist 관련 state
-    const[loginId] = useAtom(loginIdState);
+    const [loginId] = useAtom(loginIdState);
     const [isWish, setIsWish] = useState(false);
     const [wishCount, setWishCount] = useState(0);
 
@@ -78,11 +80,11 @@ export default function RestaurantDetail() {
                 memberId: loginId,
                 restaurantId: restaurantId
             });
-            
+
             // 서버에서 받은 최신 상태와 개수로 UI 업데이트
             setIsWish(response.data.isWish);
             setWishCount(response.data.count);
-            
+
             if (response.data.isWish) {
                 toast.success("저장되었습니다.");
             } else {
@@ -100,98 +102,117 @@ export default function RestaurantDetail() {
     }, [checkWish]);
 
     useEffect(() => {
-        if (!restaurant) return;
+        if (!restaurant?.restaurantAddress) return;
 
         const placeService = new kakao.maps.services.Places();
+        const geocoder = new kakao.maps.services.Geocoder();
 
-        const option = {
-            location: new kakao.maps.LatLng(restaurant.restaurantAddressY, restaurant.restaurantAddressX),
-            radius: 1000,
-            sort: kakao.maps.services.SortBy.DISTANCE
-        };
-
-        placeService.keywordSearch("지하철역", (data, status) => {
-            if (status === kakao.maps.services.Status.OK) {
-                const stationsMap = {};
-
-                data.forEach(place => {
-                    const tokens = place.place_name.split(" ");
-                    const name = tokens[0];
-                    const lineRaw = tokens[1] || "";
-
-                    // '역'으로 끝나지 않으면 skip
-                    if (!name.endsWith("역")) return;
-
-                    // 호선 처리
-                    let lineName = "";
-                    let lineColorKey = "";
-
-                    const numberMatch = lineRaw.match(/\d+/);
-                    if (numberMatch) {
-                        lineName = numberMatch[0];
-                        lineColorKey = lineRaw;
-                    }
-                    else if (lineRaw.includes("공항철도")) {
-                        lineName = "공항";
-                        lineColorKey = lineRaw;
-                    }
-                    else {
-                        lineName = lineRaw.endsWith("선") ? lineRaw.slice(0, -1) : lineRaw;
-                        lineColorKey = lineRaw;
-                    }
-
-                    // 역별 데이터 병합
-                    if (!stationsMap[name]) {
-                        stationsMap[name] = {
-                            name, lines: [],
-                            lineColorKeys: [],
-                            distance: place.distance
-                        };
-                    }
-
-                    if (!stationsMap[name].lines.includes(lineName)) {
-                        stationsMap[name].lines.push(lineName);
-                        stationsMap[name].lineColorKeys.push(lineColorKey); // 색상 저장
-                    }
-                });
-
-
-                // 거리 기준 정렬
-                const stations = Object.values(stationsMap).sort((a, b) => a.distance - b.distance);
-                const closestStation = stations[0];
-
-                if (!closestStation) {
+        geocoder.addressSearch(
+            restaurant.restaurantAddress,
+            function (result, gStatus) {
+                if (gStatus !== kakao.maps.services.Status.OK) {
                     setDistance(restaurant.restaurantAddress);
                     setline([]);
                     return;
                 }
 
-                // line 배열을 {name, colorKey} 객체로 저장
-                const lineData = closestStation.lines.map((name, idx) => ({
-                    name,
-                    colorKey: closestStation.lineColorKeys[idx] // 미리 저장된 색상 키
-                }));
+                const addressY = result[0].y;
+                const addressX = result[0].x;
 
-                const isFar = closestStation.distance > 1000;
+                const option = {
+                    location: new kakao.maps.LatLng(addressY, addressX),
+                    radius: 1000,
+                    sort: kakao.maps.services.SortBy.DISTANCE
+                };
 
-                // 거리 표시
-                setDistance(isFar ? restaurant.restaurantAddress : `${closestStation.name}에서 ${closestStation.distance}m`);
+                placeService.keywordSearch("지하철역", (data, status) => {
+                    if (status !== kakao.maps.services.Status.OK) {
+                        setDistance(restaurant.restaurantAddress);
+                        setline([]);
+                        return;
+                    }
 
-                // 호선 배열 저장
-                setline(lineData);
+                    const stationsMap = {};
 
-            } else {
-                setDistance(restaurant.restaurantAddress);
-                setline([]);
+                    data.forEach(place => {
+                        if (!place.distance) return; 
+
+                        const tokens = place.place_name.split(" ");
+                        const name = tokens[0];
+                        const lineRaw = tokens[1] || "";
+
+                        if (!name.endsWith("역")) return;
+
+                        if (!stationsMap[name]) {
+                            stationsMap[name] = {
+                                name,
+                                lines: [],
+                                lineColorKeys: [],
+                                distance: Number(place.distance)
+                            };
+                        }
+
+                        // 호선 파싱
+                        let lineName = "";
+                        let lineColorKey = "";
+
+                        const numberMatch = lineRaw.match(/\d+/);
+                        if (numberMatch) {
+                            lineName = numberMatch[0];
+                            lineColorKey = lineRaw;
+                        } else if (lineRaw.includes("공항철도")) {
+                            lineName = "공항";
+                            lineColorKey = lineRaw;
+                        } else {
+                            lineName = lineRaw.endsWith("선") ? lineRaw.slice(0, -1) : lineRaw;
+                            lineColorKey = lineRaw;
+                        }
+
+                        if (!stationsMap[name].lines.includes(lineName)) {
+                            stationsMap[name].lines.push(lineName);
+                            stationsMap[name].lineColorKeys.push(lineColorKey);
+                        }
+                    });
+
+                    const stations = Object.values(stationsMap)
+                        .sort((a, b) => a.distance - b.distance);
+
+                    const closestStation = stations[0];
+
+                    if (!closestStation) {
+                        setDistance(restaurant.restaurantAddress);
+                        setline([]);
+                        return;
+                    }
+
+                    const isFar = closestStation.distance > 1000;
+
+                    setDistance(
+                        isFar
+                            ? restaurant.restaurantAddress
+                            : `${closestStation.name}에서 ${closestStation.distance}m`
+                    );
+
+                    setline(
+                        closestStation.lines.map((name, idx) => ({
+                            name,
+                            colorKey: closestStation.lineColorKeys[idx]
+                        }))
+                    );
+
+                }, option);
             }
-        }, option);
+        );
     }, [restaurant]);
 
     const loadData = useCallback(async () => {
         try {
             const { data } = await axios.get(`/restaurant/detail/${restaurantId}`);
-            console.log(data);
-            setRestaurant(data);
+            const {restaurantDto, ...rest} = data;
+
+            console.log(rest);
+            setRestaurant(restaurantDto);
+            setMoreInfo(rest);
         }
         catch (err) {
             toast.error("요청이 정상적으로 처리되지 않았습니다");
@@ -212,6 +233,7 @@ export default function RestaurantDetail() {
         return "휴무일";
     }, [today, restaurant]);
 
+    console.log(restaurant);
 
     if (restaurant === null) {
         return (
@@ -233,8 +255,8 @@ export default function RestaurantDetail() {
                     <img src={`http://localhost:8080/restaurant/image/${restaurantId}`} className="w-100 mb-4" />
                     <h1>{restaurant.restaurantName}</h1>
                     <div className="review-info-wrapper d-flex">
-                        <span className="d-flex align-items-center"><FaStar className="text-warning me-2" />{restaurant.restaurantAvgRating.toFixed(1)}</span>
-                        <span className="ms-2">  ·  리뷰 0개 ＞</span>
+                        <span className="d-flex align-items-center"><FaStar className="text-warning me-2" />{moreInfo.restaurantAvgRating.toFixed(1)}</span>
+                        <span className="ms-2">  ·  리뷰 <span>{moreInfo.reviewCount}</span>개 ＞</span>
                     </div>
                     <div className="mt-2">{restaurant.restaurantDescription}</div>
                     <hr />
@@ -265,14 +287,14 @@ export default function RestaurantDetail() {
                 </div>
             </div>
             <div className="row p-2 bg-white border">
-                    <div className="d-flex justify-content-between">
-                        <div className="divst-group-item">홈</div>
-                        <div className="divst-group-item">소식</div> 
-                        <div className="divst-group-item">메뉴</div> 
-                        <div className="divst-group-item">사진</div> 
-                        <Link to={`/restaurant/detail/${restaurantId}/review`}>리뷰</Link>
-                        <div className="divst-group-item">매장정보</div> 
-                    </div>    
+                <div className="d-flex justify-content-between">
+                    <div className="divst-group-item">홈</div>
+                    <div className="divst-group-item">소식</div>
+                    <div className="divst-group-item">메뉴</div>
+                    <div className="divst-group-item">사진</div>
+                    <Link to={`/restaurant/detail/${restaurantId}/review`}>리뷰</Link>
+                    <div className="divst-group-item">매장정보</div>
+                </div>
             </div>
             <Outlet />
             <div className="row p-4 border">
@@ -307,7 +329,7 @@ export default function RestaurantDetail() {
                     <h3>메뉴...</h3>
                 </div>
             </div>
-            
+
             <div className="row mt-4 border p-4">
                 <div className="col">
                     <h3>사진 ...</h3>
@@ -317,9 +339,9 @@ export default function RestaurantDetail() {
             <div className="row mt-4 p-2">
                 <div className="col d-flex">
                     <div className="more-info-wrapper d-flex mt-2">
-                        <span 
-                            className="d-flex flex-column align-items-center" 
-                            onClick={toggleWish} 
+                        <span
+                            className="d-flex flex-column align-items-center"
+                            onClick={toggleWish}
                             style={{ cursor: "pointer", userSelect: "none" }}
                         >
                             {isWish ? (
@@ -330,10 +352,10 @@ export default function RestaurantDetail() {
                             <span style={{ fontSize: "0.8rem", marginTop: "2px" }}>
                                 {wishCount} {/* 실시간 저장 개수 */}
                             </span>
-                         </span>
+                        </span>
                         <span className="ms-3 d-flex flex-column align-items-center"><FaPhoneAlt className="fs-4" />전화</span>
                     </div>
-                        <button className="ms-4 btn btn-primary rounded-pill" style={{width : "80%"}}>예약하기</button>
+                    <button className="ms-4 btn btn-primary rounded-pill" style={{ width: "80%" }}>예약하기</button>
                 </div>
             </div>
 

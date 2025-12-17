@@ -308,19 +308,33 @@ export default function RestaurantList() {
             cancelButtonColor: "#ff7675",
         });
         const info = {
-            reservationTarget : selectedSeat.seatRestaurantId,
-            reservationSeat : selectedSeat.seatId,
-            reservationPeopleCount : peopleCount,
-            reservationTime : slotTime,
-            selectedRestaurant : selectedRestaurant.restaurantName,
-            selectedSeat : selectedSeat.seatType
+            reservationTarget: selectedSeat.seatRestaurantId,
+            reservationSeat: selectedSeat.seatId,
+            reservationPeopleCount: peopleCount,
+            reservationTime: slotTime,
+            selectedRestaurant: selectedRestaurant.restaurantName,
+            selectedSeat: selectedSeat.seatType
         }
-        if(choice.isConfirmed) {
+        if (choice.isConfirmed) {
             closeModal();
-            navigate("/reservation/add", { state : info});
+            navigate("/reservation/add", { state: info });
         }
 
     }, [slotTime, selectedSeat, peopleCount, selectedRestaurant]);
+
+    const clearData = useCallback(() => {
+        setPeopleCount(0);
+        setSelectedRestaurant("");
+        setSelectedSeat("");
+        setSlotTime(null);
+        setSlotDate(null);
+        setAvailableSeatList([]);
+    }, []);
+
+    const closeAndClearData = useCallback(() => {
+        clearData();
+        closeModal();
+    }, [modal]);
 
     return (
         <>
@@ -342,7 +356,13 @@ export default function RestaurantList() {
                                                     <span className="badge bg-primary">{restaurant.categoryName}</span>
                                                 </div>
                                                 <div className="review-info-wrapper mt-2 d-flex">
-                                                    <span className="d-flex align-items-center"><FaStar className="text-warning me-1" /><span className="fw-bold me-1">{restaurant.restaurantAvgRating}</span>({restaurant.reviewCount})</span>
+                                                    <span className="d-flex align-items-center">
+                                                        <FaStar className="text-warning me-1" />
+                                                        <span className="fw-bold me-1">
+                                                            {(restaurant.restaurantAvgRating ?? 0).toFixed(1)}
+                                                        </span>
+                                                        ({restaurant.reviewCount})
+                                                    </span>
                                                 </div>
                                                 <div className="price-wrapper mt-2">
                                                     <span>점심 ? 원</span>  ·  <span>저녁 ? 원 </span>
@@ -388,7 +408,7 @@ export default function RestaurantList() {
                 <div className="modal-dialog">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <button className="btn-close" onClick={closeModal}></button>
+                            <button className="btn-close" onClick={closeAndClearData}></button>
                         </div>
                         <div className="modal-body">
                             <div className="row">
@@ -463,7 +483,7 @@ export default function RestaurantList() {
                                 </div>)}
                         </div>
                         <div className="modal-footer">
-                            <button className={`ms-2 btn btn-primary`} onClick={closeModal}>닫기</button>
+                            <button className={`ms-2 btn btn-primary`} onClick={closeAndClearData}>닫기</button>
                         </div>
                     </div>
                 </div>
