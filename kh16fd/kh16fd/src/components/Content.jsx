@@ -37,6 +37,7 @@ import PlaceImageAdd from "./admin/place/PlaceImageAdd";
 import PlaceImageList from "./admin/place/PlaceImageList";
 import RestaurantConfirm from "./admin/restaurant/RestaurantConfirm"
 import RestaurantMenu from "./restaurant/RestaurantMenu";
+import RestaurantConfirmDetail from "./admin/restaurant/RestaurantConfirmDetail";
 
 export default function Content() {
 
@@ -88,6 +89,7 @@ export default function Content() {
                         <Route path="/admin/setting" element={<Admin><AdminSetting /></Admin>} />
                         <Route path="/admin/review/list" element={<Admin><ReviewManager /></Admin>} />
                         <Route path="/admin/restaurant" element={<Admin><RestaurantConfirm/></Admin>} />
+                        <Route path="/admin/restaurant/:restaurantId" element={<Admin><RestaurantConfirmDetail/></Admin>} />
                         
                         {/* 카테고리 */}
                         <Route path="/category/add" element={<Admin><CategoryAdd /></Admin>} />

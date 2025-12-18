@@ -2,8 +2,9 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Jumbotron from "../../templates/Jumbotron";
 import { throttle } from "lodash";
 import axios from "axios";
+import { Link } from "react-router-dom";
 
-export default function AdminSetting() { 
+export default function RestaurantConfirm() {
 
     //state
     //목록
@@ -37,12 +38,12 @@ export default function AdminSetting() {
             // console.log("현재 스크롤 위치:" + percent);
 
             //맨 아래에서 위로 올라간 경우
-            if(beforePercent === 100 && beforePercent > percent) {
+            if (beforePercent === 100 && beforePercent > percent) {
                 loading.current = false;
             }
-            
-            if(percent === 100 && loading.current === false) {
-                setPage(prev=>prev+1); //page를 직전값 + 1 로 변경 (=다음페이지)
+
+            if (percent === 100 && loading.current === false) {
+                setPage(prev => prev + 1); //page를 직전값 + 1 로 변경 (=다음페이지)
             }
             beforePercent = percent;
         }, 500);
@@ -113,7 +114,7 @@ export default function AdminSetting() {
         // 스크롤 가능한 실제 최대 높이 (전체 높이 - 보이는 높이)
         const scrollableHeight = scrollHeight - clientHeight;
 
-        if(scrollableHeight - scrollTop < 1) {
+        if (scrollableHeight - scrollTop < 1) {
             return 100;
         }
 
@@ -136,7 +137,9 @@ export default function AdminSetting() {
                         <li className="list-group-item" key={restaurant.restaurantId}>
                             <div className="p-4 shadow rounded">
                                 <div className="fs-2 d-flex align-items-center">
-                                    <span className="badge text-bg-primary" >{restaurant.restaurantName}</span>
+                                    <Link to={`/admin/restaurant/${restaurant.restaurantId}`}>
+                                        <span className="badge text-bg-primary" >{restaurant.restaurantName}</span>
+                                    </Link>
                                     <span className="ms-4">{restaurant.ownerId}</span>
                                     <span className="text-muted ms-2">{restaurant.restaurantCreatedAt}</span>
                                 </div>
