@@ -2,7 +2,7 @@ import axios from "axios";
 import { useAtom } from "jotai";
 import { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { accessTokenState, loginIdState, loginLevelState, refreshTokenState } from "../../utils/jotai";
+import { accessTokenState, attachmentProfileAtomState, loginIdState, loginLevelState, refreshTokenState } from "../../utils/jotai";
 import Jumbotron from "../templates/Jumbotron";
 
 export default function MemberLogin() {
@@ -11,6 +11,8 @@ export default function MemberLogin() {
     const [loginLevel, setLoginLevel] = useAtom(loginLevelState); //읽기, 쓰기 가능(atom)
     const [accessToken, setAccessToken] = useAtom(accessTokenState); //읽기, 쓰기 가능(atom)
     const [refreshToken, setRefreshToken] = useAtom(refreshTokenState); //읽기, 쓰기 가능(atom)
+    const [profileNo, setProfileNo] = useAtom(attachmentProfileAtomState);
+
 
     //state
     const [member, setMember] = useState({
@@ -29,6 +31,19 @@ export default function MemberLogin() {
         setMember(prev => ({ ...prev, [name]: value }));
     }, []);
 
+    const findProfile = useCallback(async (targetId) => {
+        if(!targetId) return;
+        try {
+            // const { data } = await axios.get(`http://192.168.20.21:8080/memberProfile/${loginId}`);
+            const { data } = await axios.get(`http://localhost:8080/memberProfile/${targetId}`);
+            setProfileNo(data.attachmentNo);
+            console.log("프로필 번호 저장 완료:", data.attachmentNo);
+        } catch (err){
+            setResult(false);
+            console.log("프로필 조회 실패:", err);
+        }
+    }, []);
+
     //로그인
     const sendLogin = useCallback(async () => {
         try {
@@ -36,6 +51,7 @@ export default function MemberLogin() {
             setResult(true);
             setLoginId(data.loginId);
             setLoginLevel(data.loginLevel);
+            // setProfileNo()
             console.log(data);
             //data에 있는 accessToken을 axios에 설정
             // - axios의 기본 설정 중에서 헤더(header)의 Authorization 이름에 토큰값을 설정
@@ -44,6 +60,7 @@ export default function MemberLogin() {
             // - 그 외에도 Basic, Admin, Digest, ApiKey 등이 존재 (생성 가능 ... 카카오는 KakaoAK 를 사용)
             axios.defaults.headers.common["Authorization"] = `Bearer ${data.accessToken}`;
             
+            await findProfile(data.loginId);
             //새로고침 시에도 accessToken이 유지되도록 처리하는 방법
             //1. jotai state로 저장하는 방법(비교적 간단하지만 보안상 취약점 존재) --- 프론트엔드에서 해결
             //2. 서버에서 서버 전용 쿠키를 사용하는 방법 --- 백엔드에서 해결
@@ -58,7 +75,7 @@ export default function MemberLogin() {
             // setLoginId(data에 담긴 loginId)
             // setLoginLevel(data에 담긴 loginLevel)
         }
-    }, [member]);
+    }, [member, findProfile]);
 
     return (
         <>
