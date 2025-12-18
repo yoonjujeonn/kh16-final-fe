@@ -35,6 +35,7 @@ import ReviewManager from "./admin/ReviewManager";
 import MyReservationList from "./reservation/MyReservationList";
 import PlaceImageAdd from "./admin/place/PlaceImageAdd";
 import PlaceImageList from "./admin/place/PlaceImageList";
+import RestaurantMenu from "./restaurant/RestaurantMenu";
 
 export default function Content() {
 
@@ -71,6 +72,8 @@ export default function Content() {
                             <Route path="review" element={<ReviewList />} />
                             <Route path="review/write" element={<ReviewWrite />} />
                             <Route path="review/edit/:reviewNo" element={<ReviewEdit />} />
+                            {/* 메뉴 */}
+                            <Route path="menu" element={<RestaurantMenu />} />
                         </Route>
 
                         {/* 검색 */}
