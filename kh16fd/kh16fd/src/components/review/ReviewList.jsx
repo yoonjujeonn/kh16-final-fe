@@ -24,6 +24,8 @@ export default function ReviewList() {
     const max_length = 150;
     const [expandedReviews, setExpandedReviews] = useState({});
 
+    const [profileMap, setProfileMap] = useState({});
+
     const toggleExpand = useCallback((reviewNo) => {
         setExpandedReviews(prev => ({
             ...prev,
@@ -36,6 +38,14 @@ export default function ReviewList() {
         try {
             const response = await axios.get(`http://localhost:8080/restaurant/detail/${restaurantId}/review/`);
             setReviews(response.data);
+
+            const ids = [...new Set(response.data.map(r => r.memberId))];
+            ids.forEach(async (id) => {
+                try {
+                    const res = await axios.get(`http://localhost:8080/memberProfile/${id}`);
+                    setProfileMap(prev => ({ ...prev, [id]: res.data.attachmentNo }));
+                } catch (e) { }
+            });
         }
         catch (err) {
             toast.error("리뷰 목록 로딩 실패");
@@ -85,6 +95,7 @@ export default function ReviewList() {
         // 백엔드에서 '/attachment/{파일번호}'로 이미지 파일을 제공한다고 가정합니다.
         return `http://localhost:8080/attachment/${attachmentNo}`;
     };
+    const getUrl = (no) => no ? `http://localhost:8080/attachment/${no}` : "https://dummyimage.com/100/ccc/fff&text=no";
 
     if (loading) {
         return <div className="text-center p-5">리뷰 목록을 불러오는 중...</div>;
@@ -127,72 +138,47 @@ export default function ReviewList() {
 
                     return (
 
-                        <li key={review.reviewNo}
-                            className="py-3" // 상하 패딩 (구분선과의 간격 확보)
-                            style={{
-                                borderBottom: isLast ? 'none' : '1px solid #e0e0e0'
-                            }} // 얇은 회색 구분선 추가
-                        >
-                            <div>
-                                <div className="d-flex align-items-center mb-1">
+                        <li key={review.reviewNo} className="py-4 border-bottom">
+                            {/* 1. 프로필 상단 영역 */}
+                            <div className="d-flex align-items-center mb-2">
+                                <img src={getUrl(profileMap[review.memberId])} className="rounded-circle border me-2" style={{ width: "35px", height: "35px", objectFit: "cover" }} />
+                                <span className="fw-bold me-2">{review.memberId}</span>
+                                {loginId === review.memberId && (
+                                    <div className="d-flex gap-1" style={{ fontSize: '0.85rem' }}>
+                                        <span className="text-muted" style={{ cursor: 'pointer' }}
+                                            onClick={() => navigate(`/restaurant/detail/${restaurantId}/review/edit/${review.reviewNo}`)}>
+                                            수정
+                                        </span>
+                                        <span className="text-danger" style={{ cursor: 'pointer' }} onClick={() => handleDelete(review.reviewNo)} >
+                                            삭제
+                                        </span>
+                                    </div>
+                                )}
+                            </div>
 
-                                    {/* 닉네임, 별점 부분 */}
-                                    <h5 className="mb-0 me-3">
-                                        {review.memberId} (<FaStar color="#ffc107" /> {review.reviewRating})
-                                    </h5>
-
-                                    {/* 수정/삭제 버튼 그룹 */}
-                                    {loginId && loginId === review.memberId && (
-                                        <div className="d-flex gap-2">
-                                            <button
-                                                className="btn btn-sm btn-outline-secondary"
-                                                onClick={() => navigate(`/restaurant/detail/${restaurantId}/review/edit/${review.reviewNo}`)}
-                                            >
-                                                수정
-                                            </button>
-                                            <button
-                                                className="btn btn-sm btn-outline-danger"
-                                                onClick={() => handleDelete(review.reviewNo)}
-                                            >
-                                                삭제
-                                            </button>
-                                        </div>
-                                    )}
+                            {/* 2. 점수 및 날짜 */}
+                            <div className="d-flex justify-content-between align-items-center mb-3">
+                                <div className="text-warning fw-bold">
+                                    <FaStar className="me-1" />{review.reviewRating.toFixed(1)}
                                 </div>
-                                <p className="mt-2 mb-0">
-                                    {displayContent}
-                                </p>
-
-                                {hasAttachment && (
-                                    <div className="mb-3">
-                                        <img
-                                            src={getImageUrl(attachmentNo)}
-                                            alt={`리뷰 이미지 ${review.reviewNo}`}
-                                            className="img-fluid rounded shadow-sm"
-                                            style={{ maxWidth: "150px", height: "auto" }} // 크기 제한 설정
-                                        />
-                                    </div>
-                                )}
-
-                                {/* [추가] 더보기/접기 버튼을 오른쪽 끝에 배치하기 위한 <div> */}
-                                {isLong && (
-                                    <div className="text-end mt-2">
-                                        <button
-                                            className="text-secondary"
-                                            style={{ background: 'none', border: 'none', cursor: 'pointer' }}
-                                            onClick={() => toggleExpand(review.reviewNo)}
-                                        >
-                                            {isExpanded ? '접기' : '더보기'}
-                                            <span className="ms-1">
-                                                {isExpanded ?
-                                                    <MdExpandLess /> : // 위쪽 화살표 (접기 상태)
-                                                    <MdExpandMore />  // 아래쪽 화살표 (더보기 상태)
-                                                }
-                                            </span>
-                                        </button>
-                                    </div>
-                                )}
                                 <small className="text-muted">{formattedCreatedAt}</small>
+                            </div>
+
+                            {/* 3. 리뷰 이미지 (본문 위) */}
+                            {hasAttachment && (
+                                <div className="mb-3">
+                                    <img src={getUrl(review.reviewAttachmentNo)} className="rounded shadow-sm" style={{ width: "120px", height: "120px", objectFit: "cover" }} />
+                                </div>
+                            )}
+
+                            {/* 4. 리뷰 텍스트 */}
+                            <div style={{ whiteSpace: "pre-wrap" }}>
+                                {displayContent}
+                                {content.length > max_length && (
+                                    <button className="btn btn-link btn-sm text-secondary p-0 ms-1 shadow-none" onClick={() => toggleExpand(review.reviewNo)}>
+                                        {isExpanded ? <><MdExpandLess />접기</> : <><MdExpandMore />더보기</>}
+                                    </button>
+                                )}
                             </div>
                         </li>
                     );
