@@ -154,7 +154,7 @@ export default function Menu() {
                         )}
                     </ul>
 
-                    {/* 🔍 검색 UI */}
+                    {/* 검색 UI */}
                     <div className="input-group flex-grow-1 ms-3">
                         <input
                             className="form-control"
