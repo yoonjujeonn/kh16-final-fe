@@ -35,11 +35,12 @@ import ReviewManager from "./admin/ReviewManager";
 import MyReservationList from "./reservation/MyReservationList";
 import PlaceImageAdd from "./admin/place/PlaceImageAdd";
 import PlaceImageList from "./admin/place/PlaceImageList";
+import RestaurantConfirm from "./admin/restaurant/RestaurantConfirm"
 import RestaurantMenu from "./restaurant/RestaurantMenu";
 
 export default function Content() {
 
-    return (
+    return ( 
         <>
             <div className="row">
                 <div className="col-md-10 offset-md-1 col-sm-12">
@@ -86,6 +87,8 @@ export default function Content() {
                         {/* 관리자 */}
                         <Route path="/admin/setting" element={<Admin><AdminSetting /></Admin>} />
                         <Route path="/admin/review/list" element={<Admin><ReviewManager /></Admin>} />
+                        <Route path="/admin/restaurant" element={<Admin><RestaurantConfirm/></Admin>} />
+                        
                         {/* 카테고리 */}
                         <Route path="/category/add" element={<Admin><CategoryAdd /></Admin>} />
                         <Route path="/category/list" element={<Admin><CategoryList /></Admin>} />
