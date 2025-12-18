@@ -89,6 +89,8 @@ export function buildAvailableSlots({ restaurant, slotDate, peopleCount }) {
 
   let openTime = parseTimeWithDate(restaurant.restaurantOpen, slotDate, false);
   const endTime = parseTimeWithDate(restaurant.restaurantLastOrder, slotDate, true);
+  const breakStart = parseTimeWithDate(restaurant.restaurantBreakStart, slotDate, false);
+  const breakEnd = parseTimeWithDate(restaurant.restaurantBreakEnd, slotDate, false);
 
   let currentTime = openTime;
 
@@ -108,9 +110,14 @@ export function buildAvailableSlots({ restaurant, slotDate, peopleCount }) {
       continue;
     }
 
+    if (breakStart && breakEnd && currentTime >= breakStart && currentTime < breakEnd) {
+      currentTime = breakEnd; // 브레이크 끝으로 건너뛰기
+      continue;
+    }
+    
     slots.push({
       timeStr: format(currentTime, "HH:mm"),
-      isAvailable: peopleCount <= restaurant.seatMaxPeople,
+      isAvailable: peopleCount <= restaurant.restaurantMaxPeople,
     });
 
     currentTime = addMinutes(currentTime, restaurant.reservationInterval || 30);
