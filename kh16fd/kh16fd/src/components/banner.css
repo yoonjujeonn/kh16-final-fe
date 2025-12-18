@@ -9,8 +9,11 @@
     border-radius: 8px;
 }
 
-.swiper-button-prev,
-.swiper-button-next {
+.swiper-slide:hover {
+    filter: brightness(0.9);
+}
+
+.swiper-button-prev,.swiper-button-next {
     width: 36px;
     height: 36px;
     border-radius: 50%;
