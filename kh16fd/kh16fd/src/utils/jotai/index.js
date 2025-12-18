@@ -14,7 +14,7 @@ export const loginLevelState = atomWithStorage("loginLevelState", "", sessionSto
 export const accessTokenState = atomWithStorage("accessTokenState", "", sessionStorage);
 
 //refreshToken
-export const refreshTokenState = atomWithStorage("refreshTokenState", "", sessionStorage);
+export const refreshTokenState = atomWithStorage("refreshTokenState", 0, sessionStorage);
 // export const loginState = selector({
 //     key : "loginState",
 //     get: (state) => {
@@ -23,6 +23,9 @@ export const refreshTokenState = atomWithStorage("refreshTokenState", "", sessio
 //         return loginId !== null && loginLevel !== null;
 //     }
 // }); --- recoil
+
+//사진 관련 기능 jotai에 추가(251218 추가됨)
+// export const attachmentProfileAtomState = atomWithStorage('attachmentNo', 0, sessionStorage);
 
 export const loginState = atom(get => {
     const loginId = get(loginIdState);
@@ -52,7 +55,21 @@ export const clearLoginState = atom(
         set(loginLevelState, "");
         set(accessTokenState, "");
         set(refreshTokenState, "");
+        set(attachmentProfileAtomState, 0);
     });
+
+// 1. 순수하게 번호만 저장 (localStorage 연동)
+export const attachmentProfileAtomState = atomWithStorage("profileNo", 0);
+
+// 2. 번호를 기반으로 URL을 계산 (읽기 전용 아톰)
+export const profileImageUrlAtom = atom((get) => {
+    const no = get(attachmentProfileAtomState);
+    if (!no) {
+        return "https://dummyimage.com/300X300/a6a6a6/fff.png&text=no+profile";
+    }
+    return `http://localhost:8080/attachment/${no}?t=${new Date().getTime()}`;
+});
+
 
 //DevTools에서 확인하기 위한 이름 설정
 loginIdState.debugLabel = "loginIdState";
@@ -62,3 +79,5 @@ adminState.debugLabel = "adminState";
 accessTokenState.debugLabel = "accessTokenState";
 refreshTokenState.debugLabel = "refreshTokenState";
 loginCompleteState.debugLabel = "loginCompleteState";
+attachmentProfileAtomState.debugLabel = "attachmentProfileAtomState";
+profileImageUrlAtom.debugLabel = "profileImageAddress";

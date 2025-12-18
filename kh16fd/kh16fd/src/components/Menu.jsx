@@ -100,7 +100,9 @@ export default function Menu() {
                                     <FaUser />
                                 </a>
                                 <div className="dropdown-menu">
-                                    <span className="dropdown-item">{loginId}</span>
+                                    <Link className="dropdown-item" to={`/member/info`}>
+                                        {loginId}
+                                    </Link>
                                     <Link className="dropdown-item" to="/restaurant/add">
                                         <IoRestaurant className="me-2" />식당 등록
                                     </Link>
