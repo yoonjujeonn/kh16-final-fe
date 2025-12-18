@@ -3,7 +3,7 @@ import Jumbotron from "../../templates/Jumbotron";
 import { throttle } from "lodash";
 import axios from "axios";
 
-export default function AdminSetting() { 
+export default function AdminSetting() {
 
     //state
     //목록
