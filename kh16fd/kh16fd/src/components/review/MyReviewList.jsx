@@ -111,7 +111,7 @@ export default function MyReviewList() {
 
     // render
     return (<>
-        <Jumbotron subject={`${loginId} 님의 리뷰`} />
+        {/* <Jumbotron subject={`${loginId} 님의 리뷰`} /> */}
         <h3 className="my-4">내리뷰 ({reviews.length})</h3>
 
         {reviews.length === 0 ? (

@@ -73,7 +73,7 @@ export default function RestaurantMoreInfo({ data, setData, onPrev }) {
 
     const changeStrValue = useCallback(e => {
         const { name, value } = e.target;
-        setBasicInfo(prev => ({
+        setReservationInfo(prev => ({
             ...prev,
             [name]: value
         }));
