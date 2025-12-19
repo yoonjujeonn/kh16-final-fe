@@ -101,12 +101,20 @@ export default function Menu() {
                                     <Link className="dropdown-item" to={`/member/info`}>
                                         {loginId}
                                     </Link>
+
                                     <Link className="dropdown-item" to="/restaurant/add">
                                         <IoRestaurant className="me-2" />식당 등록
                                     </Link>
+
+                                    {/* ⭐ 추가된 부분 */}
+                                    <Link className="dropdown-item" to="/owner/my-restaurant">
+                                        <IoRestaurant className="me-2" />내가 등록한 식당
+                                    </Link>
+
                                     <Link className="dropdown-item" to="/member/info/reservation">
                                         <FaCalendar className="me-2" />나의 예약
                                     </Link>
+
                                     <Link className="dropdown-item" onClick={logout}>
                                         <FaRightToBracket className="me-2" />로그아웃
                                     </Link>
