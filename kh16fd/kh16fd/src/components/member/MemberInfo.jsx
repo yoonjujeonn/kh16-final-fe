@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 
-
 export default function MemberInfo() {
 
 
@@ -57,16 +56,6 @@ export default function MemberInfo() {
     return (<>
         <h1>{loginId} 님의 정보</h1>
 
-        <div className="row mt-4">
-            <div className="col">
-                <Link className="btn btn-secondary me-2" to="/member/info/change">내정보 변경</Link>
-                {/* 이거는 조건 따져서 가리면 됨 */}
-                <Link className="btn btn-secondary me-2" to="/member/info/reservation">나의 예약/결제</Link>
-                <Link className="btn btn-secondary me-2" to="/member/info/review">나의 리뷰</Link>
-                <Link className="btn btn-secondary me-2" to="/member/info/wishlist">위시리스트</Link>
-            </div>
-        </div>
-
         {/* 중첩 라우팅은 당분간 중지 */}
         {/* <div className="row mt-4">
             <div className="col">
@@ -74,45 +63,54 @@ export default function MemberInfo() {
             </div>
         </div> */}
         <div className="container border rounded mt-4 p-4">
-        <div className="row mt-4 fs-2">
-            <div className="col-sm-3 text-primary">프로필 이미지</div>
-            <div className="col-sm-9">
-                <img
-                    src={profileUrl}
-                    className="border rounded"
-                />
+            <div className="row p-2">
+            <div className="d-flex justify-content-between">
+                <Link className="list-group-item text-secondary fs-3" to="/member/info/change">내정보 변경</Link>
+                {/* 이거는 조건 따져서 가리면 됨 */}
+                <Link className="list-group-item text-secondary fs-3" to="/member/info/reservation">나의 예약/결제</Link>
+                <Link className="list-group-item text-secondary fs-3" to="/member/info/review">나의 리뷰</Link>
+                <Link className="list-group-item text-secondary fs-3" to="/member/info/wishlist">위시리스트</Link>
             </div>
         </div>
+        <hr className="my-4"/>
+            <div className="row mt-4 fs-2">
+                <div className="col-sm-3 text-primary">프로필 이미지</div>
+                <div className="col-sm-9">
+                    <img
+                        src={profileUrl}
+                        className="border rounded"
+                    />
+                </div>
+            </div>
+            <div className="row mt-4 fs-2">
+                <div className="col-sm-3 text-primary">닉네임</div>
+                <div className="col-sm-9">{member?.memberNickname}</div>
+            </div>
+            <div className="row mt-4 fs-2">
+                <div className="col-sm-3 text-primary">생년월일</div>
+                <div className="col-sm-9">{member?.memberBirth}</div>
+            </div>
+            <div className="row mt-4 fs-2">
+                <div className="col-sm-3 text-primary">연락처</div>
+                <div className="col-sm-9">{member?.memberContact}</div>
+            </div>
+            <div className="row mt-4 fs-2">
+                <div className="col-sm-3 text-primary">이메일</div>
+                <div className="col-sm-9">{member?.memberEmail}</div>
+            </div>
 
-        <div className="row mt-4 fs-2">
-            <div className="col-sm-3 text-primary">닉네임</div>
-            <div className="col-sm-9">{member?.memberNickname}</div>
-        </div>
-        <div className="row mt-4 fs-2">
-            <div className="col-sm-3 text-primary">생년월일</div>
-            <div className="col-sm-9">{member?.memberBirth}</div>
-        </div>
-        <div className="row mt-4 fs-2">
-            <div className="col-sm-3 text-primary">연락처</div>
-            <div className="col-sm-9">{member?.memberContact}</div>
-        </div>
-        <div className="row mt-4 fs-2">
-            <div className="col-sm-3 text-primary">이메일</div>
-            <div className="col-sm-9">{member?.memberEmail}</div>
-        </div>
-
-        <div className="row mt-4 fs-2">
-            <div className="col-sm-3 text-primary">우편번호</div>
-            <div className="col-sm-9">{member?.memberPost}</div>
-        </div>
-        <div className="row mt-4 fs-2">
-            <div className="col-sm-3 text-primary">기본주소</div>
-            <div className="col-sm-9">{member?.memberAddress1}</div>
-        </div>
-        <div className="row mt-4 fs-2">
-            <div className="col-sm-3 text-primary">상세주소</div>
-            <div className="col-sm-9">{member?.memberAddress2}</div>
-        </div>
+            <div className="row mt-4 fs-2">
+                <div className="col-sm-3 text-primary">우편번호</div>
+                <div className="col-sm-9">{member?.memberPost}</div>
+            </div>
+            <div className="row mt-4 fs-2">
+                <div className="col-sm-3 text-primary">기본주소</div>
+                <div className="col-sm-9">{member?.memberAddress1}</div>
+            </div>
+            <div className="row mt-4 fs-2">
+                <div className="col-sm-3 text-primary">상세주소</div>
+                <div className="col-sm-9">{member?.memberAddress2}</div>
+            </div>
         </div>
     </>)
 }
