@@ -204,7 +204,7 @@ export default function BizMemberJoin() { // MemberJoin -> BizMemberJoin
         }
         catch (err) {
             setCertNumberClass("is-invalid");
-            setCertNumberFeedback("인증번호 형식이 부적합합니다");
+            setCertNumberFeedback("인증번호 형식이 부적합합니다"); 
         }
 
         // console.log(data);

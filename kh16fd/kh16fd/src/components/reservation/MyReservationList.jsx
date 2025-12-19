@@ -221,17 +221,18 @@ export default function MyReservationList() {
 
                                 {/* 하단 버튼 */}
                                 <div className="text-end mt-3">
-                                    {!isCancelled && (
+                                    {item.reservationStatus === '예약완료' && (
                                         <button className="btn btn-outline-danger me-2" onClick={() => handleCancel(item)}>
                                             취소하기
                                         </button>
                                     )}
-                                    {/* <button 
-                                            className="btn btn-outline-primary btn-sm"
-                                            onClick={() => navigate(`/reservation/add/success?reservationId=${item.reservationId}`)}
-                                        >
-                                            상세보기
-                                        </button> */}
+
+                                    {/* (선택사항) 방문완료인 경우에는 '리뷰 쓰기' 버튼 */}
+                                    {/* {item.reservationStatus === '방문완료' && (
+                                        <button className="btn btn-outline-primary" onClick={() => navigate(`/restaurant/detail/${item.reservationTarget}/review/write`)}>
+                                            리뷰 작성
+                                        </button>
+                                    )} */}
                                 </div>
                             </div>
                         </div>
