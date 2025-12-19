@@ -6,6 +6,7 @@ import { Link, useParams } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
+import { FaAsterisk } from "react-icons/fa";
 
 export default function RestaurantAddFinish() {
 
@@ -145,12 +146,13 @@ export default function RestaurantAddFinish() {
         <>
             {!isComplete ? (
                 <>
-                    <Jumbotron
-                        subject="추가 정보 등록"
-                        detail="추가 정보를 입력해주세요(미입력시 승인이 늦어집니다)"
-                        bgColor="secondary"
-                    />
-
+                    <div className="title-wrapper">
+                        <h1>추가 정보 등록하기</h1>
+                        <div className="d-flex justify-content-end">
+                            <span><FaAsterisk className="text-danger me-2"/>미입력 시 승인이 거절될 수 있습니다</span>
+                        </div>
+                    </div>
+                    <hr/>
                     {/* 대표 이미지 */}
                     <div className="row mt-4">
                         <label className="col-sm-3 col-form-label">대표 이미지</label>
@@ -262,10 +264,10 @@ export default function RestaurantAddFinish() {
                 </>
             ) : (
                 <>
-                    <Jumbotron
-                        subject="식당 등록 완료!"
-                        detail="관리자 승인 후 노출됩니다"
-                    />
+                    <div className="title-wrapper text-center">
+                        <h1>식당 등록이 완료되었습니다</h1>
+                        <span>관리자 승인 후 최종 등록됩니다(영업일 기준 2~3일)</span>
+                    </div>
                     <div className="text-center mt-4">
                         <img src="https://i.gifer.com/7efs.gif" alt="완료" />
                         <Link to="/" className="btn btn-primary mt-3">

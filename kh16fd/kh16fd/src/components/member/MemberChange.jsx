@@ -781,8 +781,10 @@ export default function MemberChange() {
 
 
     return (<>
-        <Jumbotron subject={`안녕하세요 ${loginLevel}님`} detail={`${loginId}님의 정보 수정을 진행해 주세요`} />
-
+        <div className="title-wrapper">
+            <h1>내 정보 수정</h1>
+        </div>
+        <hr className="my-4"/>
         {/* 닉네임 */}
         {/* <div className="row mt-4">
             <label className="col-sm-3 col-form-label">
@@ -801,7 +803,7 @@ export default function MemberChange() {
             <div className="col-sm-3 text-primary">닉네임</div>
             <div className="col-sm-9">{member?.memberNickname}</div>
         </div> */}
-
+        <div className="container border rounded p-4">
         {/* 프로필 이미지 */}
         <div className="row mt-4 fs-3">
             <label className="col-sm-3 col-form-label">프로필 이미지</label>
@@ -1136,15 +1138,15 @@ export default function MemberChange() {
                 </>)}
             </div>
         </div>
-
+        </div>
         {/* 회원 탈퇴 버튼 */}
         <div className="row mt-4">
-            <div className="col d-flex align-item-center">
+            <div className="col d-flex align-item-center justify-content-end">
                 <button className="btn btn-danger" type="button" onClick={memberWithdraw}>
                     회원 탈퇴
                 </button>
             </div>
         </div>
-
+        
     </>)
 }

@@ -75,8 +75,11 @@ export default function MyWishList() {
 
     // render
     return (<>
-        <Jumbotron subject={`${loginId} 님의 위시리스트`} />
-        <span className="my-4 fs-2">내 위시리스트</span>
+        <div className="title-wrapper my-4">
+            <h1>{loginId} 님의 위시리스트</h1>
+        </div>
+        <div className="container border rounded p-4">
+        <span className="my-4 fs-2">내 위시리스트 목록</span>
         <span className="ms-2 fs-2 text-secondary mb-2">{wishlist.length}</span>
         <div className="row mt-2">
             {wishlist.map((restaurant) => (
@@ -103,6 +106,7 @@ export default function MyWishList() {
                     </div>
                 </div>
             ))}
+        </div>
         </div>
     </>
     );

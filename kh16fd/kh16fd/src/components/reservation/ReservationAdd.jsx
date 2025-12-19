@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { format, isToday, isTomorrow, parse } from "date-fns";
 import { ko } from "date-fns/locale";
 import axios from "axios";
-import { FaAngleDown } from "react-icons/fa";
+import { FaAngleDown, FaAngleLeft } from "react-icons/fa";
 import { Modal } from "bootstrap";
 import { toast } from "react-toastify";
 
@@ -136,6 +136,7 @@ export default function ReservationAdd() {
         window.addEventListener("beforeunload", handleBeforeUnload);
         return () => window.removeEventListener("beforeunload", handleBeforeUnload);
     }, [lockId, isPaying]);
+
     //callback
     const loadData = useCallback(async () => {
         const { data } = await axios.get(`/restaurant/detail/${reservationTarget}`);
@@ -177,8 +178,17 @@ export default function ReservationAdd() {
 
     }, [reservationInfo]);
 
+    const goToTarget = useCallback(async () => {
+        const response = await axios.delete(`/slot/lock/delete/${lockId}`);
+        navigate(`/restaurant/detail/${reservationTarget}`);
+    }, []);
+
     return (
         <>
+            <div className="title-wrapper d-flex mb-4">
+                <FaAngleLeft className="ms-3 fs-1 me-2"></FaAngleLeft>
+                <h1 className="clickable" onClick={goToTarget}>{selectedRestaurant}</h1>
+            </div>
             <div className="row mt-2">
                 <div className="col">
                     {timeLeft > 0 ?
@@ -194,7 +204,6 @@ export default function ReservationAdd() {
                     }
                 </div>
             </div>
-            <Jumbotron subject={`${selectedRestaurant} 예약 정보`} detail="예약 상세 페이지" />
             <div className="row mt-4">
                 <div className="col">
                     <ul className="list-group border border-primary">

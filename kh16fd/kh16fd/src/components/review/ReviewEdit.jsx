@@ -137,8 +137,10 @@ export default function ReviewEdit() {
 
     // render
     return (<>
-        <Jumbotron subject={`${restaurantId}번 식당 리뷰 수정 (#${reviewNo})`} />
-        <div className="container mt-5">
+        <div className="title-wrapper mt-4">
+        <h1 className="text-primary p-4 rounded" style={{backgroundColor : "#cee4d557"}}>리뷰 수정 (#{reviewNo})</h1>
+        </div>
+        <div className="container mt-4 border rounded p-4">
             <div className="form-container">
 
                 <div className="row mb-4 align-items-center">

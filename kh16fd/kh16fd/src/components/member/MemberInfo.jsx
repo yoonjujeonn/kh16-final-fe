@@ -55,7 +55,7 @@ export default function MemberInfo() {
 
 
     return (<>
-        <Jumbotron subject={`${loginId} 님의 정보`} />
+        <h1>{loginId} 님의 정보</h1>
 
         <div className="row mt-4">
             <div className="col">
@@ -73,7 +73,7 @@ export default function MemberInfo() {
                 <Outlet/>
             </div>
         </div> */}
-
+        <div className="container border rounded mt-4 p-4">
         <div className="row mt-4 fs-2">
             <div className="col-sm-3 text-primary">프로필 이미지</div>
             <div className="col-sm-9">
@@ -112,6 +112,7 @@ export default function MemberInfo() {
         <div className="row mt-4 fs-2">
             <div className="col-sm-3 text-primary">상세주소</div>
             <div className="col-sm-9">{member?.memberAddress2}</div>
+        </div>
         </div>
     </>)
 }
