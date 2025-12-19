@@ -11,7 +11,7 @@ import { toast } from "react-toastify";
 export default function ReservationAdd() {
 
     const location = useLocation();
-    const { reservationTarget, reservationSeat, reservationPeopleCount, reservationTime, selectedRestaurant, selectedSeat } = location.state || {};
+    const { reservationTarget, reservationSeat, reservationPeopleCount, reservationTime, selectedRestaurant, selectedSeat, lockId } = location.state || {};
 
     //state
     const [reservationInfo, setReservationInfo] = useState({
@@ -19,11 +19,15 @@ export default function ReservationAdd() {
         reservationSeat: reservationSeat,
         reservationPeopleCount: reservationPeopleCount,
         reservationTime: reservationTime,
-        reservationRequestNote : "",
-        reservationPurpose : ""
+        reservationRequestNote: "",
+        reservationPurpose: ""
     });
 
+    const [timeLeft, setTimeLeft] = useState(6 * 60);
+
     const [restaurantInfo, setRestaurantInfo] = useState(null);
+
+    const [isPaying, setIsPaying] = useState(false);
 
     //날짜 변환
     const reservationTimeStr = reservationInfo.reservationTime;
@@ -50,6 +54,13 @@ export default function ReservationAdd() {
         ? `${ampm} ${hour12}시`
         : `${ampm} ${hour12}시 ${minutes}분`;
 
+
+    const formatTime = (seconds) => {
+        const m = Math.floor(seconds / 60).toString().padStart(2, "0");
+        const s = (seconds % 60).toString().padStart(2, "0");
+        return `${m}:${s}`;
+    };
+
     //가격 계산
     const [price, setPrice] = useState(0);
 
@@ -58,11 +69,28 @@ export default function ReservationAdd() {
         loadData();
     }, []);
 
+    //타이머
+    useEffect(() => {
+        if (!timeLeft) return;
+
+        const interval = setInterval(() => {
+            setTimeLeft(prev => {
+                if (prev <= 1) {
+                    clearInterval(interval);
+                    return 0;
+                }
+                return prev - 1;
+            });
+        }, 1000);
+
+        return () => clearInterval(interval);
+    }, []);
+
     //callback
     const loadData = useCallback(async () => {
         const { data } = await axios.get(`/restaurant/detail/${reservationTarget}`);
-        setRestaurantInfo(data);
-        const price = parseInt(data.restaurantReservationPrice);
+        setRestaurantInfo(data.restaurantDto);
+        const price = parseInt(data.restaurantDto.restaurantReservationPrice);
         const people = parseInt(reservationInfo.reservationPeopleCount);
         setPrice(price * people);
 
@@ -83,19 +111,40 @@ export default function ReservationAdd() {
     const navigate = useNavigate();
 
     const sendData = useCallback(async () => {
+        setIsPaying(true);
+
         try {
-            const {data} = await axios.post("/reservation/pay", reservationInfo);
+            const { data } = await axios.post("/reservation/pay", reservationInfo);
             navigate(data.next_redirect_pc_url);
         }
-        catch(err){
+        catch (err) {
             console.log(reservationInfo);
             toast.error("요청이 정상적으로 처리되지 않았습니다");
         }
+        finally {
+            setIsPaying(false);
+        }
 
     }, [reservationInfo]);
+   
     return (
         <>
-            <Jumbotron subject={`${selectedRestaurant} 예약 정보`} detail="예약 상세 페이지"/>
+            <div className="row mt-2">
+                <div className="col">
+                    {timeLeft > 0 ?
+                        <div className="bg-light p-3">
+                            <span className="badge p-2 bg-primary badge-lg">{formatTime(timeLeft)}</span>
+                            <small className="ms-3 fw-bold">6분간 예약 찜! 시간 내 예약을 완료해주세요</small>
+                        </div>
+                        :
+                        <div className="bg-light p-3">
+                            <span className="badge p-2 bg-danger badge-lg">{formatTime(timeLeft)}</span>
+                            <small className="ms-3 fw-bold">찜 시간이 만료되어 다른 사람이 선택 좌석을 예약할 수 있습니다</small>
+                        </div>
+                    }
+                </div>
+            </div>
+            <Jumbotron subject={`${selectedRestaurant} 예약 정보`} detail="예약 상세 페이지" />
             <div className="row mt-4">
                 <div className="col">
                     <ul className="list-group border border-primary">
