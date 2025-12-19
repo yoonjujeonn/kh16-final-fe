@@ -1,7 +1,7 @@
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import Jumbotron from "../templates/Jumbotron";
 import { Link, Outlet, useNavigate, useParams } from "react-router-dom";
-import { attachmentProfileAtomState, loginIdState, loginLevelState, profileImageUrlAtom } from "../../utils/jotai";
+import { adminState, attachmentProfileAtomState, loginIdState, loginLevelState, ownerState, profileImageUrlAtom } from "../../utils/jotai";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -18,6 +18,8 @@ export default function MemberInfo() {
     const [member, setMember] = useState(null);
 
     const profileUrl = useAtomValue(profileImageUrlAtom);
+    const isAdmin = useAtomValue(adminState);
+    const isOwner = useAtomValue(ownerState);
 
     // const[member, setMember] = useState(
     //     member
@@ -64,15 +66,19 @@ export default function MemberInfo() {
         </div> */}
         <div className="container border rounded mt-4 p-4">
             <div className="row p-2">
-            <div className="d-flex justify-content-between">
-                <Link className="list-group-item text-secondary fs-3" to="/member/info/change">내정보 변경</Link>
-                {/* 이거는 조건 따져서 가리면 됨 */}
-                <Link className="list-group-item text-secondary fs-3" to="/member/info/reservation">나의 예약/결제</Link>
-                <Link className="list-group-item text-secondary fs-3" to="/member/info/review">나의 리뷰</Link>
-                <Link className="list-group-item text-secondary fs-3" to="/member/info/wishlist">위시리스트</Link>
+                <div className="d-flex justify-content-between">
+                    <Link className="list-group-item text-secondary fs-3" to="/member/info/change">내정보 변경</Link>
+                    {/* 이거는 조건 따져서 가리면 됨 */}
+                    {!isAdmin && !isOwner && (
+                        <>
+                            <Link className="list-group-item text-secondary fs-3" to="/member/info/reservation">나의 예약/결제</Link>
+                            <Link className="list-group-item text-secondary fs-3" to="/member/info/review">나의 리뷰</Link>
+                            <Link className="list-group-item text-secondary fs-3" to="/member/info/wishlist">위시리스트</Link>
+                        </>
+                    )}
+                </div>
             </div>
-        </div>
-        <hr className="my-4"/>
+            <hr className="my-4" />
             <div className="row mt-4 fs-2">
                 <div className="col-sm-3 text-primary">프로필 이미지</div>
                 <div className="col-sm-9">

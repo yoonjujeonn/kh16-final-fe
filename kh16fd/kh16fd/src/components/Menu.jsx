@@ -163,7 +163,7 @@ export default function Menu() {
                                             식당 관리
                                         </Link>
                                         <Link className="dropdown-item" to="/owner/dashboard">
-                                            <FaClipboardCheck className="me-2"/>예약 관리
+                                            예약 관리
                                         </Link>
                                     </div>
                                 </li>
