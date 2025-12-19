@@ -746,7 +746,7 @@ export default function RestaurantDetail() {
                     <div className="col">
                         <div className="border ronded p-4">
                         <div className="title-wrapper">
-                            <span>매장 정보</span>
+                            <span className="fs-3">매장 정보</span>
                         </div>
                         <div className="mt-2">
                             <span><FaLocationDot className="me-2" />{fullInfo.restaurantAddress}</span>
