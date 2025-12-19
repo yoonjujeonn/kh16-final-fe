@@ -458,14 +458,6 @@ export default function RestaurantDetail() {
         navigate(`/restaurant/detail/${restaurantId}/review`);
     }, []);
 
-    const seatTypeList = useMemo(() => {
-        if (!availableSeatList) return;
-        const types = availableSeatList.map(s => s.seatType);
-        const typeGroups = [...new Set(types)];
-        return typeGroups;
-
-    }, [availableSeatList]);
-    
     const selectSeatByType = useCallback((type) => {
         if (!availableSeatList) return;
         const seat = availableSeatList.find(s => s.seatType === type);
@@ -474,6 +466,14 @@ export default function RestaurantDetail() {
             setSelectedSeat(seat);
 
         }
+    }, [availableSeatList]);
+
+    const seatTypeList = useMemo(() => {
+        if (!availableSeatList) return;
+        const types = availableSeatList.map(s => s.seatType);
+        const typeGroups = [...new Set(types)];
+        return typeGroups;
+
     }, [availableSeatList]);
 
     const lockSlot = useCallback(async () => {
@@ -620,11 +620,9 @@ export default function RestaurantDetail() {
                 </div>
                 <div className="row p-2 bg-white border">
                     <div className="d-flex justify-content-between">
-                        <div className="divst-group-item">홈</div>
-                        <div className="divst-group-item">소식</div>
-                        <div className="divst-group-item">메뉴</div>
-                        <div className="divst-group-item">사진</div>
-                        <Link to={`/restaurant/detail/${restaurantId}/review`}>리뷰</Link>
+                        <Link to={`/restaurant/detail/${restaurantId}`} className="list-group-item text-primary">홈</Link>
+                        <Link to={`/restaurant/detail/${restaurantId}/menu`} className="text-decoration-none">메뉴</Link>
+                        <Link to={`/restaurant/detail/${restaurantId}/review`} className="text-decoration-none">리뷰</Link>
                         <div className="divst-group-item">매장정보</div>
                     </div>
                 </div>
@@ -679,7 +677,12 @@ export default function RestaurantDetail() {
                                             <Swiper
                                                 key={peopleCount}
                                                 spaceBetween={10}
-                                                slidesPerView={10}
+                                                slidesPerView={6}
+                                                breakpoints={{
+                                                    768: {
+                                                        slidesPerView: 10
+                                                    }
+                                                }}
                                                 pagination={false}>
                                                 {availableSlots.map(slot => (
                                                     <SwiperSlide key={slot.timeStr}>
@@ -699,30 +702,6 @@ export default function RestaurantDetail() {
                                         )}
                                 </div>
                             </div>}
-                    </div>
-                </div>
-
-                <div className="row mt-4 border p-4">
-                    <div className="col">
-                        <h3>소식...</h3>
-                    </div>
-                </div>
-
-                <div className="row mt-4 border p-4">
-                    <div className="col">
-                        <h3>편의시설...</h3>
-                    </div>
-                </div>
-
-                <div className="row mt-4 border p-4">
-                    <div className="col">
-                        <h3>메뉴...</h3>
-                    </div>
-                </div>
-
-                <div className="row mt-4 border p-4">
-                    <div className="col">
-                        <h3>사진 ...</h3>
                     </div>
                 </div>
 
@@ -768,6 +747,11 @@ export default function RestaurantDetail() {
                                                 key={peopleCount}
                                                 spaceBetween={10}
                                                 slidesPerView={6}
+                                                breakpoints={{
+                                                    768: {
+                                                        slidesPerView: 10
+                                                    }
+                                                }}
                                                 pagination={false}>
                                                 {availableSlots.map(slot => (
                                                     <SwiperSlide key={slot.timeStr}>

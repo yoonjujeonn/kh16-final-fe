@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import {
     FaCalendar,
+    FaClipboardCheck,
     FaGear, FaMagnifyingGlass, FaRightToBracket,
     FaTag, FaUserPlus
 } from "react-icons/fa6";
@@ -100,7 +101,9 @@ export default function Menu() {
                                     <FaUser />
                                 </a>
                                 <div className="dropdown-menu">
-                                    <span className="dropdown-item">{loginId}</span>
+                                    <Link className="dropdown-item" to={`/member/info`}>
+                                        {loginId}
+                                    </Link>
                                     <Link className="dropdown-item" to="/restaurant/add">
                                         <IoRestaurant className="me-2" />식당 등록
                                     </Link>
@@ -134,6 +137,10 @@ export default function Menu() {
                                     <FaGear className="me-2" />관리 메뉴
                                 </a>
                                 <div className="dropdown-menu">
+                                    
+                                    <Link className="dropdown-item" to="/admin/restaurant">
+                                        <FaClipboardCheck className="me-2" />미승인 레스토랑 목록
+                                    </Link>
                                     <Link className="dropdown-item" to="/category/list">
                                         <FaTag className="me-2" />카테고리 관리
                                     </Link>

@@ -1,7 +1,7 @@
-import { useAtom } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import Jumbotron from "../templates/Jumbotron";
 import { Link, Outlet, useNavigate, useParams } from "react-router-dom";
-import { loginIdState, loginLevelState } from "../../utils/jotai";
+import { attachmentProfileAtomState, loginIdState, loginLevelState, profileImageUrlAtom } from "../../utils/jotai";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -13,9 +13,12 @@ export default function MemberInfo() {
     //state
     const [loginId, setloginId] = useAtom(loginIdState);
     const [loginLevel, setLoginLevel] = useAtom(loginLevelState);
+    const [profileNo, setProfileNo] = useAtom(attachmentProfileAtomState);
 
     // const {loginId} = useParams();
     const [member, setMember] = useState(null);
+
+    const profileUrl = useAtomValue(profileImageUrlAtom);
 
     // const[member, setMember] = useState(
     //     member
@@ -43,6 +46,14 @@ export default function MemberInfo() {
     }, [loginId]);
 
 
+
+    // useEffect(()=> {
+    //     axios.get(`http://192.168.20.21:8080/memberProfile/${loginId}`)
+    //     .then(set);
+    // }, [loginId]);
+
+
+
     return (<>
         <Jumbotron subject={`${loginId} 님의 정보`} />
 
@@ -62,6 +73,16 @@ export default function MemberInfo() {
                 <Outlet/>
             </div>
         </div> */}
+
+        <div className="row mt-4 fs-2">
+            <div className="col-sm-3 text-primary">프로필 이미지</div>
+            <div className="col-sm-9">
+                <img
+                    src={profileUrl}
+                    className="border rounded"
+                />
+            </div>
+        </div>
 
         <div className="row mt-4 fs-2">
             <div className="col-sm-3 text-primary">닉네임</div>
@@ -91,6 +112,6 @@ export default function MemberInfo() {
         <div className="row mt-4 fs-2">
             <div className="col-sm-3 text-primary">상세주소</div>
             <div className="col-sm-9">{member?.memberAddress2}</div>
-        </div>        
+        </div>
     </>)
 }

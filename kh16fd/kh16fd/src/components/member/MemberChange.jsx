@@ -1,5 +1,5 @@
 import { useAtom, useSetAtom } from "jotai";
-import { accessTokenState, loginIdState, loginLevelState, refreshTokenState } from "../../utils/jotai";
+import { accessTokenState, attachmentProfileAtomState, loginIdState, loginLevelState, refreshTokenState } from "../../utils/jotai";
 import Jumbotron from "../templates/Jumbotron";
 import { useNavigate, useParams } from "react-router-dom";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -690,7 +690,43 @@ export default function MemberChange() {
 
     // const [file, setFile] = useState(null);
 
-    const sendData = useCallback(() => {
+    const [profileNo, setProfileNo] = useAtom(attachmentProfileAtomState);
+
+    const findProfile = useCallback(async (targetId) => {
+        console.log("1. findProfile 시작 - ID:", targetId);
+        try {
+            const response = await axios.get(`http://localhost:8080/memberProfile/${targetId}`);
+            console.log("2. 서버 응답 전체:", response); // 통신 성공 여부 확인
+
+            if (response.data) {
+                console.log("3. 데이터 존재:", response.data.attachmentNo);
+                setProfileNo(response.data.attachmentNo);
+            } else {
+                console.log("3. 데이터가 비어있음");
+            }
+        } catch (err) {
+            console.error("4. 통신 실패 원인:", err.response || err); // 에러 상세 확인
+        }
+    }, [setProfileNo, member]);
+
+    // const findProfile = useCallback(async (targetId) => {
+    //     if (!targetId) return;
+    //     try {
+    //         // const { data } = await axios.get(`http://192.168.20.21:8080/memberProfile/${loginId}`);
+    //         const { data } = await axios.get(`http://localhost:8080/memberProfile/${targetId}`);
+    //         setProfileNo(data.attachmentNo);
+    //         console.log("프로필 번호 저장 완료:", data.attachmentNo);
+    //     } catch (err) {
+    //         setResult(false);
+    //         console.log("프로필 조회 실패:", err);
+    //     }
+    // }, []);
+
+    const sendData = useCallback(async () => {
+
+        // 1. 여기서 사용하려는 ID가 진짜 있는지 먼저 체크
+        const targetId = memberProfile.memberId || loginId; // 둘 중 확실한 값 사용
+        console.log("전송 시작 시점의 ID:", targetId);
 
         if (!memberProfile.attach) {
             toast.warning("프로필 사진을 고르세요");
@@ -702,19 +738,46 @@ export default function MemberChange() {
         formData.append("attach", memberProfile.attach);
 
 
-        axios.post("http://localhost:8080/memberProfile/add", formData, {
-            headers: { "Content-Type": "multipart/form-data" },
-            withCredentials: true
-        })
-            .then(() => {
-                toast.success("프로필 등록 완료");
-                // navigate("/banner/list");
-            })
-            .catch(err => {
-                console.error(err);
-                toast.error("프로필 등록 실패");
+        try {
+            await axios.post("http://localhost:8080/memberProfile/add", formData, {
+                headers: { "Content-Type": "multipart/form-data" },
+                withCredentials: true
             });
-    }, [memberProfile, buildFormData]);
+
+            toast.success("프로필 등록 완료");
+
+            await findProfile(targetId);
+        } catch (err) {
+            console.log("error", err);
+            toast.error("프로필 등록 실패");
+        }
+
+
+    }, [memberProfile, buildFormData, findProfile, loginId]);
+
+
+    const checkChangeProfile = useCallback(() => {
+        Swal.fire({
+            title: "이미지를 정말 바꾸시나요?",
+            text: "다시 복원할 수 없으니 이미지를 백업하실래요?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "바꾸기",
+            cancelButtonText: "되돌리기"
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                await sendData();
+                Swal.fire({
+                    title: "변경되었어요",
+                    text: "성공적으로 프로필 사진이 바뀌었어요!",
+                    icon: "success"
+                });
+            }
+        });
+    }, [sendData]);
+
 
 
     return (<>
@@ -740,7 +803,7 @@ export default function MemberChange() {
         </div> */}
 
         {/* 프로필 이미지 */}
-        <div className="row mt-4">
+        <div className="row mt-4 fs-3">
             <label className="col-sm-3 col-form-label">프로필 이미지</label>
             <div className="col-sm-9">
                 <input
@@ -758,7 +821,7 @@ export default function MemberChange() {
         {/* 버튼 */}
         <div className="row mt-4">
             <div className="col text-end">
-                <button type="button" className="btn btn-success me-2" onClick={sendData}>
+                <button type="button" className="btn btn-success me-2" onClick={checkChangeProfile}>
                     <FaPlus className="me-2" /><span>등록</span>
                 </button>
             </div>
