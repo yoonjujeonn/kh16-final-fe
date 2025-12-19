@@ -275,6 +275,12 @@ export default function RestaurantList() {
 
     const navigate = useNavigate();
 
+    const sendToLogin = useCallback(() => {
+        if(loginId) return;
+        closeAndClearData();
+        navigate("/member/login");
+    }, [loginId]);
+    
     const selectSeatByType = useCallback((type) => {
         if (!availableSeatList) return;
         const seat = availableSeatList.find(s => s.seatType === type);
@@ -504,7 +510,7 @@ export default function RestaurantList() {
                                 <div className="row mt-4">
                                     <div className="col">
                                         <div className="btn-wrapper d-flex justify-content-center">
-                                            <button className="btn btn-outline-primary w-100" onClick={sendData}>예약하기</button>
+                                            {loginId ? <button className="btn btn-outline-primary w-100" onClick={sendData} disabled={!loginId}>예약하기</button> : <button className="btn btn-info" onClick={sendToLogin}>로그인 후 이용해주세요</button>}
                                         </div>
                                     </div>
                                 </div>)}

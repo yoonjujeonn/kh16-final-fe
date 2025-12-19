@@ -3,6 +3,7 @@ import RestaurantBasicInfo from "./RestaurantBasicInfo";
 import RestaurantScheduleInfo from "./RestaurantScheduleInfo";
 import { useCallback, useEffect, useState } from "react";
 import RestaurantMoreInfo from "./RestaurantMoreInfo";
+import { FaAsterisk } from "react-icons/fa";
 
 const RestaurantAddByStep = () => {
     const [restaurantInfo, setRestaurantInfo] = useState({
@@ -24,7 +25,7 @@ const RestaurantAddByStep = () => {
         restaurantDescription: "",
         categoryIdList: [],
         preview: [],
-        seatList : []
+        seatList: []
     });
 
     const [step, setStep] = useState(0);
@@ -55,15 +56,22 @@ const RestaurantAddByStep = () => {
 
     return (
         <>
-            <Jumbotron subject="식당 신규 등록" detail="식당 등록을 위한 정보를 입력해주세요" />
-            <div className="progress mt-4">
+            <div className="title-wrapper mb-4">
+                <h1>식당 신규 등록</h1>
+                <div className="d-flex  justify-content-end align-items-center">
+                    <FaAsterisk className="me-2 text-danger" />
+                    <span className="text-muted">필수 항목을 모두 작성해주세요</span>
+                </div>
+            </div>
+            <div className="progress my-4">
                 <div className="progress-bar " role="progressbar" style={{ width: `${percent}%` }}>
                 </div>
             </div>
-
-            <div className="row">
-                <div className="col">
-                    <CurrentPage data={restaurantInfo} setData={setRestaurantInfo} onPrev={prevStep} onNext={nextStep} />
+            <div className="container border rounded p-4">
+                <div className="row">
+                    <div className="col">
+                        <CurrentPage data={restaurantInfo} setData={setRestaurantInfo} onPrev={prevStep} onNext={nextStep} />
+                    </div>
                 </div>
             </div>
         </>

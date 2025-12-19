@@ -78,11 +78,8 @@ export default function Menu() {
     return (
         <nav className="navbar navbar-expand-lg bg-light" ref={menuRef}>
             <div className="container-fluid">
-                <Link to="/">
-                    <img
-                        src="https://www.dummyimage.com/50x50/000/fff"
-                        className="ms-2 rounded navbar-brand"
-                    />
+                <Link to="/" className="ms-2 rounded navbar-brand">
+                    미식 로그
                 </Link>
 
                 <button

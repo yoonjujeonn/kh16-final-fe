@@ -43,6 +43,11 @@ export const adminState = atom(get => {
     return loginId?.length > 0 && loginLevel === "관리자";
 });
 
+export const ownerState = atom(get => {
+    const loginId = get(loginIdState);
+    const loginLevel = get(loginLevelState);
+    return loginId?.length > 0 && loginLevel === "자영업자";
+});
 //로그인 판정이 완료되었는지 확인하기 위한 데이터
 export const loginCompleteState = atom(false);
 
