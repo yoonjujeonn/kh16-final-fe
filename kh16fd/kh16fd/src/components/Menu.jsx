@@ -109,7 +109,7 @@ export default function Menu() {
                                     </Link>
                                 </li>
                                 <li className="nav-item">
-                                    <Link className="nav-link" to="/member/owner/join">
+                                    <Link className="nav-link" to="/member/bizjoin">
                                         <IoRestaurant className="me-1" />비즈회원 가입
                                     </Link>
                                 </li>
@@ -159,7 +159,7 @@ export default function Menu() {
                                         <Link className="dropdown-item" to="/member/info">
                                             내 정보
                                         </Link>
-                                        <Link className="dropdown-item" to="/restaurant/manage">
+                                        <Link className="dropdown-item" to="/owner/my-restaurant">
                                             식당 관리
                                         </Link>
                                     </div>
