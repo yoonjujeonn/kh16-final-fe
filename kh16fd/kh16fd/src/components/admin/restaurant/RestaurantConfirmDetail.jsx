@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from "react-router-dom";
 import Jumbotron from "../../templates/Jumbotron";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 
@@ -33,6 +33,23 @@ export default function RestaurantConfirmDetail() {
 
     }, [restaurantId]);
 
+    const approved = useCallback(async () => {
+        try {
+            const response = await axios.patch(`/admin/restaurant/${restaurantId}`);
+        
+            if(response.data) {
+                toast.success("승인이 완료되었습니다!");
+                navigate("/admin/restaurant"); // 승인 후 목록으로 이동
+            }
+        
+        }
+        catch (err) {
+            console.error("데이터 로딩 실패", err);
+            toast.warn("승인이 안됩니다");
+        }
+    }, [restaurantId, navigate]);
+
+
     if (!restaurantId) {
         return <div className="p-5 text-center">로딩 중입니다...</div>
     }
@@ -46,7 +63,7 @@ export default function RestaurantConfirmDetail() {
                     <p>설명: {restaurant?.restaurantDescription}</p>
                     <p>등록일: {restaurant?.restaurantCreatedAt}</p>
                     {/* 여기에 승인 버튼 등을 추가하세요 */}
-                    <button className="btn btn-success" onClick={() => {/* 승인 로직 */ }}>
+                    <button className="btn btn-success" onClick={approved}>
                         승인하기
                     </button>
                 </div>
