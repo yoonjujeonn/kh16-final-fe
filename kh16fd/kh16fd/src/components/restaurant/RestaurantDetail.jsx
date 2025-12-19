@@ -663,6 +663,7 @@ export default function RestaurantDetail() {
                         <Link to={`/restaurant/detail/${restaurantId}/info`} className="text-decoration-none">매장정보</Link>
                     </div>
                 </div>
+                <Outlet />
                 <div className="row p-4 border">
                     <div className="col">
                         <div className="my-4 info p-3 text-center border rounded" style={{ cursor: "pointer" }} onClick={openModal}>
@@ -762,7 +763,6 @@ export default function RestaurantDetail() {
                             </div>
                         </div>
                         </div>
-                        <Outlet />
                     </div>
                 </div>
             </div>
