@@ -105,16 +105,8 @@ export default function ReviewList() {
     // render
     return (<>
         {/* <Jumbotron subject={`${restaurantId}번 식당의 리뷰 목록`} /> */}
-        {/* 로그인 상태일 때만 리뷰 작성하기 버튼 표시 */}
-        {loginId && (
-            <div className="text-end">
-                <Link to={`/restaurant/detail/${restaurantId}/review/write`} className="btn btn-success mt-4">
-                    리뷰 작성하기
-                </Link>
-            </div>
-        )}
         {reviews.length === 0 ? (
-            <div className="alert alert-warning mt-3">아직 등록된 리뷰가 없습니다.</div>
+            <div className="p-4 alert alert-warning mt-3">아직 등록된 리뷰가 없습니다.</div>
         ) : (
             <ul className="list-unstyled">
                 {reviews.map((review, index) => {
@@ -185,6 +177,13 @@ export default function ReviewList() {
                 })}
             </ul>
         )}
-
+        {/* 로그인 상태일 때만 리뷰 작성하기 버튼 표시 */}
+        {loginId && (
+            <div className="text-end">
+                <Link to={`/restaurant/detail/${restaurantId}/review/write`} className="btn btn-success mt-2">
+                    리뷰 작성하기
+                </Link>
+            </div>
+        )}
     </>)
 }

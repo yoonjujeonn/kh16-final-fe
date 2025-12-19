@@ -19,7 +19,7 @@ import { buildRestaurantSlots, buildAvailableSlots } from "../../utils/custom-ut
 
 import "react-day-picker/dist/style.css";
 import "/src/custom-css/daypicker-custom.css";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAtom } from "jotai";
 import { loginIdState } from "../../utils/jotai";
 
@@ -381,8 +381,8 @@ export default function RestaurantList() {
                                     <li className="list-group-item">
                                         <div className="row">
                                             <div className="col">
-                                                <img className="d-flex rounded mt-2 clickable w-100" src={`http://localhost:8080/restaurant/image/${restaurant.restaurantId}`} style={{ height: "250px", objectFit: "cover" }} />
-                                                <h3 className="mt-2">{restaurant.restaurantName}</h3>
+                                                <Link to={`/restaurant/detail/${restaurant.restaurantId}`}><img className="d-flex rounded mt-2 clickable w-100" src={`http://localhost:8080/restaurant/image/${restaurant.restaurantId}`} style={{ height: "400px", objectFit: "cover" }} /></Link>
+                                                <h3 className="mt-4">{restaurant.restaurantName}</h3>
                                                 <div className="mt-2">{restaurant.statusText}  ·  <FaUser className="me-2" />최대 {restaurant.restaurantMaxPeople}명 예약 가능</div>
                                                 <div className="badge-wrapper mt-2">
                                                     <span className="badge bg-secondary me-2">{restaurant.placeGroupName}</span>
@@ -397,9 +397,6 @@ export default function RestaurantList() {
                                                         ({restaurant.reviewCount})
                                                     </span>
                                                 </div>
-                                                <div className="price-wrapper mt-2">
-                                                    <span>점심 ? 원</span>  ·  <span>저녁 ? 원 </span>
-                                                </div>
                                             </div>
                                         </div>
                                         {/* 슬롯 영역 (추후 swiper 적용) */}
@@ -407,6 +404,7 @@ export default function RestaurantList() {
                                             <div className="col">
                                                 <div className="slot-wrapper d-flex">
                                                     <Swiper
+                                                        className="w-100"
                                                         spaceBetween={10}       // 슬라이드 사이 간격
                                                         slidesPerView={5}       // 한 화면에 보여줄 슬라이드 수
                                                         pagination={false} // 페이지 네비게이션

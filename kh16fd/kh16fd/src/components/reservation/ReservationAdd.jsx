@@ -23,6 +23,8 @@ export default function ReservationAdd() {
         reservationPurpose: ""
     });
 
+    console.log(reservationTime);
+    
     const [agreements, setAgreements] = useState({
         required1: false,
         required2: false,
