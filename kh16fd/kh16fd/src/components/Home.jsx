@@ -22,7 +22,7 @@ export default function Home() {
 
     const [categoryList, setCategoryList] = useState([]);
 
-    // ⭐ [추가] depth1 대표 지역 + 이미지 목록
+    // ⭐ depth1 대표 지역 + 이미지
     const [placeTopList, setPlaceTopList] = useState([]);
 
     useEffect(() => {
@@ -40,7 +40,6 @@ export default function Home() {
             .then(res => setCategoryList(res.data));
     }, []);
 
-    // ⭐ [추가] 홈 화면용 지역 이미지 목록 조회
     useEffect(() => {
         axios.get("http://localhost:8080/place/top")
             .then(res => setPlaceTopList(res.data));
@@ -69,6 +68,7 @@ export default function Home() {
 
     return (
         <>
+            {/* 배너 */}
             <div className="row mt-4">
                 <div className="col sm-9 d-flex justify-content-center">
                     {bannerList.length === 0 ? (
@@ -89,6 +89,8 @@ export default function Home() {
                                     <img
                                         src={`http://localhost:8080/attachment/${banner.bannerAttachmentNo}`}
                                         alt=""
+                                        style={{ cursor: "pointer" }}
+                                        onClick={() => navigate(banner.bannerLink)}
                                     />
                                 </SwiperSlide>
                             ))}
@@ -97,6 +99,7 @@ export default function Home() {
                 </div>
             </div>
 
+            {/* 지역 카드 */}
             <div className="row mt-5">
                 <div className="col sm-9">
                     <h3 className="mb-4 text-center">지역으로 검색</h3>
@@ -125,6 +128,7 @@ export default function Home() {
                 </div>
             </div>
 
+            {/* 지역 버튼 */}
             <div className="row mt-4">
                 <div className="col sm-9">
                     <h3 className="mb-3 text-center">지역</h3>
@@ -157,6 +161,7 @@ export default function Home() {
                 </div>
             </div>
 
+            {/* 카테고리 */}
             <div className="row mt-5">
                 <div className="col sm-9">
                     <h3 className="mt-3 text-center">종류</h3>
