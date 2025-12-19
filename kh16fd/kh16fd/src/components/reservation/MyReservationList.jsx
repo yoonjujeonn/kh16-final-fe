@@ -134,8 +134,6 @@ export default function MyReservationList() {
 
     // render
     return (<>
-        {/* <Jumbotron subject="나의 예약내역" /> */}
-
 
         {/* 탭 메뉴 UI */}
         <div className="container-fluid my-4">
@@ -167,6 +165,8 @@ export default function MyReservationList() {
                     const isCancelled = item.reservationStatus === '예약취소';
                     const isNoShow = item.reservationStatus === '노쇼';
                     const isCompleted = item.reservationStatus === '방문완료';
+
+                    const diffDays = differenceInDays(startOfDay(parse(item.reservationTime, "yyyy-MM-dd HH:mm", new Date())), startOfDay(new Date()));
 
                     // 상태별 배지 색상 결정
                     const getBadgeClass = (status) => {
@@ -222,17 +222,15 @@ export default function MyReservationList() {
                                 {/* 하단 버튼 */}
                                 <div className="text-end mt-3">
                                     {item.reservationStatus === '예약완료' && (
+                                        diffDays < 0 ? (
+                                                <span className="text-danger me-2">기한 만료</span>
+                                        ):(
                                         <button className="btn btn-outline-danger me-2" onClick={() => handleCancel(item)}>
                                             취소하기
                                         </button>
+                                        )
                                     )}
 
-                                    {/* (선택사항) 방문완료인 경우에는 '리뷰 쓰기' 버튼 */}
-                                    {/* {item.reservationStatus === '방문완료' && (
-                                        <button className="btn btn-outline-primary" onClick={() => navigate(`/restaurant/detail/${item.reservationTarget}/review/write`)}>
-                                            리뷰 작성
-                                        </button>
-                                    )} */}
                                 </div>
                             </div>
                         </div>
