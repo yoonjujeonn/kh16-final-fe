@@ -14,10 +14,15 @@ export default function RestaurantMenu() {
   }, [restaurantId]);
 
   if (menuList.length === 0) {
-    return <div className="text-muted">등록된 메뉴가 없습니다</div>;
+    return (
+    <div className="container border rounded mt-4 p-4">
+    <span className="text-muted">등록된 메뉴가 없습니다</span>
+    </div>
+    )
   }
 
   return (
+    <div className="container border rounded mt-4 p-4">
     <ul className="list-unstyled">
       {menuList.map(menu => (
         <li key={menu.menuId} className="mb-3 pb-3 border-bottom">
@@ -31,5 +36,6 @@ export default function RestaurantMenu() {
         </li>
       ))}
     </ul>
+    </div>
   );
 }
