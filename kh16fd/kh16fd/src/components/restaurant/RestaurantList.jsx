@@ -301,6 +301,7 @@ export default function RestaurantList() {
 
         try {
             const response = await axios.post("/slot/lock", request);
+            console.log(response.data);
             return response.data;
         }
         catch(error){
