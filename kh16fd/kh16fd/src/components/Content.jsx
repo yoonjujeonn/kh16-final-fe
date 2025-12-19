@@ -36,6 +36,9 @@ import MyReservationList from "./reservation/MyReservationList";
 import PlaceImageAdd from "./admin/place/PlaceImageAdd";
 import PlaceImageList from "./admin/place/PlaceImageList";
 import RestaurantMenu from "./restaurant/RestaurantMenu";
+import MyRestaurantDetail from "./owner/MyRestaurantDetail";
+import MyRestaurantList from "./owner/MyRestaurantList";
+import MyRestaurantManage from "./owner/MyRestaurantManage";
 
 export default function Content() {
 
@@ -64,6 +67,11 @@ export default function Content() {
                         {/* 식당 등록 */}
                         <Route path="/restaurant/add" element={<RestaurantAddByStep />}></Route>
                         <Route path="/restaurant/add/finish/:restaurantId" element={<RestaurantAddFinish />} />
+
+                        {/* 사장님 */}
+                        <Route path="/owner/my-restaurant" element={<MyRestaurantList />} />
+                        <Route path="/owner/my-restaurant/:restaurantId" element={<MyRestaurantDetail />} />
+                        <Route path="/owner/my-restaurant/:restaurantId/manage" element={<MyRestaurantManage />} />
 
                         {/* 식당 페이지 */}
                         <Route path="/restaurant/edit/:restaurantId" element={<RestaurantEdit />}></Route>
