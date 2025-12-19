@@ -41,6 +41,7 @@ import MyRestaurantDetail from "./owner/MyRestaurantDetail";
 import MyRestaurantList from "./owner/MyRestaurantList";
 import MyRestaurantManage from "./owner/MyRestaurantManage";
 import RestaurantConfirmDetail from "./admin/restaurant/RestaurantConfirmDetail";
+import Owner from "./guard/Owner";
 
 
 export default function Content() {
@@ -77,7 +78,7 @@ export default function Content() {
                         <Route path="/owner/my-restaurant/:restaurantId/manage" element={<MyRestaurantManage />} />
 
                         {/* 식당 페이지 */}
-                        <Route path="/restaurant/edit/:restaurantId" element={<RestaurantEdit />}></Route>
+                        <Route path="/restaurant/edit/:restaurantId" element={<Owner><RestaurantEdit /></Owner>}></Route>
                         <Route path="/restaurant/list" element={<RestaurantList />} />
                         <Route path="/restaurant/detail/:restaurantId" element={<RestaurantDetail />}>
                             <Route path="review" element={<ReviewList />} />
