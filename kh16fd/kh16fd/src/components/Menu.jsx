@@ -10,7 +10,7 @@ import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import {
     accessTokenState, adminState, clearLoginState,
     loginCompleteState, loginIdState, loginLevelState,
-    loginState, refreshTokenState
+    loginState, ownerState, refreshTokenState
 } from "../utils/jotai";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -26,6 +26,7 @@ export default function Menu() {
     const [, setRefreshToken] = useAtom(refreshTokenState);
     const isLogin = useAtomValue(loginState);
     const isAdmin = useAtomValue(adminState);
+    const isOwner = useAtomValue(ownerState);
     const clearLogin = useSetAtom(clearLoginState);
 
     const [open, setOpen] = useState(false);
@@ -104,9 +105,17 @@ export default function Menu() {
                                     <Link className="dropdown-item" to="/restaurant/add">
                                         <IoRestaurant className="me-2" />식당 등록
                                     </Link>
+                                    {!isOwner && !isAdmin &&(
                                     <Link className="dropdown-item" to="/member/info/reservation">
                                         <FaCalendar className="me-2" />나의 예약
                                     </Link>
+                                    )}
+                                    {isOwner &&(
+                                        <Link className="dropdown-item" to="/owner/dashboard">
+                                            <FaClipboardCheck className="me-2"/>예약 관리
+                                        </Link>
+                                    )}
+
                                     <Link className="dropdown-item" onClick={logout}>
                                         <FaRightToBracket className="me-2" />로그아웃
                                     </Link>
