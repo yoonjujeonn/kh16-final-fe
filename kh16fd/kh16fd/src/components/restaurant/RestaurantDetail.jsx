@@ -268,7 +268,6 @@ export default function RestaurantDetail() {
             const { restaurantDto, ...rest } = data;
 
             console.log(data);
-            
             setRestaurant(restaurantDto);
             setMoreInfo(rest);
             setFullInfo({ ...restaurantDto, ...rest });
