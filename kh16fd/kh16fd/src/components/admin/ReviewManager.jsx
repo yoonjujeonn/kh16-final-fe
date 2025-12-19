@@ -3,7 +3,7 @@ import Jumbotron from "../templates/Jumbotron";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { MdExpandLess, MdExpandMore } from "react-icons/md";
-import { FaStar } from "react-icons/fa6";
+import { FaStar, FaTrash } from "react-icons/fa6";
 import Swal from "sweetalert2";
 
 export default function ReviewManager() {
@@ -108,7 +108,7 @@ export default function ReviewManager() {
                         <th>작성자</th>
                         <th>평점</th>
                         <th style={{ width: '35%' }}>내용</th>
-                        <th>신고 수</th>
+                        {/* <th>신고 수</th> */}
                         <th>작성일</th>
                         <th>관리</th>
                     </tr>
@@ -170,12 +170,12 @@ export default function ReviewManager() {
                                 </td>
 
                                 {/* 신고 수 표시 (현재 0) */}
-                                <td>
+                                {/* <td>
                                     {review.reportCount > 0 ?
                                         <span className="badge bg-danger">{review.reportCount}</span>
                                         : review.reportCount
                                     }
-                                </td>
+                                </td> */}
 
                                 {/* 작성일 */}
                                 <td>
@@ -188,7 +188,7 @@ export default function ReviewManager() {
                                         className="btn btn-sm btn-danger"
                                         onClick={() => handleDelete(review.reviewNo)}
                                     >
-                                        삭제
+                                        <FaTrash/>
                                     </button>
                                 </td>
                             </tr>

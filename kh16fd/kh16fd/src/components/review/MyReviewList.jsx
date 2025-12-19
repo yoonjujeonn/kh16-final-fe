@@ -5,7 +5,7 @@ import axios from "axios";
 import Jumbotron from "../templates/Jumbotron";
 import { Link, useNavigate } from "react-router-dom";
 import { MdExpandLess, MdExpandMore } from "react-icons/md";
-import { FaStar } from "react-icons/fa6";
+import { FaPen, FaStar, FaTrash } from "react-icons/fa6";
 import Swal from "sweetalert2";
 
 
@@ -124,12 +124,12 @@ export default function MyReviewList() {
                     <table className="table table-hover align-middle">
                         <thead>
                             <tr>
-                                <th style={{ width: '5%' }}></th>
-                                <th style={{ width: '15%' }}></th>
-                                <th style={{ width: '35%' }}></th>
-                                <th style={{ width: '10%' }}></th>
-                                <th style={{ width: '15%' }}></th>
-                                <th style={{ width: '20%' }}></th>
+                                <th className="text-center" style={{ width: '60px' }}>번호</th>
+                                <th style={{ width: '150px' }}>식당 정보</th>
+                                <th>리뷰 내용</th>
+                                <th className="text-center" style={{ width: '80px' }}>평점</th>
+                                <th className="text-center" style={{ width: '120px' }}>작성일</th>
+                                <th className="text-center" style={{ width: '100px' }}>관리</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -159,34 +159,57 @@ export default function MyReviewList() {
                                             </Link>
                                         </td>
                                         {/* 리뷰 내용 및 더보기/접기 버튼 */}
-                                        <td>
-                                            <div className="d-flex justify-content-between align-items-start">
-                                                {displayContent}
+                                        <td style={{ minWidth: '300px' }}> {/* 내용 영역의 최소 폭 확보 */}
+                                            <div className="d-flex flex-column h-100">
+                                                {/* 본문 텍스트 */}
+                                                <div style={{
+                                                    wordBreak: 'break-all',
+                                                    whiteSpace: 'normal',
+                                                    lineHeight: '1.5'
+                                                }}>
+                                                    {displayContent}
+                                                </div>
 
-                                                {/* 1. 글이 길거나 사진이 있는 경우 '더보기' 버튼 표시 */}
+                                                {/* 더보기 버튼: 한 줄 고정 처리 */}
                                                 {(isLong || hasAttachment) && (
-                                                    <button
-                                                        className="btn btn-link btn-sm p-0 ms-2 text-secondary"
-                                                        onClick={() => toggleExpand(review.reviewNo)}
-                                                        style={{ textDecoration: 'none' }}
-                                                    >
-                                                        {isExpanded ? '접기' : '더보기'}
-                                                        {isExpanded ? <MdExpandLess /> : <MdExpandMore />}
-                                                    </button>
+                                                    <div className="mt-1">
+                                                        <button
+                                                            className="btn btn-link btn-sm p-0 text-primary fw-medium"
+                                                            onClick={() => toggleExpand(review.reviewNo)}
+                                                            style={{
+                                                                textDecoration: 'none',
+                                                                whiteSpace: 'nowrap', // [핵심] 글자가 절대 줄바꿈되지 않게 함
+                                                                fontSize: '13px',
+                                                                display: 'inline-flex',
+                                                                alignItems: 'center'
+                                                            }}
+                                                        >
+                                                            {isExpanded ? (
+                                                                <>접기 <MdExpandLess className="ms-1" size="18" /></>
+                                                            ) : (
+                                                                <>더보기 <MdExpandMore className="ms-1" size="18" /></>
+                                                            )}
+                                                        </button>
+                                                    </div>
+                                                )}
+
+                                                {/* 펼쳐졌을 때 이미지 레이아웃 */}
+                                                {isExpanded && hasAttachment && (
+                                                    <div className="mt-2 animate__animated animate__fadeIn">
+                                                        <img
+                                                            src={getImageUrl(attachmentNo)}
+                                                            alt="리뷰 이미지"
+                                                            className="img-thumbnail shadow-sm"
+                                                            style={{
+                                                                width: "180px",
+                                                                height: "120px",
+                                                                objectFit: "cover",
+                                                                borderRadius: '8px'
+                                                            }}
+                                                        />
+                                                    </div>
                                                 )}
                                             </div>
-
-                                            {/* 2. '더보기' 상태일 때만 사진 표시 */}
-                                            {isExpanded && hasAttachment && (
-                                                <div className="mt-3 animate__animated animate__fadeIn">
-                                                    <img
-                                                        src={getImageUrl(attachmentNo)}
-                                                        alt="리뷰 이미지"
-                                                        className="img-fluid rounded shadow-sm"
-                                                        style={{ maxWidth: "250px", height: "auto", border: "1px solid #eee" }}
-                                                    />
-                                                </div>
-                                            )}
                                         </td>
                                         {/* 평점 */}
                                         <td><FaStar color="#ffc107" /> {review.reviewRating}</td>
@@ -196,16 +219,16 @@ export default function MyReviewList() {
                                         <td>
                                             <div className="d-flex gap-2">
                                                 <button
-                                                    className="btn btn-sm btn-outline-secondary"
+                                                    className="btn btn-sm btn-secondary"
                                                     onClick={() => navigate(`/restaurant/detail/${review.restaurantId}/review/edit/${review.reviewNo}`)}
                                                 >
-                                                    수정
+                                                    <FaPen />
                                                 </button>
                                                 <button
-                                                    className="btn btn-sm btn-outline-danger"
+                                                    className="btn btn-sm btn-danger"
                                                     onClick={() => handleDelete(review.reviewNo, review.restaurantId)}
                                                 >
-                                                    삭제
+                                                    <FaTrash />
                                                 </button>
                                             </div>
                                         </td>
