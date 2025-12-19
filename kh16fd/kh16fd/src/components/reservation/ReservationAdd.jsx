@@ -86,6 +86,25 @@ export default function ReservationAdd() {
         return () => clearInterval(interval);
     }, []);
 
+    //페이지 나가면 락 잠금
+    useEffect(() => {
+     const handleBeforeUnload = () => {
+        if(!lockId || isPaying) return;
+
+        navigator.sendBeacon(`/slot/lock/delete/${lockId}`); //페이지 벗어나면 락 해제
+
+        // 새로고침 감지
+        const perfEntries = performance.getEntriesByType("navigation");
+        const isReload = perfEntries.length > 0 && perfEntries[0].type === "reload";
+
+        if(isReload){
+            navigate(`/restaurant/detail/${reservationTarget}`, { replace : true });
+        }
+     };
+     
+     window.addEventListener("beforeunload", handleBeforeUnload);
+     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+    }, [lockId, isPaying]);
     //callback
     const loadData = useCallback(async () => {
         const { data } = await axios.get(`/restaurant/detail/${reservationTarget}`);
