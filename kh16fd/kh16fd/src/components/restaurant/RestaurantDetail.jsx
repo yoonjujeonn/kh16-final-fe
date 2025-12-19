@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { Link, Outlet, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { ScaleLoader } from "react-spinners";
-import { FaBookmark, FaPhone, FaPhoneAlt, FaPhoneSlash, FaRegBookmark, FaStar, FaUser } from "react-icons/fa";
+import { FaAngleLeft, FaBookmark, FaPhone, FaPhoneAlt, FaPhoneSlash, FaRegBookmark, FaStar, FaUser } from "react-icons/fa";
 import { IoIosArrowDown, IoIosCall } from "react-icons/io";
 import { useAtom } from "jotai";
 import { loginIdState } from "../../utils/jotai";
@@ -21,7 +21,7 @@ import "react-day-picker/dist/style.css";
 import "/src/custom-css/daypicker-custom.css";
 import { useNavigate } from "react-router-dom";
 import { Modal } from "bootstrap";
-import { v4 as uuidv4 } from "uuid";
+import { FaCalendar, FaLocationDot, FaMoneyBill, FaWonSign } from "react-icons/fa6";
 
 export default function RestaurantDetail() {
     const [restaurant, setRestaurant] = useState(null);
@@ -123,6 +123,34 @@ export default function RestaurantDetail() {
         loadSlotList();
         checkWish();
     }, [checkWish]);
+
+    const mapRef = useRef(null);         // 지도 DOM
+    const mapInstance = useRef(null);    // kakao map 객체
+    const markersRef = useRef([]);       // 마커 히스토리
+
+    //마커
+    useEffect(() => {
+        if (!fullInfo) return;
+        if (!window.kakao || !mapRef.current) return;
+
+        const position = new window.kakao.maps.LatLng(
+            fullInfo.restaurantAddressY,
+            fullInfo.restaurantAddressX
+        );
+
+        mapInstance.current = new window.kakao.maps.Map(mapRef.current, {
+            center: position,
+            level: 2
+        });
+
+        // ✅ 마커 생성
+        const marker = new window.kakao.maps.Marker({
+            position
+        });
+
+        marker.setMap(mapInstance.current);
+
+    }, [fullInfo]);
 
     //주소 표시
     useEffect(() => {
@@ -239,6 +267,7 @@ export default function RestaurantDetail() {
             const { data } = await axios.get(`/restaurant/detail/${restaurantId}`);
             const { restaurantDto, ...rest } = data;
 
+            console.log(data);
             setRestaurant(restaurantDto);
             setMoreInfo(rest);
             setFullInfo({ ...restaurantDto, ...rest });
@@ -454,6 +483,12 @@ export default function RestaurantDetail() {
 
     const navigate = useNavigate();
 
+    const sendToLogin = useCallback(() => {
+        if (loginId) return;
+        closeAndClearData();
+        navigate("/member/login");
+    }, [loginId]);
+
     const goReview = useCallback(() => {
         navigate(`/restaurant/detail/${restaurantId}/review`);
     }, []);
@@ -479,13 +514,9 @@ export default function RestaurantDetail() {
     const lockSlot = useCallback(async () => {
         if (!selectedSeat || !slotTime) return;
 
-        const isVisitor = !loginId;
-        const uuid = uuidv4();
-        const lockuser = isVisitor ? uuid : loginId;
-
         const request = {
             seatId: selectedSeat.seatId,
-            slotLockedBy: lockuser,
+            slotLockedBy: loginId,
             slotLockTime: slotTime
         };
 
@@ -560,10 +591,11 @@ export default function RestaurantDetail() {
             </>
         )
     }
-
+    console.log(fullInfo.restaurantAvgRating);
     return (
         <>
             <div className="container">
+                <Link to={`/restaurant/list`} className="text-decoration-none"><h3 className="mb-4"><FaAngleLeft className="me-2 fs-3" />목록으로</h3></Link>
                 <div className="row border rounded mb-4 p-3">
                     <div className="col">
                         <div className="info-wrapper position-relative">
@@ -587,7 +619,7 @@ export default function RestaurantDetail() {
                         </div>
                         <span className="fs-1 me-2">{fullInfo.restaurantName}</span>
                         <div className="review-info-wrapper d-flex" style={{ cursor: "pointer" }} onClick={goReview}>
-                            <span className="d-flex align-items-center"><FaStar className="text-warning me-2" />{fullInfo.restaurantAvgRating.toFixed(1)}</span>
+                            <span className="d-flex align-items-center"><FaStar className="text-warning me-2" />{(fullInfo.restaurantAvgRating ?? 0).toFixed(1)}</span>
                             <span className="ms-2">  ·  리뷰 <span>{fullInfo.reviewCount}</span>개 ＞</span>
                         </div>
                         <div className="mt-2">{fullInfo.restaurantDescription}</div>
@@ -608,9 +640,14 @@ export default function RestaurantDetail() {
                             <span className="ms-1">{distance}</span>
                             <IoIosArrowDown className="text-info ms-2" />
                         </div>
-                        {/* 메뉴 테이블에서 가격 평균 */}
-                        <div className="mt-2">점심 ? 원 · 저녁 ? 원 </div>
-                        <div className="mt-2" style={{ cursor: "pointer" }}>오늘 ({today})  ·  {openHours}<IoIosArrowDown className="text-info ms-2" /></div>
+                        {/* 예약금 */}
+                        <div className="mt-2 d-flex align-items-center"><FaWonSign className="me-2" />
+                            <span>{fullInfo.restaurantReservationPrice} (1인)</span>
+                        </div>
+                        <div className="mt-2 d-flex align-items-center" style={{ cursor: "pointer" }}>
+                            <FaCalendar className="me-2" />
+                            <span>오늘 ({today})  ·  {openHours}</span><IoIosArrowDown className="text-info ms-2" />
+                        </div>
                         <div className="tag-wrapper my-3">
                             <span className="badge bg-light">최대 {fullInfo.restaurantMaxPeople}명 예약</span>
                             <span className="ms-3 badge bg-primary">{fullInfo.placeGroupName}</span>
@@ -623,13 +660,11 @@ export default function RestaurantDetail() {
                         <Link to={`/restaurant/detail/${restaurantId}`} className="list-group-item text-primary">홈</Link>
                         <Link to={`/restaurant/detail/${restaurantId}/menu`} className="text-decoration-none">메뉴</Link>
                         <Link to={`/restaurant/detail/${restaurantId}/review`} className="text-decoration-none">리뷰</Link>
-                        <div className="divst-group-item">매장정보</div>
+                        <Link to={`/restaurant/detail/${restaurantId}/info`} className="text-decoration-none">매장정보</Link>
                     </div>
                 </div>
-                <Outlet />
                 <div className="row p-4 border">
                     <div className="col">
-                        <span>예약</span>
                         <div className="my-4 info p-3 text-center border rounded" style={{ cursor: "pointer" }} onClick={openModal}>
                             <span>
                                 {slotDate || peopleCount ? (
@@ -647,6 +682,7 @@ export default function RestaurantDetail() {
                                 <div className="col">
                                     <div className="slot-wrapper d-flex">
                                         <Swiper
+                                            className="w-100"
                                             spaceBetween={10}       // 슬라이드 사이 간격
                                             slidesPerView={4}       // 한 화면에 보여줄 슬라이드 수
                                             pagination={false} // 페이지 네비게이션
@@ -675,9 +711,10 @@ export default function RestaurantDetail() {
                                     {peopleCount <= fullInfo.restaurantMaxPeople ? (
                                         <div className="slot-wrapper d-flex">
                                             <Swiper
+                                                className="w-100"
                                                 key={peopleCount}
                                                 spaceBetween={10}
-                                                slidesPerView={6}
+                                                slidesPerView={10}
                                                 breakpoints={{
                                                     768: {
                                                         slidesPerView: 10
@@ -704,7 +741,30 @@ export default function RestaurantDetail() {
                             </div>}
                     </div>
                 </div>
-
+                {/* 메뉴 */}
+                <div className="row my-4">
+                    <div className="col">
+                        <div className="border ronded p-4">
+                        <div className="title-wrapper">
+                            <span>매장 정보</span>
+                        </div>
+                        <div className="mt-2">
+                            <span><FaLocationDot className="me-2" />{fullInfo.restaurantAddress}</span>
+                        </div>
+                        <div className="row mt-2">
+                            <div className="col">
+                                <div
+                                    className="kakao-map mt-3"
+                                    ref={mapRef}
+                                    style={{ width: "100%", height: "350px", border: "1px solid #ddd" }}
+                                >
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+                        <Outlet />
+                    </div>
+                </div>
             </div>
 
             {/* 모달 영역 */}
@@ -725,6 +785,7 @@ export default function RestaurantDetail() {
                                 <div className="col">
                                     <div className="slot-wrapper d-flex">
                                         <Swiper
+                                            className="w-100"
                                             spaceBetween={1}
                                             slidesPerView={7}
                                             pagination={false}
@@ -744,14 +805,10 @@ export default function RestaurantDetail() {
                                     {peopleCount <= fullInfo.restaurantMaxPeople ? (
                                         <div className="slot-wrapper d-flex">
                                             <Swiper
+                                                className="w-100"
                                                 key={peopleCount}
                                                 spaceBetween={10}
                                                 slidesPerView={6}
-                                                breakpoints={{
-                                                    768: {
-                                                        slidesPerView: 10
-                                                    }
-                                                }}
                                                 pagination={false}>
                                                 {availableSlots.map(slot => (
                                                     <SwiperSlide key={slot.timeStr}>
@@ -790,7 +847,7 @@ export default function RestaurantDetail() {
                                 <div className="row mt-4">
                                     <div className="col">
                                         <div className="btn-wrapper d-flex justify-content-center">
-                                            <button className="btn btn-outline-primary w-100" onClick={sendData}>예약하기</button>
+                                            {loginId ? <button className="btn btn-outline-primary w-100" onClick={sendData} disabled={!loginId}>예약하기</button> : <button className="btn btn-info" onClick={sendToLogin}>로그인 후 이용해주세요</button>}
                                         </div>
                                     </div>
                                 </div>)}

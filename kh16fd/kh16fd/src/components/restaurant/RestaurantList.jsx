@@ -19,10 +19,9 @@ import { buildRestaurantSlots, buildAvailableSlots } from "../../utils/custom-ut
 
 import "react-day-picker/dist/style.css";
 import "/src/custom-css/daypicker-custom.css";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAtom } from "jotai";
 import { loginIdState } from "../../utils/jotai";
-import { v4 as uuidv4 } from "uuid";
 
 export default function RestaurantList() {
     //hook 호출(스크롤 페이징)
@@ -276,6 +275,12 @@ export default function RestaurantList() {
 
     const navigate = useNavigate();
 
+    const sendToLogin = useCallback(() => {
+        if(loginId) return;
+        closeAndClearData();
+        navigate("/member/login");
+    }, [loginId]);
+    
     const selectSeatByType = useCallback((type) => {
         if (!availableSeatList) return;
         const seat = availableSeatList.find(s => s.seatType === type);
@@ -288,13 +293,9 @@ export default function RestaurantList() {
     const lockSlot = useCallback(async () => {
         if (!selectedSeat || !slotTime) return;
 
-        const isVisitor = !loginId;
-        const uuid = uuidv4();
-        const lockuser = isVisitor ? uuid : loginId;
-
         const request = {
             seatId: selectedSeat.seatId,
-            slotLockedBy: lockuser,
+            slotLockedBy: loginId,
             slotLockTime: slotTime
         };
 
@@ -380,8 +381,8 @@ export default function RestaurantList() {
                                     <li className="list-group-item">
                                         <div className="row">
                                             <div className="col">
-                                                <img className="d-flex rounded mt-2 clickable w-100" src={`http://localhost:8080/restaurant/image/${restaurant.restaurantId}`} style={{ height: "250px", objectFit: "cover" }} />
-                                                <h3 className="mt-2">{restaurant.restaurantName}</h3>
+                                                <Link to={`/restaurant/detail/${restaurant.restaurantId}`}><img className="d-flex rounded mt-2 clickable w-100" src={`http://localhost:8080/restaurant/image/${restaurant.restaurantId}`} style={{ height: "400px", objectFit: "cover" }} /></Link>
+                                                <h3 className="mt-4">{restaurant.restaurantName}</h3>
                                                 <div className="mt-2">{restaurant.statusText}  ·  <FaUser className="me-2" />최대 {restaurant.restaurantMaxPeople}명 예약 가능</div>
                                                 <div className="badge-wrapper mt-2">
                                                     <span className="badge bg-secondary me-2">{restaurant.placeGroupName}</span>
@@ -396,9 +397,6 @@ export default function RestaurantList() {
                                                         ({restaurant.reviewCount})
                                                     </span>
                                                 </div>
-                                                <div className="price-wrapper mt-2">
-                                                    <span>점심 ? 원</span>  ·  <span>저녁 ? 원 </span>
-                                                </div>
                                             </div>
                                         </div>
                                         {/* 슬롯 영역 (추후 swiper 적용) */}
@@ -406,6 +404,7 @@ export default function RestaurantList() {
                                             <div className="col">
                                                 <div className="slot-wrapper d-flex">
                                                     <Swiper
+                                                        className="w-100"
                                                         spaceBetween={10}       // 슬라이드 사이 간격
                                                         slidesPerView={5}       // 한 화면에 보여줄 슬라이드 수
                                                         pagination={false} // 페이지 네비게이션
@@ -509,7 +508,7 @@ export default function RestaurantList() {
                                 <div className="row mt-4">
                                     <div className="col">
                                         <div className="btn-wrapper d-flex justify-content-center">
-                                            <button className="btn btn-outline-primary w-100" onClick={sendData}>예약하기</button>
+                                            {loginId ? <button className="btn btn-outline-primary w-100" onClick={sendData} disabled={!loginId}>예약하기</button> : <button className="btn btn-info" onClick={sendToLogin}>로그인 후 이용해주세요</button>}
                                         </div>
                                     </div>
                                 </div>)}

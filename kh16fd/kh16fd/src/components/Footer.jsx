@@ -11,28 +11,25 @@ export default function Footer () {
 
                     {/* 회사 정보 */}
                     <div className="col-12 col-md-6 col-lg-4 mb-4">
-                        <h5 className="fs-2">KH정보교육원</h5>
+                        <h5 className="fs-2">미식 로그</h5>
                         <div className="d-flex flex-column small">
-                            <span>사업자등록번호 : 487-86-00763</span>
-                            <span>사업자등록번호 : 851-87-00622</span>
-                            <span>서울 강남 제2014-01호</span>
-                            <span>대표자 : 양진선</span>
-                            <span>책임자 : 양진선</span>
-                            <span>개인정보관리책임자 : 양진선</span>
+                            <span>사업자등록번호 : 123-12-12345</span>
+                            <span>사업자등록번호 : 234-34-23456</span>
+                            <span>서울 강남 제2025-01호</span>
+                            <span>대표자 : 김미식</span>
+                            <span>책임자 : 김미식</span>
+                            <span>개인정보관리책임자 : 김미식</span>
                         </div>
                     </div>
 
-                    {/* 지점 정보 */}
+                    {/* 제휴 정보 */}
                     <div className="col-12 col-md-6 col-lg-4 mb-4">
-                        <h5 className="fs-2">지점 정보</h5>
+                        <h5 className="fs-2">제휴 정보</h5>
                         <div className="d-flex flex-column small">
-                            <span>강남점1관 <Link to="#"><FaUpRightFromSquare /></Link></span>
-                            <span>강남점2관 <Link to="#"><FaUpRightFromSquare /></Link></span>
-                            <span>강남점3관 <Link to="#"><FaUpRightFromSquare /></Link></span>
-                            <span>종로점 <Link to="#"><FaUpRightFromSquare /></Link></span>
-                            <span>당산점 <Link to="#"><FaUpRightFromSquare /></Link></span>
-                            <span>논현점 <Link to="#"><FaUpRightFromSquare /></Link></span>
-                            <span>부산점 <Link to="#"><FaUpRightFromSquare /></Link></span>
+                            <span>맛집기행 <Link to="#"><FaUpRightFromSquare className="ms-2"/></Link></span>
+                            <span>미슐랭 가이드 <Link to="#"><FaUpRightFromSquare className="ms-2"/></Link></span>
+                            <span>오늘의 맛집 <Link to="#"><FaUpRightFromSquare className="ms-2"/></Link></span>
+                            
                         </div>
                     </div>
 

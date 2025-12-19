@@ -10,7 +10,7 @@ import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import {
     accessTokenState, adminState, clearLoginState,
     loginCompleteState, loginIdState, loginLevelState,
-    loginState, refreshTokenState
+    loginState, ownerState, refreshTokenState
 } from "../utils/jotai";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -26,6 +26,7 @@ export default function Menu() {
     const [, setRefreshToken] = useAtom(refreshTokenState);
     const isLogin = useAtomValue(loginState);
     const isAdmin = useAtomValue(adminState);
+    const isOwner = useAtomValue(ownerState);
     const clearLogin = useSetAtom(clearLoginState);
 
     const [open, setOpen] = useState(false);
@@ -78,11 +79,8 @@ export default function Menu() {
     return (
         <nav className="navbar navbar-expand-lg bg-light" ref={menuRef}>
             <div className="container-fluid">
-                <Link to="/">
-                    <img
-                        src="https://www.dummyimage.com/50x50/000/fff"
-                        className="ms-2 rounded navbar-brand"
-                    />
+                <Link to="/" className="ms-2 rounded navbar-brand">
+                    미식 로그
                 </Link>
 
                 <button
@@ -93,78 +91,135 @@ export default function Menu() {
                     <span className="navbar-toggler-icon"></span>
                 </button>
 
-                <div className={`collapse ${open ? "show" : ""} navbar-collapse`}>
-                    <ul className="navbar-nav">
-                        {isLogin ? (
-                            <li className="nav-item dropdown">
-                                <a className="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#">
-                                    <FaUser />
-                                </a>
-                                <div className="dropdown-menu">
-                                    <Link className="dropdown-item" to={`/member/info`}>
-                                        {loginId}
+                <div className={`collapse navbar-collapse ${open ? "show" : ""}`}>
+                    {/* 왼쪽 메뉴 */}
+                    <ul className="navbar-nav me-auto">
+
+                        {/* ===== 비회원 ===== */}
+                        {!isLogin && !isOwner && !isAdmin && (
+                            <>
+                                <li className="nav-item">
+                                    <Link className="nav-link" to="/member/login">
+                                        <FaRightToBracket className="me-1" />로그인
                                     </Link>
-                                    <Link className="dropdown-item" to="/restaurant/add">
-                                        <IoRestaurant className="me-2" />식당 등록
+                                </li>
+                                <li className="nav-item">
+                                    <Link className="nav-link" to="/member/join">
+                                        <FaUserPlus className="me-1" />회원가입
                                     </Link>
-                                    <Link className="dropdown-item" to="/member/info/reservation">
-                                        <FaCalendar className="me-2" />나의 예약
+                                </li>
+                                <li className="nav-item">
+                                    <Link className="nav-link" to="/member/bizjoin">
+                                        <IoRestaurant className="me-1" />비즈회원 가입
                                     </Link>
-                                    <Link className="dropdown-item" onClick={logout}>
-                                        <FaRightToBracket className="me-2" />로그아웃
-                                    </Link>
-                                </div>
-                            </li>
-                        ) : (
-                            <li className="nav-item dropdown">
-                                <a className="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#">
-                                    <FaUser />
-                                </a>
-                                <div className="dropdown-menu">
-                                    <Link to="/member/join" className="dropdown-item">
-                                        <FaUserPlus className="me-2" />회원가입
-                                    </Link>
-                                    <Link to="/member/login" className="dropdown-item">
-                                        <FaRightToBracket className="me-2" />로그인
-                                    </Link>
-                                </div>
-                            </li>
+                                </li>
+                            </>
                         )}
 
+                        {/* ===== 일반 회원 ===== */}
+                        {isLogin && !isOwner && !isAdmin && (
+                            <>
+                                <li className="nav-item">
+                                    <Link className="nav-link" to="/restaurant/list">
+                                        식당 목록
+                                    </Link>
+                                </li>
+                                <li className="nav-item">
+                                    <Link className="nav-link" to="/member/info">
+                                        <FaUser className="me-1" />내 정보
+                                    </Link>
+                                </li>
+                                <li className="nav-item">
+                                    <button className="nav-link btn btn-link" onClick={logout}>
+                                        로그아웃
+                                    </button>
+                                </li>
+                            </>
+                        )}
+
+                        {/* ===== 식당 주인 ===== */}
+                        {isOwner && (
+                            <>
+                                <li className="nav-item">
+                                    <Link className="nav-link" to="/restaurant/add">
+                                        <IoRestaurant className="me-1" />식당 등록
+                                    </Link>
+                                </li>
+
+                                {/* 내 정보 드롭다운 */}
+                                <li className="nav-item dropdown">
+                                    <a
+                                        className="nav-link dropdown-toggle"
+                                        href="#"
+                                        data-bs-toggle="dropdown"
+                                    >
+                                        <FaUser className="me-1" />내 정보
+                                    </a>
+                                    <div className="dropdown-menu">
+                                        <Link className="dropdown-item" to="/member/info">
+                                            내 정보
+                                        </Link>
+                                        <Link className="dropdown-item" to="/owner/my-restaurant">
+                                            식당 관리
+                                        </Link>
+                                    </div>
+                                </li>
+
+                                <li className="nav-item">
+                                    <button className="nav-link btn btn-link" onClick={logout}>
+                                        로그아웃
+                                    </button>
+                                </li>
+                            </>
+                        )}
+
+                        {/* ===== 관리자 ===== */}
                         {isAdmin && (
-                            <li className="nav-item dropdown">
-                                <a className="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#">
-                                    <FaGear className="me-2" />관리 메뉴
-                                </a>
-                                <div className="dropdown-menu">
-                                    
-                                    <Link className="dropdown-item" to="/admin/restaurant">
-                                        <FaClipboardCheck className="me-2" />미승인 레스토랑 목록
-                                    </Link>
-                                    <Link className="dropdown-item" to="/category/list">
-                                        <FaTag className="me-2" />카테고리 관리
-                                    </Link>
-                                    <Link className="dropdown-item" to="/category/image/list">
-                                        <FaTag className="me-2" />카테고리 이미지 관리
-                                    </Link>
-                                    <Link className="dropdown-item" to="/place/image/list">
-                                        <FaTag className="me-2" />지역 이미지 관리
-                                    </Link>
-                                    <Link className="dropdown-item" to="/banner/list">
-                                        <FaTag className="me-2" />배너 관리
-                                    </Link>
-                                    <Link className="dropdown-item" to="/admin/review/list">
-                                        <FaTag className="me-2" />리뷰 관리
-                                    </Link>
-                                </div>
-                            </li>
+                            <>
+                                <li className="nav-item dropdown">
+                                    <a
+                                        className="nav-link dropdown-toggle"
+                                        href="#"
+                                        data-bs-toggle="dropdown"
+                                    >
+                                        <FaGear className="me-1" />관리 메뉴
+                                    </a>
+                                    <div className="dropdown-menu">
+                                        <Link className="dropdown-item" to="/admin/restaurant">
+                                            <FaClipboardCheck className="me-2" />
+                                            미승인 레스토랑
+                                        </Link>
+                                        <Link className="dropdown-item" to="/category/list">
+                                            <FaTag className="me-2" />카테고리 관리
+                                        </Link>
+                                        <Link className="dropdown-item" to="/category/image/list">
+                                            <FaTag className="me-2" />카테고리 이미지
+                                        </Link>
+                                        <Link className="dropdown-item" to="/place/image/list">
+                                            <FaTag className="me-2" />지역 이미지
+                                        </Link>
+                                        <Link className="dropdown-item" to="/banner/list">
+                                            <FaTag className="me-2" />배너 관리
+                                        </Link>
+                                        <Link className="dropdown-item" to="/admin/review/list">
+                                            <FaTag className="me-2" />리뷰 관리
+                                        </Link>
+                                    </div>
+                                </li>
+
+                                <li className="nav-item">
+                                    <button className="nav-link btn btn-link" onClick={logout}>
+                                        로그아웃
+                                    </button>
+                                </li>
+                            </>
                         )}
                     </ul>
 
-                    {/* 검색 UI */}
-                    <div className="input-group flex-grow-1 ms-3">
+                    {/* ===== 검색창 (오른쪽 고정) ===== */}
+                    <div className="d-flex">
                         <input
-                            className="form-control"
+                            className="form-control me-2"
                             placeholder="검색어를 입력하세요"
                             value={keyword}
                             onChange={e => setKeyword(e.target.value)}
@@ -177,5 +232,6 @@ export default function Menu() {
                 </div>
             </div>
         </nav>
+
     );
 }
