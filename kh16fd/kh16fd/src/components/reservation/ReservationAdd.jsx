@@ -23,6 +23,33 @@ export default function ReservationAdd() {
         reservationPurpose: ""
     });
 
+    const [agreements, setAgreements] = useState({
+        required1: false,
+        required2: false,
+        required3: false,
+        required4: false
+    });
+
+    //전체 동의
+    const handleAllAgreement = (e) => {
+        const { checked } = e.target;
+        setAgreements(prev => ({
+            ...prev,
+            required3: checked,
+            required4: checked
+        }));
+    };
+
+    //개별 동의
+    const handleCheck = (name) => {
+        setAgreements(prev => ({
+            ...prev,
+            [name]: !prev[name]
+        }));
+    };
+
+    const isAllChecked = agreements.required1 && agreements.required2 && agreements.required3 && agreements.required4;
+    const isGroupChecked = agreements.required3 && agreements.required4;
     const [timeLeft, setTimeLeft] = useState(6 * 60);
 
     const [restaurantInfo, setRestaurantInfo] = useState(null);
@@ -199,11 +226,11 @@ export default function ReservationAdd() {
                         <li className="list-group-item d-flex flex-column p-4">
                             <label className="fw-bold"><span className="text-danger me-2">[필수]</span>확인해주세요</label>
                             <div className="input-group mt-2">
-                                <input type="checkbox" className="form-check-input me-2"></input>
-                                <label className="check-form-label"><span className="fw-bold me-2">[필수]</span>어쩌구 저쩌구</label>
+                                <input type="checkbox" className="form-check-input me-2" checked={agreements.required1} onChange={() => handleCheck("required1")}></input>
+                                <label className="check-form-label"><span className="fw-bold me-2">[필수]</span>매장 이용수칙을 확인했습니다</label>
                             </div>
                             <div className="input-group mt-2">
-                                <input type="checkbox" className="form-check-input me-2"></input>
+                                <input type="checkbox" className="form-check-input me-2" checked={agreements.required2} onChange={() => handleCheck("required2")}></input>
                                 <label className="check-form-label"><span className="fw-bold me-2">[필수]</span>유의 사항에 동의합니다</label>
                             </div>
                         </li>
@@ -217,7 +244,10 @@ export default function ReservationAdd() {
                             고객 요청사항
                         </li>
                         <li className="list-group-item p-4">
-                            <textarea className="form-control" rows={10} style={{ resize: "none" }} placeholder="매장에 요청할 내용이 있다면 작성해주세요"></textarea>
+                            <textarea className="form-control" rows={10} style={{ resize: "none" }} placeholder="매장에 요청할 내용이 있다면 작성해주세요"
+                                value={reservationInfo.reservationRequestNote}
+                                onChange={(e) => setReservationInfo({ ...reservationInfo, reservationRequestNote: e.target.value })}
+                            ></textarea>
                         </li>
                     </ul>
                 </div>
@@ -230,15 +260,15 @@ export default function ReservationAdd() {
                         </li>
                         <li className="list-group-item d-flex flex-column align-items-center">
                             <div className="input-group border rounded p-3">
-                                <input type="checkbox" className="form-check-input me-2"></input>
+                                <input type="checkbox" className="form-check-input me-2" checked={isGroupChecked} onChange={handleAllAgreement}></input>
                                 <label className="check-form-label">모두 동의합니다</label>
                             </div>
                             <div className="input-group mt-2 ms-3">
-                                <input type="checkbox" className="form-check-input me-2"></input>
+                                <input type="checkbox" className="form-check-input me-2" checked={agreements.required3} onChange={() => handleCheck("required3")}></input>
                                 <label className="check-form-label">개인정보 제3자 제공 동의</label>
                             </div>
                             <div className="input-group mt-2 ms-3">
-                                <input type="checkbox" className="form-check-input me-2"></input>
+                                <input type="checkbox" className="form-check-input me-2" checked={agreements.required4} onChange={() => handleCheck("required4")}></input>
                                 <label className="check-form-label">예약 취소/변경에 대한 환불 정책 동의</label>
                             </div>
                             <ul className="my-4 w-75 list-group">
@@ -254,11 +284,7 @@ export default function ReservationAdd() {
                                     <span>50% 환불</span>
                                 </li>
                                 <li className="list-group-item d-flex justify-content-between">
-                                    <span>당일</span>
-                                    <span>20% 환불</span>
-                                </li>
-                                <li className="list-group-item d-flex justify-content-between">
-                                    <span>노쇼</span>
+                                    <span>당일 취소 및 노쇼</span>
                                     <span>환불 불가</span>
                                 </li>
                             </ul>
@@ -267,7 +293,7 @@ export default function ReservationAdd() {
                 </div>
             </div>
             {/* 임시 버튼 */}
-            <button className="btn btn-info mt-4" onClick={openModal}>결제창 열기(임시 버튼)</button>
+            <button className={`btn mt-4 ${isAllChecked ? 'btn-info' : 'btn-secondary'}`} onClick={isAllChecked ? openModal : () => toast.warn("모든 필수 약관에 동의해주세요.")}>결제하기</button>
             {/* 체크박스 동의 시 활성화 */}
             <div className="modal fade" tabIndex={-1} data-bs-backdrop="static" ref={modal} data-bs-keyboard="false">
                 <div className="modal-dialog">
