@@ -162,6 +162,9 @@ export default function Menu() {
                                         <Link className="dropdown-item" to="/owner/my-restaurant">
                                             식당 관리
                                         </Link>
+                                        <Link className="dropdown-item" to="/owner/dashboard">
+                                            <FaClipboardCheck className="me-2"/>예약 관리
+                                        </Link>
                                     </div>
                                 </li>
 

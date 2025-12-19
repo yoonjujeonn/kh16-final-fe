@@ -41,6 +41,7 @@ import MyRestaurantDetail from "./owner/MyRestaurantDetail";
 import MyRestaurantList from "./owner/MyRestaurantList";
 import MyRestaurantManage from "./owner/MyRestaurantManage";
 import RestaurantConfirmDetail from "./admin/restaurant/RestaurantConfirmDetail";
+import OwnerReservationList from "./owner/OwnerReservationList";
 
 
 export default function Content() {
@@ -99,6 +100,9 @@ export default function Content() {
                         <Route path="/admin/review/list" element={<Admin><ReviewManager /></Admin>} />
                         <Route path="/admin/restaurant" element={<Admin><RestaurantConfirm/></Admin>} />
                         <Route path="/admin/restaurant/:restaurantId" element={<Admin><RestaurantConfirmDetail/></Admin>} />
+
+                        {/* 자영업자 */}
+                        <Route path="/owner/dashboard" element={<OwnerReservationList/>}/>
                         
                         {/* 카테고리 */}
                         <Route path="/category/add" element={<Admin><CategoryAdd /></Admin>} />
