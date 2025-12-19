@@ -30,6 +30,10 @@ export default function ReservationAdd() {
         required4: false
     });
 
+    //상세보기(화살표) state
+    const [showReservationDetail, setShowReservationDetail] = useState(false);
+    const [showPriceDetail, setShowPriceDetail] = useState(false);
+
     //전체 동의
     const handleAllAgreement = (e) => {
         const { checked } = e.target;
@@ -115,22 +119,22 @@ export default function ReservationAdd() {
 
     //페이지 나가면 락 잠금
     useEffect(() => {
-     const handleBeforeUnload = () => {
-        if(!lockId || isPaying) return;
+        const handleBeforeUnload = () => {
+            if (!lockId || isPaying) return;
 
-        navigator.sendBeacon(`/slot/lock/delete/${lockId}`); //페이지 벗어나면 락 해제
+            navigator.sendBeacon(`/slot/lock/delete/${lockId}`); //페이지 벗어나면 락 해제
 
-        // 새로고침 감지
-        const perfEntries = performance.getEntriesByType("navigation");
-        const isReload = perfEntries.length > 0 && perfEntries[0].type === "reload";
+            // 새로고침 감지
+            const perfEntries = performance.getEntriesByType("navigation");
+            const isReload = perfEntries.length > 0 && perfEntries[0].type === "reload";
 
-        if(isReload){
-            navigate(`/restaurant/detail/${reservationTarget}`, { replace : true });
-        }
-     };
-     
-     window.addEventListener("beforeunload", handleBeforeUnload);
-     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+            if (isReload) {
+                navigate(`/restaurant/detail/${reservationTarget}`, { replace: true });
+            }
+        };
+
+        window.addEventListener("beforeunload", handleBeforeUnload);
+        return () => window.removeEventListener("beforeunload", handleBeforeUnload);
     }, [lockId, isPaying]);
     //callback
     const loadData = useCallback(async () => {
@@ -172,7 +176,7 @@ export default function ReservationAdd() {
         }
 
     }, [reservationInfo]);
-   
+
     return (
         <>
             <div className="row mt-2">
@@ -195,12 +199,39 @@ export default function ReservationAdd() {
                 <div className="col">
                     <ul className="list-group border border-primary">
                         <li className="list-group-item list-group-item-primary text-center">예약 정보</li>
-                        <li className="list-group-item p-4 d-flex align-items-center justify-content-between">
-                            {/* 화살표 누르면 상세(예약 정보 : ? 테이블 : ? ) */}
-                            <span className="flex-grow-1 text-center">
+                        {/* <li className="list-group-item p-4 d-flex align-items-center justify-content-between"> */}
+                        {/* 화살표 누르면 상세(예약 정보 : ? 테이블 : ? ) */}
+                        {/* <span className="flex-grow-1 text-center">
                                 {dayStr} · {timeStr} · {reservationInfo.reservationPeopleCount}명 · {selectedSeat}
                             </span>
                             <FaAngleDown className="ms-2 fs-4 text-primary" />
+                        </li> */}
+                        <li className="list-group-item p-0">
+                            <div className="p-4 d-flex align-items-center justify-content-between"
+                                onClick={() => setShowReservationDetail(!showReservationDetail)}>
+                                <span className="flex-grow-1 text-center">
+                                    {dayStr} · {timeStr} · {reservationInfo.reservationPeopleCount}명 · {selectedSeat}
+                                </span>
+                                <FaAngleDown className="ms-2 fs-4 text-primary"
+                                    style={{ transform: showReservationDetail ? "rotate(180deg)" : "none", transition: "0.2s" }} />
+                            </div>
+                            {/* 상세내용 */}
+                            {showReservationDetail && (
+                                <div className="bg-light p-4 border-top">
+                                    <div className="d-flex justify-content-between mb-2">
+                                        <span>방문 식당</span><span className="fw-bold">{selectedRestaurant}</span>
+                                    </div>
+                                    <div className="d-flex justify-content-between mb-2">
+                                        <span>예약 인원</span><span className="fw-bold">성인 {reservationInfo.reservationPeopleCount}명</span>
+                                    </div>
+                                    <div className="d-flex justify-content-between mb-2">
+                                        <span>예약 일시</span><span className="fw-bold">{dayStr} {timeStr}</span>
+                                    </div>
+                                    <div className="d-flex justify-content-between mb-2">
+                                        <span>좌석 정보</span><span className="fw-bold">{selectedSeat}</span>
+                                    </div>
+                                </div>
+                            )}
                         </li>
                     </ul>
                 </div>
@@ -208,9 +239,46 @@ export default function ReservationAdd() {
             <div className="row mt-4">
                 <div className="col">
                     <ul className="list-group">
-                        <li className="list-group-item d-flex justify-content-between border-primary p-4">
-                            {/* 화살표 누르면 상세(예약금 : ? 인원 : ?) */}
-                            <span className="fw-bold">총 결제 금액</span> <span className="text-primary fw-bold">{price.toLocaleString()} 원<FaAngleDown className="ms-2 fs-4" /></span></li>
+                        {/* <li className="list-group-item d-flex justify-content-between border-primary p-4"> */}
+                        {/* 화살표 누르면 상세(예약금 : ? 인원 : ?) */}
+                        {/* <span className="fw-bold">총 결제 금액</span> <span className="text-primary fw-bold">{price.toLocaleString()} 원<FaAngleDown className="ms-2 fs-4" /></span>
+                        </li> */}
+                        <li className="list-group-item border-primary p-0">
+                            <div className="p-4 d-flex justify-content-between align-items-center"
+                                onClick={() => setShowPriceDetail(!showPriceDetail)}>
+                                <span className="fw-bold">총 결제 금액</span>
+                                <span className="text-primary fw-bold">
+                                    {price.toLocaleString()} 원
+                                    <FaAngleDown className="ms-2 fs-4"
+                                        style={{ transform: showPriceDetail ? "rotate(180deg)" : "none", transition: "0.3s" }} />
+                                </span>
+                            </div>
+                            {showPriceDetail && (
+                                <div className="bg-light p-4 border-top border-primary">
+                                    <div className="d-flex justify-content-between align-items-center mb-2">
+                                        <span>예약금 상세</span>
+                                        <span className="fw-bold">
+                                            {parseInt(restaurantInfo.restaurantReservationPrice).toLocaleString()}원 (1인)
+                                            <span className="mx-2 text-muted">×</span>
+                                            {reservationInfo.reservationPeopleCount}명
+                                        </span>
+                                    </div>
+
+                                    <hr className="my-3" />
+
+                                    <div className="d-flex justify-content-between align-items-center">
+                                        <span className="fw-bold text-danger">최종 결제 금액</span>
+                                        <span className="fs-5 fw-bold text-danger">
+                                            {price.toLocaleString()}원
+                                        </span>
+                                    </div>
+
+                                    <div className="text-end mt-2">
+                                        <small className="text-muted">* 인원수에 따른 예약금이 부과됩니다.</small>
+                                    </div>
+                                </div>
+                            )}
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -219,8 +287,19 @@ export default function ReservationAdd() {
                     <ul className="list-group border border-primary">
                         <li className="list-group-item list-group-item-primary text-center">
                             매장 유의사항
-                            <div className="my-4 card rounded p-4" style={{ backgroundColor: "rgba(245, 255, 240, 0.4)" }}>
-                                어쩌구 저쩌구
+                            <div className="my-4 card rounded p-4 text-start" style={{ backgroundColor: "rgba(245, 255, 240, 0.4)" }}>
+                                <div className="mb-2">
+                                    <strong>1. 예약 시간 준수</strong>
+                                    <p className="small mb-2 text-muted">- 예약 시간을 반드시 준수해주세요.</p>
+                                </div>
+                                <div className="mb-2">
+                                    <strong>2. 인원 변경 및 좌석 안내</strong>
+                                    <p className="small mb-2 text-muted">- 방문 인원 변경 시 사전에 꼭 연락 주시기 바랍니다. 좌석은 매장 상황에 따라 배정됩니다.</p>
+                                </div>
+                                <div className="mb-0">
+                                    <strong>3. 취소 및 환불 규정</strong>
+                                    <p className="small mb-0 text-muted">- 하단의 환불 정책을 반드시 확인해 주세요. 당일 취소는 환불이 어렵습니다.</p>
+                                </div>
                             </div>
                         </li>
                         <li className="list-group-item d-flex flex-column p-4">
