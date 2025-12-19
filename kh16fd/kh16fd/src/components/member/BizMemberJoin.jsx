@@ -355,7 +355,7 @@ export default function BizMemberJoin() { // MemberJoin -> BizMemberJoin
 
 
     return (<>
-        <Jumbotron subject="레스토랑 가입" detail="별 표시는 모두 작성해 주세요"></Jumbotron>
+        <Jumbotron subject="파트너 가입" detail="별 표시는 모두 작성해 주세요" bgColor="secondary"></Jumbotron>
 
         {/* 아이디 */}
         <div className="row mt-4">
