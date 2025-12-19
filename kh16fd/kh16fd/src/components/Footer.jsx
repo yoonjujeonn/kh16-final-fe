@@ -50,6 +50,9 @@ export default function Footer () {
                             <FaGithub className="me-2" size={24} />
                             <FaLinkedin className="me-2" size={24} />
                         </div>
+                        <div>
+                            <Link to="/member/bizJoin">입점을 원하시면 가입하세요!</Link>
+                        </div>
                     </div>
 
                 </div>
