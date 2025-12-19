@@ -22,7 +22,6 @@ import "/src/custom-css/daypicker-custom.css";
 import { useNavigate } from "react-router-dom";
 import { useAtom } from "jotai";
 import { loginIdState } from "../../utils/jotai";
-import { v4 as uuidv4 } from "uuid";
 
 export default function RestaurantList() {
     //hook 호출(스크롤 페이징)
@@ -288,13 +287,9 @@ export default function RestaurantList() {
     const lockSlot = useCallback(async () => {
         if (!selectedSeat || !slotTime) return;
 
-        const isVisitor = !loginId;
-        const uuid = uuidv4();
-        const lockuser = isVisitor ? uuid : loginId;
-
         const request = {
             seatId: selectedSeat.seatId,
-            slotLockedBy: lockuser,
+            slotLockedBy: loginId,
             slotLockTime: slotTime
         };
 
