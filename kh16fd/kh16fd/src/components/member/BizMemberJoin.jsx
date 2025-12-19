@@ -355,8 +355,14 @@ export default function BizMemberJoin() { // MemberJoin -> BizMemberJoin
 
 
     return (<>
-        <Jumbotron subject="레스토랑 가입" detail="별 표시는 모두 작성해 주세요"></Jumbotron>
-
+        <div className="title-wrapper my-4">
+        <h1 className="ms-3">비즈회원 회원가입</h1>
+        <div className="d-flex  justify-content-end align-items-center">
+        <FaAsterisk className="me-2 text-danger" />
+        <span className="text-muted">필수 항목을 모두 작성해주세요</span>
+        </div>
+        </div>
+        <div className="container border rounded p-4">
         {/* 아이디 */}
         <div className="row mt-4">
             <label className="col-sm-3 col-form-label">
@@ -551,7 +557,7 @@ export default function BizMemberJoin() { // MemberJoin -> BizMemberJoin
                 <div className="invalid-feedback">주소는 모두 작성하셔야 합니다</div>
             </div>
         </div>
-
+        </div>
         {/* 가입버튼 */}
         <div className="row mt-5">
             <div className="col text-end">

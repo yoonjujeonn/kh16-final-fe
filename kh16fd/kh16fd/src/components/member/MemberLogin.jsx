@@ -1,9 +1,10 @@
 import axios from "axios";
 import { useAtom } from "jotai";
 import { useCallback, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { accessTokenState, attachmentProfileAtomState, loginIdState, loginLevelState, refreshTokenState } from "../../utils/jotai";
 import Jumbotron from "../templates/Jumbotron";
+import { FaAngleDoubleRight, FaAngleRight } from "react-icons/fa";
 
 export default function MemberLogin() {
     //jotai state (전체 화면에 영향을 미치는 데이터)
@@ -79,9 +80,9 @@ export default function MemberLogin() {
 
     return (
         <>
-        <Jumbotron subject="회원 로그인" detail="원활한 기능 이용을 위해 로그인 해주세요"></Jumbotron>
             <div className="container my-4 d-flex flex-column justify-content-center align-items-center">
                 <div className="card p-4 shadow w-50">
+                    <div className="fs-2 fw-bold text-center mb-2">로그인</div>
                     <div className="my-2" style={{ height: "120px" }}>
                         <div className="form-floating">
                         <input type="text" name="memberId" value={member.memberId} onChange={changeStrValue} className="form-control" placeholder="" style={{ height: "60px" }}></input>
@@ -103,6 +104,17 @@ export default function MemberLogin() {
                         </div>
                     }
                      <button type="button" className={`mt-2 btn w-100 ${result === false ? "btn-danger" : "btn-success"}`} onClick={sendLogin}>로그인</button>
+                    <div className="mt-4 d-flex flex-column">
+                        <span className="mb-3 text-muted">아직 회원이 아니신가요? </span>
+                        <div className="d-flex justify-content-between">
+                        <small>일반 회원이라면</small>
+                        <small><Link to="/member/join">회원가입</Link></small>
+                        </div>
+                        <div className="d-flex justify-content-between">
+                        <small>사업자회원이라면</small>
+                        <small><Link to="/member/join">비즈회원 회원가입</Link></small>
+                        </div>
+                    </div>
                 </div>
             </div>
         </>

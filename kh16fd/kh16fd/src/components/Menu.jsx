@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import {
     FaCalendar,
+    FaClipboardCheck,
     FaGear, FaMagnifyingGlass, FaRightToBracket,
     FaTag, FaUserPlus
 } from "react-icons/fa6";
@@ -77,11 +78,8 @@ export default function Menu() {
     return (
         <nav className="navbar navbar-expand-lg bg-light" ref={menuRef}>
             <div className="container-fluid">
-                <Link to="/">
-                    <img
-                        src="https://www.dummyimage.com/50x50/000/fff"
-                        className="ms-2 rounded navbar-brand"
-                    />
+                <Link to="/" className="ms-2 rounded navbar-brand">
+                    미식 로그
                 </Link>
 
                 <button
@@ -144,6 +142,10 @@ export default function Menu() {
                                     <FaGear className="me-2" />관리 메뉴
                                 </a>
                                 <div className="dropdown-menu">
+                                    
+                                    <Link className="dropdown-item" to="/admin/restaurant">
+                                        <FaClipboardCheck className="me-2" />미승인 레스토랑 목록
+                                    </Link>
                                     <Link className="dropdown-item" to="/category/list">
                                         <FaTag className="me-2" />카테고리 관리
                                     </Link>

@@ -11,7 +11,7 @@ import "bootswatch/dist/minty/bootstrap.min.css";
 import "bootstrap";
 //custom css
 import './index.css'
-
+import './custom-css/fonts.css'
 // axios
 import "./utils/axios"
 

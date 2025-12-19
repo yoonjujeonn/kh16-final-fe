@@ -57,11 +57,11 @@ export default function MemberJoin() {
     const changeDateValue = useCallback((date) => {
         const replacement = format(date, "yyyy-MM-dd");//date-fns에서 제공하는 변환 명령
         setMember(prev => ({ ...prev, memberBirth: replacement }));
-        if(date === null) {
-            setMemberClass(prev => ({...prev, memberBirth : "is-invalid"}))
+        if (date === null) {
+            setMemberClass(prev => ({ ...prev, memberBirth: "is-invalid" }))
         }
-        else if(date !== null) {
-            setMemberClass (prev => ({...prev, memberBirth : "is-valid"}))
+        else if (date !== null) {
+            setMemberClass(prev => ({ ...prev, memberBirth: "is-valid" }))
         }
     }, [member, memberClass]);
 
@@ -355,213 +355,218 @@ export default function MemberJoin() {
 
 
     return (<>
-        <Jumbotron subject="회원 가입" detail="별 표시는 모두 작성해 주세요"></Jumbotron>
-
-        {/* 아이디 */}
-        <div className="row mt-4">
-            <label className="col-sm-3 col-form-label">
-                아이디 <FaAsterisk className="text-danger" />
-            </label>
-            <div className="col-sm-9">
-                <input type="text" className={`form-control ${memberClass.memberId}`}
-                    name="memberId" value={member.memberId} onChange={changeStrValue}
-                    onBlur={checkMemberId}/>
-                <div className="valid-feedback">사용 가능한 아이디입니다!</div>
-                <div className="invalid-feedback">{memberIdFeedback}</div>
-            </div>
+        <div className="title-wrapper my-4">
+        <h1 className="ms-3">회원가입</h1>
+        <div className="d-flex  justify-content-end align-items-center">
+        <FaAsterisk className="me-2 text-danger" />
+        <span className="text-muted">필수 항목을 모두 작성해주세요</span>
         </div>
-
-
-        {/* 비밀번호 */}
-        <div className="row mt-4">
-            <label className="col-sm-3 col-form-label">
-                비밀번호
-                <FaAsterisk className="text-danger" />
-                {showPassword === true ? (
-                    <FaEye className="ms-2 text-primary"
-                        onClick={e => setShowPassword(false)} />
-                ) : (
-                    <FaEyeSlash className="ms-2 text-primary"
-                        onClick={e => setShowPassword(true)} />
-                )}
-            </label>
-            <div className="col-sm-9">
-                <input type={showPassword === true ? "text" : "password"} className={`form-control ${memberClass.memberPw}`}
-                    name="memberPw" value={member.memberPw} onChange={changeStrValue}
-                    onBlur={checkMemberPw} autoComplete="off"/>
-                <div className="valid-feedback">사용 가능한 비밀번호 형식입니다!</div>
-                <div className="invalid-feedback">대문자, 소문자, 숫자, 특수문자를 반드시 한개 포함해 8~16자로 작성하세요</div>
-            </div>
         </div>
-
-        {/* 비밀번호 확인 */}
-        <div className="row mt-4">
-            <label className="col-sm-3 col-form-label">
-                비밀번호 확인
-                <FaAsterisk className="text-danger" />
-                {showPassword === true ? (
-                    <FaEye className="ms-2 text-primary"
-                        onClick={e => setShowPassword(false)} />
-                ) : (
-                    <FaEyeSlash className="ms-2 text-primary"
-                        onClick={e => setShowPassword(true)} />
-                )}
-            </label>
-            <div className="col-sm-9">
-                <input type={showPassword === true ? "text" : "password"} className={`form-control ${memberClass.memberPw2}`}
-                    name="memberPw2" value={member.memberPw2} onChange={changeStrValue}
-                    onBlur={checkMemberPw} />
-                <div className="valid-feedback">비밀번호가 일치합니다</div>
-                <div className="invalid-feedback">{memberPw2Feedback}</div>
-            </div>
-        </div>
-
-        {/* 닉네임 */}
-        <div className="row mt-4">
-            <label className="col-sm-3 col-form-label">
-                닉네임 <FaAsterisk className="text-danger" />
-            </label>
-            <div className="col-sm-9">
-                <input type="text" className={`form-control ${memberClass.memberNickname}`}
-                    name="memberNickname" value={member.memberNickname} onChange={changeStrValue}
-                    onBlur={checkMemberNickname} />
-                <div className="valid-feedback">멋진 닉네임이네요!</div>
-                <div className="invalid-feedback">{memberNicknameFeedback}</div>
-            </div>
-        </div>
-
-        {/* 이메일 */}
-        <div className="row mt-4">
-            <label className="col-sm-3 col-form-label">
-                이메일 <FaAsterisk className="text-danger" />
-            </label>
-            <div className="col-sm-9 d-flex text-nowrap flex-wrap">
-                <input type="text" inputMode="email"
-                    className={`form-control w-auto flex-grow-1 ${memberClass.memberEmail}`}
-                    name="memberEmail" value={member.memberEmail}
-                    onChange={changeStrValue} disabled={sending} onBlur={checkMemberEmail} />
-
-                {/* sending의 여부에 따라 버튼의 상태를 변경 */}
-                <button type="button" className="btn btn-primary ms-2" onClick={sendCertEmail}
-                    disabled={sending === true}>
-                    {sending === true ? <FaSpinner className="custom-spinner" /> : <FaPaperPlane />}
-                    <span className="ms-2 d-none d-sm-inline">
-                        {sending === true ? "인증번호 발송중" : "인증번호 보내기"}
-                    </span>
-                </button>
-                <div className="valid-feedback">이메일 인증이 완료되었습니다</div>
-                <div className="invalid-feedback">{memberEmailFeedback}</div>
-            </div>
-
-            {/* 인증번호 입력 화면 */}
-            {/* sending만으로 모두 해결이 안됨 */}
-            {sending === false && (
-                <div className="col-sm-9 offset-sm-3 mt-2 d-flex flex-wrap text-nowrap">
-                    <input type="text" inputMode="numeric"
-                        className={`form-control w-auto ${certNumberClass}`}
-                        placeholder="인증번호 입력"
-                        value={certNumber} onChange={changeCertNumber} />
-                    <button type="button" className="btn btn-success ms-2" onClick={sendCertCheck}>
-                        <FaKey />
-                        <span className="ms-2 d-none d-sm-inline">인증번호 확인</span>
-                    </button>
-                    <div className="invalid-feedback">
-                        {certNumberFeedback}
-                    </div>
+        <div className="container border rounded p-4">
+            {/* 아이디 */}
+            <div className="row mt-4">
+                <label className="col-sm-3 col-form-label">
+                    아이디 <FaAsterisk className="text-danger" />
+                </label>
+                <div className="col-sm-9">
+                    <input type="text" className={`form-control ${memberClass.memberId}`}
+                        name="memberId" value={member.memberId} onChange={changeStrValue}
+                        onBlur={checkMemberId} />
+                    <div className="valid-feedback">사용 가능한 아이디입니다!</div>
+                    <div className="invalid-feedback">{memberIdFeedback}</div>
                 </div>
-            )}
+            </div>
 
-        </div>
 
-        {/* 생년월일 */}
-        <div className="row mt-4">
-            <label className="col-sm-3 col-form-label">
-                생년월일 <FaAsterisk className="text-danger" />
-            </label>
-            <div className="col-sm-9">
-                {/* <input type="text" className="form-control"
+            {/* 비밀번호 */}
+            <div className="row mt-4">
+                <label className="col-sm-3 col-form-label">
+                    비밀번호
+                    <FaAsterisk className="text-danger" />
+                    {showPassword === true ? (
+                        <FaEye className="ms-2 text-primary"
+                            onClick={e => setShowPassword(false)} />
+                    ) : (
+                        <FaEyeSlash className="ms-2 text-primary"
+                            onClick={e => setShowPassword(true)} />
+                    )}
+                </label>
+                <div className="col-sm-9">
+                    <input type={showPassword === true ? "text" : "password"} className={`form-control ${memberClass.memberPw}`}
+                        name="memberPw" value={member.memberPw} onChange={changeStrValue}
+                        onBlur={checkMemberPw} autoComplete="off" />
+                    <div className="valid-feedback">사용 가능한 비밀번호 형식입니다!</div>
+                    <div className="invalid-feedback">대문자, 소문자, 숫자, 특수문자를 반드시 한개 포함해 8~16자로 작성하세요</div>
+                </div>
+            </div>
+
+            {/* 비밀번호 확인 */}
+            <div className="row mt-4">
+                <label className="col-sm-3 col-form-label">
+                    비밀번호 확인
+                    <FaAsterisk className="text-danger" />
+                    {showPassword === true ? (
+                        <FaEye className="ms-2 text-primary"
+                            onClick={e => setShowPassword(false)} />
+                    ) : (
+                        <FaEyeSlash className="ms-2 text-primary"
+                            onClick={e => setShowPassword(true)} />
+                    )}
+                </label>
+                <div className="col-sm-9">
+                    <input type={showPassword === true ? "text" : "password"} className={`form-control ${memberClass.memberPw2}`}
+                        name="memberPw2" value={member.memberPw2} onChange={changeStrValue}
+                        onBlur={checkMemberPw} />
+                    <div className="valid-feedback">비밀번호가 일치합니다</div>
+                    <div className="invalid-feedback">{memberPw2Feedback}</div>
+                </div>
+            </div>
+
+            {/* 닉네임 */}
+            <div className="row mt-4">
+                <label className="col-sm-3 col-form-label">
+                    닉네임 <FaAsterisk className="text-danger" />
+                </label>
+                <div className="col-sm-9">
+                    <input type="text" className={`form-control ${memberClass.memberNickname}`}
+                        name="memberNickname" value={member.memberNickname} onChange={changeStrValue}
+                        onBlur={checkMemberNickname} />
+                    <div className="valid-feedback">멋진 닉네임이네요!</div>
+                    <div className="invalid-feedback">{memberNicknameFeedback}</div>
+                </div>
+            </div>
+
+            {/* 이메일 */}
+            <div className="row mt-4">
+                <label className="col-sm-3 col-form-label">
+                    이메일 <FaAsterisk className="text-danger" />
+                </label>
+                <div className="col-sm-9 d-flex text-nowrap flex-wrap">
+                    <input type="text" inputMode="email"
+                        className={`form-control w-auto flex-grow-1 ${memberClass.memberEmail}`}
+                        name="memberEmail" value={member.memberEmail}
+                        onChange={changeStrValue} disabled={sending} onBlur={checkMemberEmail} />
+
+                    {/* sending의 여부에 따라 버튼의 상태를 변경 */}
+                    <button type="button" className="btn btn-primary ms-2" onClick={sendCertEmail}
+                        disabled={sending === true}>
+                        {sending === true ? <FaSpinner className="custom-spinner" /> : <FaPaperPlane />}
+                        <span className="ms-2 d-none d-sm-inline">
+                            {sending === true ? "인증번호 발송중" : "인증번호 보내기"}
+                        </span>
+                    </button>
+                    <div className="valid-feedback">이메일 인증이 완료되었습니다</div>
+                    <div className="invalid-feedback">{memberEmailFeedback}</div>
+                </div>
+
+                {/* 인증번호 입력 화면 */}
+                {/* sending만으로 모두 해결이 안됨 */}
+                {sending === false && (
+                    <div className="col-sm-9 offset-sm-3 mt-2 d-flex flex-wrap text-nowrap">
+                        <input type="text" inputMode="numeric"
+                            className={`form-control w-auto ${certNumberClass}`}
+                            placeholder="인증번호 입력"
+                            value={certNumber} onChange={changeCertNumber} />
+                        <button type="button" className="btn btn-success ms-2" onClick={sendCertCheck}>
+                            <FaKey />
+                            <span className="ms-2 d-none d-sm-inline">인증번호 확인</span>
+                        </button>
+                        <div className="invalid-feedback">
+                            {certNumberFeedback}
+                        </div>
+                    </div>
+                )}
+
+            </div>
+
+            {/* 생년월일 */}
+            <div className="row mt-4">
+                <label className="col-sm-3 col-form-label">
+                    생년월일 <FaAsterisk className="text-danger" />
+                </label>
+                <div className="col-sm-9">
+                    {/* <input type="text" className="form-control"
                     name="memberBirth" value={member.memberBirth} 
                     onChange={changeStrValue} /> */}
-                <DatePicker className={`form-control ${memberClass.memberBirth}`}
-                    selected={member.memberBirth}
-                    onChange={changeDateValue}
-                    dateFormat={"yyyy-MM-dd"}
-                    locale={"ko"}
-                    maxDate={new Date()}
-                    monthsShown={1}
-                    showYearDropdown
-                    showMonthDropdown
-                    dropdownMode="select"
-                />
-                {/* <div className="invalid-feedback">올바른 날짜 형식이 아닙니다</div> */}
-                {/* <div className="invalid-feedback">생년월일은 필수 항목입니다</div> */}
+                    <DatePicker className={`form-control ${memberClass.memberBirth}`}
+                        selected={member.memberBirth}
+                        onChange={changeDateValue}
+                        dateFormat={"yyyy-MM-dd"}
+                        locale={"ko"}
+                        maxDate={new Date()}
+                        monthsShown={1}
+                        showYearDropdown
+                        showMonthDropdown
+                        dropdownMode="select"
+                    />
+                    {/* <div className="invalid-feedback">올바른 날짜 형식이 아닙니다</div> */}
+                    {/* <div className="invalid-feedback">생년월일은 필수 항목입니다</div> */}
+                </div>
             </div>
-        </div>
 
 
-        {/* 연락처 */}
-        <div className="row mt-4">
-            <label className="col-sm-3 col-form-label">
-                연락처
-            </label>
-            <div className="col-sm-9">
-                <input type="text" inputMode="tel"
-                    className={`form-control ${memberClass.memberContact}`}
-                    name="memberContact"
-                    value={member.memberContact}
-                    onChange={changeStrValue} onBlur={checkMemberContact} />
-                {/* <div className="valid-feedback"></div> */}
-                <div className="invalid-feedback">010으로 시작하는 11자리 휴대전화번호를 입력하세요 -사용 불가</div>
+            {/* 연락처 */}
+            <div className="row mt-4">
+                <label className="col-sm-3 col-form-label">
+                    연락처
+                </label>
+                <div className="col-sm-9">
+                    <input type="text" inputMode="tel"
+                        className={`form-control ${memberClass.memberContact}`}
+                        name="memberContact"
+                        value={member.memberContact}
+                        onChange={changeStrValue} onBlur={checkMemberContact} />
+                    {/* <div className="valid-feedback"></div> */}
+                    <div className="invalid-feedback">010으로 시작하는 11자리 휴대전화번호를 입력하세요 -사용 불가</div>
+                </div>
             </div>
-        </div>
 
 
-        {/* 주소 우편번호 기본주소 상세주소 */}
-        <div className="row mt-4">
-            <label className="col-sm-3 col-form-label">주소</label>
-            <div className="col-sm-9 d-flex align-items-center">
-                <input type="text" name="memberPost" className={`form-control w-auto ${memberClass.memberPost}`}
-                    placeholder="우편번호" value={member.memberPost} size={6}
-                    onChange={changeStrValue}
-                    readOnly onClick={searchAddress} />
-                <button type="button" className="btn btn-secondary ms-2"
-                    onClick={searchAddress}>
-                    <FaMagnifyingGlass />
-                    <span className="ms=2 d-none d-sm-inline">찾기</span>
-                </button>
-                {/* 지우기버튼 */}
-                {hasAnyChar === true && (
-                    <button type="button" className="btn btn-danger ms-2"
-                        onClick={clearMemberAddress}>
-                        <FaXmark />
+            {/* 주소 우편번호 기본주소 상세주소 */}
+            <div className="row mt-4">
+                <label className="col-sm-3 col-form-label">주소</label>
+                <div className="col-sm-9 d-flex align-items-center">
+                    <input type="text" name="memberPost" className={`form-control w-auto ${memberClass.memberPost}`}
+                        placeholder="우편번호" value={member.memberPost} size={6}
+                        onChange={changeStrValue}
+                        readOnly onClick={searchAddress} />
+                    <button type="button" className="btn btn-secondary ms-2"
+                        onClick={searchAddress}>
+                        <FaMagnifyingGlass />
+                        <span className="ms=2 d-none d-sm-inline">찾기</span>
                     </button>
-                )}
+                    {/* 지우기버튼 */}
+                    {hasAnyChar === true && (
+                        <button type="button" className="btn btn-danger ms-2"
+                            onClick={clearMemberAddress}>
+                            <FaXmark />
+                        </button>
+                    )}
+                </div>
+                <div className="col-sm-9 offset-sm-3 mt-2">
+                    <input type="text" name="memberAddress1" className={`form-control ${memberClass.memberAddress1}`}
+                        placeholder="기본주소" value={member.memberAddress1}
+                        onChange={changeStrValue}
+                        readOnly onClick={searchAddress} />
+                </div>
+                <div className="col-sm-9 offset-sm-3 mt-2">
+                    <input type="text" name="memberAddress2" className={`form-control ${memberClass.memberAddress2}`}
+                        placeholder="상세주소" value={member.memberAddress2}
+                        onChange={changeStrValue} ref={memberAddress2Ref}
+                        onBlur={checkMemberAddress} />
+                    <div className="invalid-feedback">주소는 모두 작성하셔야 합니다</div>
+                </div>
             </div>
-            <div className="col-sm-9 offset-sm-3 mt-2">
-                <input type="text" name="memberAddress1" className={`form-control ${memberClass.memberAddress1}`}
-                    placeholder="기본주소" value={member.memberAddress1}
-                    onChange={changeStrValue}
-                    readOnly onClick={searchAddress} />
             </div>
-            <div className="col-sm-9 offset-sm-3 mt-2">
-                <input type="text" name="memberAddress2" className={`form-control ${memberClass.memberAddress2}`}
-                    placeholder="상세주소" value={member.memberAddress2}
-                    onChange={changeStrValue} ref={memberAddress2Ref}
-                    onBlur={checkMemberAddress} />
-                <div className="invalid-feedback">주소는 모두 작성하셔야 합니다</div>
-            </div>
-        </div>
-
-        {/* 가입버튼 */}
-        <div className="row mt-5">
-            <div className="col text-end">
-                <button type="button" className="btn btn-lg btn-success"
+            {/* 가입버튼 */}
+            <div className="row mt-5">
+                <div className="col text-end">
+                    <button type="button" className="btn btn-lg btn-success"
                         disabled={memberValid === false} onClick={sendData}>
-                    <FaUser className="me-2"/>
-                    <span>{memberValid === true ? "회원 가입하기" : "필수 항목 작성 후 가입 가능"}</span>                    
-                </button>
+                        <FaUser className="me-2" />
+                        <span>{memberValid === true ? "회원 가입하기" : "필수 항목 작성 후 가입 가능"}</span>
+                    </button>
+                </div>
             </div>
-        </div>
-
     </>)
 }

@@ -20,6 +20,8 @@ import { buildRestaurantSlots, buildAvailableSlots } from "../../utils/custom-ut
 import "react-day-picker/dist/style.css";
 import "/src/custom-css/daypicker-custom.css";
 import { useNavigate } from "react-router-dom";
+import { useAtom } from "jotai";
+import { loginIdState } from "../../utils/jotai";
 
 export default function RestaurantList() {
     //hook 호출(스크롤 페이징)
@@ -34,6 +36,8 @@ export default function RestaurantList() {
     const [availableSeatList, setAvailableSeatList] = useState([]);
     const [slotTime, setSlotTime] = useState(null);
     const [selectedSeat, setSelectedSeat] = useState(null);
+    const [lockData, setLockData] = useState(null);
+    const [loginId] = useAtom(loginIdState);
 
     //effect
     useEffect(() => {
@@ -231,9 +235,6 @@ export default function RestaurantList() {
                 peopleCount: peopleCount
             };
             const { data } = await axios.post("/slot/seat", request);
-            console.log(slotTime, `"${slotTime}"`);
-            console.log(slotTime);
-            console.log(data);
             setAvailableSeatList(data);
 
         } catch (err) {
@@ -262,30 +263,24 @@ export default function RestaurantList() {
         instance.hide();
     }, [modal]);
 
-    const changeSlotTime = useCallback(async (e) => {
+    const changeSlotTime = useCallback((e) => {
         const text = e.target.textContent;
         const date = format(slotDate, "yyyy-MM-dd");
         const dateStr = `${date} ${text}`;
 
-        const choice = await Swal.fire({
-            title: "예약 날짜 확인",
-            text: `${dateStr} 에 방문하시는게 맞나요?`,
-            icon: "question",
-            showCancelButton: true,
-            confirmButtonText: "확인",
-            cancelButtonText: "취소",
-            confirmButtonColor: "#00b894",
-            cancelButtonColor: "#ff7675",
-        });
-
-        if (choice.isConfirmed) {
-            setSlotTime(dateStr);
-        }
+        
+        setSlotTime(dateStr);
 
     }, [slotDate]);
 
     const navigate = useNavigate();
 
+    const sendToLogin = useCallback(() => {
+        if(loginId) return;
+        closeAndClearData();
+        navigate("/member/login");
+    }, [loginId]);
+    
     const selectSeatByType = useCallback((type) => {
         if (!availableSeatList) return;
         const seat = availableSeatList.find(s => s.seatType === type);
@@ -295,8 +290,29 @@ export default function RestaurantList() {
         }
     }, [availableSeatList]);
 
-    const sendData = useCallback(async () => {
+    const lockSlot = useCallback(async () => {
+        if (!selectedSeat || !slotTime) return;
 
+        const request = {
+            seatId: selectedSeat.seatId,
+            slotLockedBy: loginId,
+            slotLockTime: slotTime
+        };
+
+        try {
+            const response = await axios.post("/slot/lock", request);
+            return response.data;
+        }
+        catch(error){
+            console.log(error);
+        }
+
+    }, [selectedSeat, slotTime, loginId]);
+    
+    const sendData = useCallback(async () => {
+        
+        if(!slotTime || !selectedSeat || !peopleCount || !selectedRestaurant) return;
+        
         const choice = await Swal.fire({
             title: "예약 정보를 확인해주세요",
             text: `${selectedRestaurant.restaurantName} · ${slotTime} · ${selectedSeat.seatType} · ${peopleCount}명`,
@@ -307,18 +323,33 @@ export default function RestaurantList() {
             confirmButtonColor: "#00b894",
             cancelButtonColor: "#ff7675",
         });
+
+        if (!choice.isConfirmed) return;
+
+        let lockId;
+
+        try {
+            lockId = await lockSlot();
+        } 
+        catch (error) {
+            console.error("에러 로그", error);
+
+            toast.error("좌석을 잠글 수 없습니다");
+            return;
+        }
+
         const info = {
             reservationTarget: selectedSeat.seatRestaurantId,
             reservationSeat: selectedSeat.seatId,
             reservationPeopleCount: peopleCount,
             reservationTime: slotTime,
             selectedRestaurant: selectedRestaurant.restaurantName,
-            selectedSeat: selectedSeat.seatType
-        }
-        if (choice.isConfirmed) {
-            closeModal();
-            navigate("/reservation/add", { state: info });
-        }
+            selectedSeat: selectedSeat.seatType,
+            lockId: lockId
+        };
+
+        closeModal();
+        navigate("/reservation/add", { state: info });
 
     }, [slotTime, selectedSeat, peopleCount, selectedRestaurant]);
 
@@ -336,15 +367,17 @@ export default function RestaurantList() {
         closeModal();
     }, [modal]);
 
+    console.log(availableSlots);
+
     return (
         <>
             <div className="row mt-4">
-                <div className="col">
+                <div className="col-sm-12">
                     {/* 영업중인 식당 목록 영역 */}
                     <div className="d-flex mb-4 flex-wrap justify-content-center">
                         {statusWithRestaurantList.map(restaurant =>
                             <div className="mt-3 d-flex flex-column align-items-center w-100" key={restaurant.restaurantId}>
-                                <ul className="list-group w-75">
+                                <ul className="list-group w-100">
                                     <li className="list-group-item">
                                         <div className="row">
                                             <div className="col">
@@ -381,13 +414,13 @@ export default function RestaurantList() {
                                                         {restaurantSlot[restaurant.restaurantId]?.map(slot => (
                                                             <SwiperSlide key={slot.date}>
                                                                 <button
-                                                                    className={`btn p-1 d-flex flex-column align-items-center ${slot.status === "휴무" || slot.status === "예약 마감" || slot.status === "영업 마감" ? "btn-light" : "btn-outline-primary"} w-100`}
+                                                                    className={`btn text-nowrap d-flex flex-column align-items-center ${slot.status === "휴무" || slot.status === "예약 마감" || slot.status === "영업 마감" ? "btn-light" : "btn-outline-primary"} w-100`}
                                                                     disabled={slot.status === "예약 마감" || slot.status === "휴무" || slot.status === "영업 마감"}
                                                                     onClick={() => selectSlot(restaurant, slot)}
                                                                 >
-                                                                    {slot.isToday && (<span className={`text-${slot.status === "휴무" ? "dark" : ""} mt-1`}>오늘 ({slot.dayName})</span>)}
-                                                                    {slot.isTomorrow && (<span className={`text-${slot.status === "휴무" ? "dark" : ""} mt-1`}>내일 ({slot.dayName})</span>)}
-                                                                    {!slot.isToday && !slot.isTomorrow && (<span className={`text-${slot.status === "휴무" ? "dark" : ""} mt-1`}>{slot.dateStr} ({slot.dayName})</span>)}
+                                                                    {slot.isToday && (<small className={`text-${slot.status === "휴무" ? "dark" : ""} mt-1`}>오늘 ({slot.dayName})</small>)}
+                                                                    {slot.isTomorrow && (<small className={`text-${slot.status === "휴무" ? "dark" : ""} mt-1`}>내일 ({slot.dayName})</small>)}
+                                                                    {!slot.isToday && !slot.isTomorrow && (<small className={`text-${slot.status === "휴무" ? "dark" : ""} mt-1`}>{slot.dateStr} ({slot.dayName})</small>)}
                                                                     <small className={`text-${slot.status === "휴무" || slot.status === "예약 마감" || slot.status === "영업 마감" ? "dark" : ""} fw-bold mt-1`}>{slot.status}</small>
                                                                 </button>
                                                             </SwiperSlide>
@@ -418,7 +451,7 @@ export default function RestaurantList() {
                             </div>
                             <hr />
                             <div className="row mt-4">
-                                <div className="col">
+                                <div className="col-sm-12">
                                     <div className="slot-wrapper d-flex">
                                         <Swiper
                                             spaceBetween={1}
@@ -477,7 +510,7 @@ export default function RestaurantList() {
                                 <div className="row mt-4">
                                     <div className="col">
                                         <div className="btn-wrapper d-flex justify-content-center">
-                                            <button className="btn btn-outline-primary w-100" onClick={sendData}>예약하기</button>
+                                            {loginId ? <button className="btn btn-outline-primary w-100" onClick={sendData} disabled={!loginId}>예약하기</button> : <button className="btn btn-info" onClick={sendToLogin}>로그인 후 이용해주세요</button>}
                                         </div>
                                     </div>
                                 </div>)}
