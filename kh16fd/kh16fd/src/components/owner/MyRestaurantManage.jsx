@@ -1,15 +1,16 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAtom } from "jotai";
 import { accessTokenState } from "../../utils/jotai";
 import { toast } from "react-toastify";
+import { Modal } from "bootstrap";
 
 export default function MyRestaurantManage() {
     const { restaurantId } = useParams();
     const [accessToken] = useAtom(accessTokenState);
-
     const navigate = useNavigate();
+
     /* =========================
        카테고리 STATE
     ========================= */
@@ -20,7 +21,7 @@ export default function MyRestaurantManage() {
     const [categoryNameMap, setCategoryNameMap] = useState({});
 
     /* =========================
-       메뉴 STATE (info 포함)
+       메뉴 STATE
     ========================= */
     const [menuList, setMenuList] = useState([]);
     const [newMenu, setNewMenu] = useState({
@@ -28,12 +29,18 @@ export default function MyRestaurantManage() {
         menuPrice: "",
         menuInfo: ""
     });
-    const [editMenuId, setEditMenuId] = useState(null);
 
     /* =========================
-       좌석
+       좌석 STATE
     ========================= */
     const [seatList, setSeatList] = useState([]);
+    const [seat, setSeat] = useState({
+        seatType: "",
+        seatMaxPeople: 1,
+        count: 1
+    });
+
+    const seatModal = useRef(null);
 
     /* =========================
        카테고리 API
@@ -51,11 +58,9 @@ export default function MyRestaurantManage() {
         axios.get(`/category/child/${parentNo}`)
             .then(res => {
                 setChildList(res.data);
-                setCategoryNameMap(prev => {
-                    const copy = { ...prev };
-                    res.data.forEach(c => copy[c.categoryNo] = c.categoryName);
-                    return copy;
-                });
+                const map = {};
+                res.data.forEach(c => map[c.categoryNo] = c.categoryName);
+                setCategoryNameMap(prev => ({ ...prev, ...map }));
             });
     }, [parentNo]);
 
@@ -64,15 +69,12 @@ export default function MyRestaurantManage() {
 
         axios.get(`/owner/restaurant/${restaurantId}/category`, {
             headers: { Authorization: `Bearer ${accessToken}` }
-        })
-            .then(res => {
-                setCheckedCategories(res.data.map(c => c.categoryNo));
-                setCategoryNameMap(prev => {
-                    const copy = { ...prev };
-                    res.data.forEach(c => copy[c.categoryNo] = c.categoryName);
-                    return copy;
-                });
-            });
+        }).then(res => {
+            setCheckedCategories(res.data.map(c => c.categoryNo));
+            const map = {};
+            res.data.forEach(c => map[c.categoryNo] = c.categoryName);
+            setCategoryNameMap(prev => ({ ...prev, ...map }));
+        });
     }, [restaurantId, accessToken]);
 
     const toggleCategory = (no) => {
@@ -101,8 +103,7 @@ export default function MyRestaurantManage() {
 
         axios.get(`/owner/restaurant/${restaurantId}/menu`, {
             headers: { Authorization: `Bearer ${accessToken}` }
-        })
-            .then(res => setMenuList(res.data));
+        }).then(res => setMenuList(res.data));
     }, [restaurantId, accessToken]);
 
     const addMenu = () => {
@@ -127,19 +128,6 @@ export default function MyRestaurantManage() {
             .catch(() => toast.error("메뉴 추가 실패"));
     };
 
-    const updateMenu = (menu) => {
-        axios.put(
-            `/owner/restaurant/${restaurantId}/menu/${menu.menuId}`,
-            menu,
-            { headers: { Authorization: `Bearer ${accessToken}` } }
-        )
-            .then(() => {
-                toast.success("메뉴 수정 완료");
-                setEditMenuId(null);
-            })
-            .catch(() => toast.error("메뉴 수정 실패"));
-    };
-
     const deleteMenu = (menuId) => {
         if (!window.confirm("메뉴를 삭제할까요?")) return;
 
@@ -155,16 +143,61 @@ export default function MyRestaurantManage() {
     };
 
     /* =========================
-       좌석 조회
+       좌석 API
     ========================= */
-    useEffect(() => {
-        if (!accessToken) return;
+    const loadSeats = () => {
+        axios.get(`/slot/seat/list/${restaurantId}`)
+            .then(res => setSeatList(res.data))
+            .catch(() => toast.error("좌석 조회 실패"));
+    };
 
-        axios.get(`/owner/restaurant/${restaurantId}/seat`, {
-            headers: { Authorization: `Bearer ${accessToken}` }
-        })
-            .then(res => setSeatList(res.data));
-    }, [restaurantId, accessToken]);
+    useEffect(() => {
+        loadSeats();
+    }, [restaurantId]);
+
+    const openSeatModal = () => {
+        Modal.getOrCreateInstance(seatModal.current).show();
+    };
+
+    const closeSeatModal = () => {
+        Modal.getInstance(seatModal.current).hide();
+    };
+
+    const createSeat = async () => {
+        if (!seat.seatType || seat.count < 1) {
+            toast.warning("좌석 정보를 입력하세요");
+            return;
+        }
+
+        try {
+            for (let i = 0; i < seat.count; i++) {
+                await axios.post("/slot/seat/add", {
+                    seatRestaurantId: restaurantId,
+                    seatType: seat.seatType,
+                    seatMaxPeople: seat.seatMaxPeople
+                });
+            }
+
+            toast.success("좌석 등록 완료");
+            setSeat({ seatType: "", seatMaxPeople: 1, count: 1 });
+            closeSeatModal();
+            loadSeats();
+        }
+        catch (e) {
+            toast.error("좌석 등록 실패");
+        }
+    };
+    
+    const deleteSeat = (seatId) => {
+        if (!window.confirm("좌석을 삭제할까요?")) return;
+
+        axios.delete(`/slot/seat/${seatId}`)
+            .then(() => {
+                toast.success("좌석 삭제 완료");
+                loadSeats();
+            })
+            .catch(() => toast.error("좌석 삭제 실패"));
+    };
 
     return (
         <div className="container mt-4">
@@ -174,22 +207,17 @@ export default function MyRestaurantManage() {
             <div className="card p-4 mb-5">
                 <h4 className="mb-3">카테고리 관리</h4>
 
-                <div className="mb-3">
-                    <strong>선택된 카테고리 :</strong>
-                    <div className="mt-2">
-                        {checkedCategories.map(no => (
-                            <span key={no} className="badge bg-primary me-2">
-                                {categoryNameMap[no]}
-                            </span>
-                        ))}
-                    </div>
+                <div className="mb-2">
+                    {checkedCategories.map(no => (
+                        <span key={no} className="badge bg-primary me-2">
+                            {categoryNameMap[no]}
+                        </span>
+                    ))}
                 </div>
 
-                <select
-                    className="form-select my-3"
+                <select className="form-select my-3"
                     value={parentNo}
-                    onChange={e => setParentNo(e.target.value)}
-                >
+                    onChange={e => setParentNo(e.target.value)}>
                     <option value="">상위 카테고리 선택</option>
                     {parentList.map(p => (
                         <option key={p.categoryNo} value={p.categoryNo}>
@@ -198,18 +226,16 @@ export default function MyRestaurantManage() {
                     ))}
                 </select>
 
-                <div className="d-flex flex-wrap">
-                    {childList.map(c => (
-                        <label key={c.categoryNo} className="me-3 mb-2">
-                            <input
-                                type="checkbox"
-                                checked={checkedCategories.includes(c.categoryNo)}
-                                onChange={() => toggleCategory(c.categoryNo)}
-                            />{" "}
-                            {c.categoryName}
-                        </label>
-                    ))}
-                </div>
+                {childList.map(c => (
+                    <label key={c.categoryNo} className="me-3">
+                        <input
+                            type="checkbox"
+                            checked={checkedCategories.includes(c.categoryNo)}
+                            onChange={() => toggleCategory(c.categoryNo)}
+                        />{" "}
+                        {c.categoryName}
+                    </label>
+                ))}
 
                 <button className="btn btn-primary mt-3" onClick={saveCategory}>
                     카테고리 저장
@@ -220,118 +246,153 @@ export default function MyRestaurantManage() {
             <div className="card p-4 mb-5">
                 <h4 className="mb-3">메뉴 관리</h4>
 
-                {/* 메뉴 추가 */}
                 <div className="d-flex mb-3">
-                    <input
-                        className="form-control me-2"
-                        placeholder="메뉴명"
+                    <input className="form-control me-2" placeholder="메뉴명"
                         value={newMenu.menuName}
                         onChange={e => setNewMenu({ ...newMenu, menuName: e.target.value })}
                     />
-                    <input
-                        className="form-control me-2"
-                        type="number"
-                        placeholder="가격"
+                    <input className="form-control me-2" type="number" placeholder="가격"
                         value={newMenu.menuPrice}
                         onChange={e => setNewMenu({ ...newMenu, menuPrice: e.target.value })}
                     />
-                    <input
-                        className="form-control me-2"
-                        placeholder="메뉴 설명"
+                    <input className="form-control me-2" placeholder="설명"
                         value={newMenu.menuInfo}
                         onChange={e => setNewMenu({ ...newMenu, menuInfo: e.target.value })}
                     />
                     <button className="btn btn-success" onClick={addMenu}>추가</button>
                 </div>
 
-                {/* 메뉴 목록 */}
-                {menuList.map(menu => (
-                    <div key={menu.menuId} className="d-flex align-items-center mb-2">
-                        {editMenuId === menu.menuId ? (
-                            <>
-                                <input
-                                    className="form-control me-2"
-                                    value={menu.menuName}
-                                    onChange={e =>
-                                        setMenuList(prev =>
-                                            prev.map(m =>
-                                                m.menuId === menu.menuId
-                                                    ? { ...m, menuName: e.target.value }
-                                                    : m
-                                            )
-                                        )
-                                    }
-                                />
-                                <input
-                                    className="form-control me-2"
-                                    type="number"
-                                    value={menu.menuPrice}
-                                    onChange={e =>
-                                        setMenuList(prev =>
-                                            prev.map(m =>
-                                                m.menuId === menu.menuId
-                                                    ? { ...m, menuPrice: e.target.value }
-                                                    : m
-                                            )
-                                        )
-                                    }
-                                />
-                                <input
-                                    className="form-control me-2"
-                                    value={menu.menuInfo}
-                                    onChange={e =>
-                                        setMenuList(prev =>
-                                            prev.map(m =>
-                                                m.menuId === menu.menuId
-                                                    ? { ...m, menuInfo: e.target.value }
-                                                    : m
-                                            )
-                                        )
-                                    }
-                                />
-                                <button className="btn btn-primary me-2" onClick={() => updateMenu(menu)}>저장</button>
-                                <button className="btn btn-secondary" onClick={() => setEditMenuId(null)}>취소</button>
-                            </>
-                        ) : (
-                            <>
-                                <div className="flex-grow-1">
-                                    <div>
-                                        <strong>{menu.menuName}</strong> - {menu.menuPrice}원
-                                    </div>
-                                    <div className="text-muted small">
-                                        {menu.menuInfo}
-                                    </div>
-                                </div>
-                                <button className="btn btn-outline-primary btn-sm me-2" onClick={() => setEditMenuId(menu.menuId)}>수정</button>
-                                <button className="btn btn-outline-danger btn-sm" onClick={() => deleteMenu(menu.menuId)}>삭제</button>
-                            </>
-                        )}
+                {menuList.map(m => (
+                    <div key={m.menuId}
+                        className="d-flex justify-content-between align-items-center mb-2">
+                        <div>
+                            <strong>{m.menuName}</strong> - {m.menuPrice}원
+                            <div className="text-muted small">{m.menuInfo}</div>
+                        </div>
+                        <button className="btn btn-outline-danger btn-sm"
+                            onClick={() => deleteMenu(m.menuId)}>
+                            삭제
+                        </button>
                     </div>
                 ))}
             </div>
 
             {/* ================= 좌석 ================= */}
-            <div className="card p-4">
-                <h4>좌석 관리</h4>
+            <div className="card p-4 mb-5">
+                <h4 className="mb-3">좌석 관리</h4>
+
                 {seatList.map(s => (
-                    <div key={s.seatId}>
-                        {s.seatName} ({s.seatCapacity}인)
+                    <div key={s.seatId}
+                        className="d-flex justify-content-between mb-2">
+                        <div>{s.seatType} / {s.seatMaxPeople}명</div>
+                        <button className="btn btn-outline-danger btn-sm"
+                            onClick={() => deleteSeat(s.seatId)}>
+                            삭제
+                        </button>
                     </div>
                 ))}
-            </div>
-            {/* ================= 하단 버튼 ================= */}
-            <div className="d-flex justify-content-between mt-4 mb-5">
-                <button
-                    className="btn btn-secondary"
-                    onClick={() => navigate(-1)}
-                >
-                    이전
-                </button>
 
-                <button
-                    className="btn btn-primary"
-                    onClick={() => navigate("/owner/my-restaurant")}
-                >
+                <button className="btn btn-success mt-3" onClick={openSeatModal}>
+                    좌석 등록
+                </button>
+            </div>
+
+            {/* 좌석 정보 모달 (등록 화면과 동일) */}
+            <div
+                className="modal fade"
+                tabIndex={-1}
+                data-bs-backdrop="static"
+                data-bs-keyboard="false"
+                ref={seatModal}
+            >
+                <div className="modal-dialog">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h5 className="modal-title">좌석 정보 설정</h5>
+                            <button
+                                type="button"
+                                className="btn-close"
+                                onClick={closeSeatModal}
+                            ></button>
+                        </div>
+
+                        <div className="modal-body">
+                            {/* 좌석 종류 */}
+                            <div className="row">
+                                <label className="col-sm-3 col-form-label">좌석 종류</label>
+                                <select
+                                    className="col-sm-9 form-select w-50"
+                                    value={seat.seatType}
+                                    onChange={e =>
+                                        setSeat({ ...seat, seatType: e.target.value })
+                                    }
+                                >
+                                    <option value="">좌석 종류</option>
+                                    <option value="홀">홀</option>
+                                    <option value="창가">창가</option>
+                                    <option value="룸">룸</option>
+                                    <option value="바">바</option>
+                                </select>
+                            </div>
+
+                            {/* 수용 인원 */}
+                            <div className="row mt-3">
+                                <label className="col-sm-3 col-form-label">
+                                    수용 인원(명)
+                                </label>
+                                <input
+                                    type="number"
+                                    className="col-sm-9 form-control w-25"
+                                    min={1}
+                                    value={seat.seatMaxPeople}
+                                    onChange={e =>
+                                        setSeat({
+                                            ...seat,
+                                            seatMaxPeople: e.target.value
+                                        })
+                                    }
+                                />
+                            </div>
+
+                            {/* 좌석 수 */}
+                            <div className="row mt-3">
+                                <label className="col-sm-3 col-form-label">
+                                    좌석 수(개)
+                                </label>
+                                <input
+                                    type="number"
+                                    className="col-sm-9 form-control w-25"
+                                    min={1}
+                                    value={seat.count}
+                                    onChange={e =>
+                                        setSeat({
+                                            ...seat,
+                                            count: e.target.value
+                                        })
+                                    }
+                                />
+                            </div>
+                        </div>
+
+                        <div className="modal-footer">
+                            <button className="btn btn-success" onClick={createSeat}>
+                                좌석 생성
+                            </button>
+                            <button
+                                className="btn btn-secondary"
+                                onClick={closeSeatModal}
+                            >
+                                닫기
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="d-flex justify-content-between mb-5">
+                <button className="btn btn-secondary" onClick={() => navigate(-1)}>이전</button>
+                <button className="btn btn-primary"
+                    onClick={() => navigate("/owner/my-restaurant")}>
                     완료
                 </button>
             </div>
