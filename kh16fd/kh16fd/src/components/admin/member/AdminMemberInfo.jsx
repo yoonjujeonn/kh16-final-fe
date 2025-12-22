@@ -12,7 +12,8 @@ export default function AdminMemberInfo() {
     const navigate = useNavigate();
     const { memberId } = useParams();
     const [accessToken] = useAtom(accessTokenState);
-    const profileUrl = useAtomValue(profileImageUrlAtom);
+    const [profile, setProfile] = useState(null);
+    // const profileUrl = useAtomValue(profileImageUrlAtom);
 
     const [member, setMember] = useState(null);
     // const [loading, setLoading] = useState(true);
@@ -26,6 +27,7 @@ export default function AdminMemberInfo() {
             headers: { Authorization: `Bearer ${accessToken}` }
         })
             .then(member => {
+                loadData();
                 setMember(member.data);
                 console.log(member.data);
                 // if (member.memberStatus === "ACTIVE") {
@@ -42,6 +44,15 @@ export default function AdminMemberInfo() {
                 navigate("/admin/setting");
             });
     }, [memberId, accessToken, navigate]);
+
+    const loadData = useCallback(async () => {
+        try {
+            const response = await axios.get(`http://localhost:8080/memberProfile/${memberId}`);
+            setProfile(response.data);
+        } catch (e) { 
+            console.log(e);
+        }
+    }, [memberId])
 
     // 회원탈퇴
     const memberWithdraw = useCallback(async () => {
@@ -138,7 +149,7 @@ export default function AdminMemberInfo() {
     }, []);
 
     return (<>
-        
+
         <h1>{member?.memberNickname} 님의 정보</h1>
 
 
@@ -148,8 +159,12 @@ export default function AdminMemberInfo() {
                 <div className="col-sm-3 text-primary">프로필 이미지</div>
                 <div className="col-sm-9">
                     <img
-                        src={profileUrl}
+                        src={profile && profile.attachmentNo
+                            ? `http://localhost:8080/attachment/${profile.attachmentNo}`
+                            : "https://dummyimage.com/300X300/a6a6a6/fff.png&text=no+profile"
+                        }
                         className="border rounded"
+                        style={{ width: "150px", height: "150px", objectFit: "cover" }}
                     />
                 </div>
             </div>
