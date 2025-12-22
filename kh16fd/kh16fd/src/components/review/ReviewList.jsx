@@ -36,13 +36,13 @@ export default function ReviewList() {
         setLoading(true);
         setError(null);
         try {
-            const response = await axios.get(`http://localhost:8080/restaurant/detail/${restaurantId}/review/`);
+            const response = await axios.get(`http://192.168.20.12:8080/restaurant/detail/${restaurantId}/review/`);
             setReviews(response.data);
 
             const ids = [...new Set(response.data.map(r => r.memberId))];
             ids.forEach(async (id) => {
                 try {
-                    const res = await axios.get(`http://localhost:8080/memberProfile/${id}`);
+                    const res = await axios.get(`http://192.168.20.12:8080/memberProfile/${id}`);
                     setProfileMap(prev => ({ ...prev, [id]: res.data.attachmentNo }));
                 } catch (e) { }
             });
@@ -68,7 +68,7 @@ export default function ReviewList() {
         });
         if (result.isConfirmed) {
             try {
-                await axios.delete(`http://localhost:8080/restaurant/detail/${restaurantId}/review/${reviewNo}`);
+                await axios.delete(`http://192.168.20.12:8080/restaurant/detail/${restaurantId}/review/${reviewNo}`);
                 Swal.fire({
                     title: "삭제 완료!",
                     text: "리뷰가 성공적으로 삭제되었습니다.",
@@ -93,9 +93,9 @@ export default function ReviewList() {
 
     const getImageUrl = (attachmentNo) => {
         // 백엔드에서 '/attachment/{파일번호}'로 이미지 파일을 제공한다고 가정합니다.
-        return `http://localhost:8080/attachment/${attachmentNo}`;
+        return `http://192.168.20.12:8080/attachment/${attachmentNo}`;
     };
-    const getUrl = (no) => no ? `http://localhost:8080/attachment/${no}` : "https://dummyimage.com/100/ccc/fff&text=no";
+    const getUrl = (no) => no ? `http://192.168.20.12:8080/attachment/${no}` : "https://dummyimage.com/100/ccc/fff&text=no";
 
     if (loading) {
         return <div className="text-center p-5">리뷰 목록을 불러오는 중...</div>;

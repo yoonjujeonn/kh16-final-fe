@@ -17,7 +17,7 @@ export default function CategoryImageAdd() {
     const [file, setFile] = useState(null);
 
     useEffect(() => {
-        axios.get("http://localhost:8080/category/parent")
+        axios.get("http://192.168.20.12:8080/category/parent")
             .then(res => setCategoryList(res.data))
             .catch(() => toast.error("카테고리 목록 불러오기 실패"));
     }, []);
@@ -36,7 +36,7 @@ export default function CategoryImageAdd() {
         formData.append("categoryNo", categoryNo);
         formData.append("attach", file);
 
-        axios.post("http://localhost:8080/admin/category/image", formData, {
+        axios.post("http://192.168.20.12:8080/admin/category/image", formData, {
             headers: { "Content-Type": "multipart/form-data" },
             withCredentials: true
         })

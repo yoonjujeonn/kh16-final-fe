@@ -695,7 +695,7 @@ export default function MemberChange() {
     const findProfile = useCallback(async (targetId) => {
         console.log("1. findProfile 시작 - ID:", targetId);
         try {
-            const response = await axios.get(`http://localhost:8080/memberProfile/${targetId}`);
+            const response = await axios.get(`http://192.168.20.12:8080/memberProfile/${targetId}`);
             console.log("2. 서버 응답 전체:", response); // 통신 성공 여부 확인
 
             if (response.data) {
@@ -713,7 +713,7 @@ export default function MemberChange() {
     //     if (!targetId) return;
     //     try {
     //         // const { data } = await axios.get(`http://192.168.20.21:8080/memberProfile/${loginId}`);
-    //         const { data } = await axios.get(`http://localhost:8080/memberProfile/${targetId}`);
+    //         const { data } = await axios.get(`http://192.168.20.12:8080/memberProfile/${targetId}`);
     //         setProfileNo(data.attachmentNo);
     //         console.log("프로필 번호 저장 완료:", data.attachmentNo);
     //     } catch (err) {
@@ -739,7 +739,7 @@ export default function MemberChange() {
 
 
         try {
-            await axios.post("http://localhost:8080/memberProfile/add", formData, {
+            await axios.post("http://192.168.20.12:8080/memberProfile/add", formData, {
                 headers: { "Content-Type": "multipart/form-data" },
                 withCredentials: true
             });
