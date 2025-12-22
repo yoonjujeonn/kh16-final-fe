@@ -268,11 +268,13 @@ export default function RestaurantAddFinish() {
                         <h1>식당 등록이 완료되었습니다</h1>
                         <span>관리자 승인 후 최종 등록됩니다(영업일 기준 2~3일)</span>
                     </div>
-                    <div className="text-center mt-4">
-                        <img src="https://i.gifer.com/7efs.gif" alt="완료" />
-                        <Link to="/" className="btn btn-primary mt-3">
+                    <div className="text-center mt-4 d-flex flex-column align-items-center">
+                        <div className="text-center">
+                        <Link to="/" className="btn btn-lg btn-primary mt-3">
                             메인 페이지로
                         </Link>
+                        </div>
+                        <img src="https://i.gifer.com/7efs.gif" alt="완료" />
                     </div>
                 </>
             )}

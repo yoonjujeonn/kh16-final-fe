@@ -6,7 +6,7 @@ import MemberLogin from "./member/MemberLogin";
 import RestaurantAddFinish from "./restaurant/RestaurantAddFinish";
 import MemberJoin from "./member/MemberJoin";
 import CategoryAdd from "./admin/category/categoryAdd";
-import BannerAdd from "./admin/banner/bannerAdd";
+import BannerAdd from "./admin/banner/BannerAdd";
 import ReviewList from "./review/ReviewList";
 import ReservationAdd from "./reservation/ReservationAdd";
 import RestaurantDetail from "./restaurant/RestaurantDetail";
@@ -76,9 +76,9 @@ export default function Content() {
                         <Route path="/restaurant/add/finish/:restaurantId" element={<Owner><RestaurantAddFinish /></Owner>} />
 
                         {/* 사장님 */}
-                        <Route path="/owner/my-restaurant" element={<MyRestaurantList />} />
-                        <Route path="/owner/my-restaurant/:restaurantId" element={<MyRestaurantDetail />} />
-                        <Route path="/owner/my-restaurant/:restaurantId/manage" element={<MyRestaurantManage />} />
+                        <Route path="/owner/my-restaurant" element={<Owner><MyRestaurantList /></Owner>} />
+                        <Route path="/owner/my-restaurant/:restaurantId" element={<Owner><MyRestaurantDetail /></Owner>} />
+                        <Route path="/owner/my-restaurant/:restaurantId/manage" element={<Owner><MyRestaurantManage /></Owner>} />
 
                         {/* 식당 페이지 */}
                         {/* <Route path="/restaurant/edit/:restaurantId" element={<Owner><RestaurantEdit /></Owner>}></Route> */}
