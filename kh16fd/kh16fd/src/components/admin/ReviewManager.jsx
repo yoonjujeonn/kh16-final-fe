@@ -15,7 +15,7 @@ export default function ReviewManager() {
     const [expandedReviews, setExpandedReviews] = useState({});
 
     const getImageUrl = (attachmentNo) => {
-        return `http://localhost:8080/attachment/${attachmentNo}`;
+        return `http://192.168.20.12:8080/attachment/${attachmentNo}`;
     };
 
     const toggleExpand = useCallback((reviewNo) => {

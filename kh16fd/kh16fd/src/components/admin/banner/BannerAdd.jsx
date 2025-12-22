@@ -45,7 +45,7 @@ export default function BannerAdd() {
         formData.append("bannerOrder", banner.bannerOrder);
         formData.append("attach", banner.attach);
 
-        axios.post("http://localhost:8080/admin/banner", formData, {
+        axios.post("http://192.168.20.12:8080/admin/banner", formData, {
             headers: { "Content-Type": "multipart/form-data" },
             withCredentials: true
         })

@@ -23,7 +23,7 @@ export default function Category() {
 
     const loadData = useCallback(async () => {
         try {
-            const res = await axios.get("http://localhost:8080/category/");
+            const res = await axios.get("http://192.168.20.12:8080/category/");
             setCategoryList(res.data);
         } catch {
             toast.error("카테고리 목록 로딩 실패");
@@ -75,7 +75,7 @@ export default function Category() {
 
         try {
             await axios.post(
-                "http://localhost:8080/admin/category",
+                "http://192.168.20.12:8080/admin/category",
                 buildPayload(),
                 { withCredentials: true }
             );
@@ -104,7 +104,7 @@ export default function Category() {
 
         try {
             await axios.put(
-                `http://localhost:8080/admin/category/${category.categoryNo}`,
+                `http://192.168.20.12:8080/admin/category/${category.categoryNo}`,
                 buildPayload(),
                 { withCredentials: true }
             );
@@ -130,7 +130,7 @@ export default function Category() {
 
         try {
             await axios.delete(
-                `http://localhost:8080/admin/category/${item.categoryNo}`,
+                `http://192.168.20.12:8080/admin/category/${item.categoryNo}`,
                 { withCredentials: true }
             );
             toast.success("삭제 완료");

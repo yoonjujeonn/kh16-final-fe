@@ -9,7 +9,7 @@ export default function CategoryImageList() {
     const navigate = useNavigate();
 
     const loadData = useCallback(() => {
-        axios.get("http://localhost:8080/category/top")
+        axios.get("http://192.168.20.12:8080/category/top")
             .then(res => setList(res.data))
             .catch(() => toast.error("카테고리 목록 불러오기 실패"));
     }, []);
@@ -20,7 +20,7 @@ export default function CategoryImageList() {
         if (!window.confirm("카테고리 이미지를 삭제하시겠습니까?")) return;
         try {
             await axios.delete(
-                `http://localhost:8080/admin/category/image/${categoryNo}`,
+                `http://192.168.20.12:8080/admin/category/image/${categoryNo}`,
                 { withCredentials: true }
             );
             toast.success("이미지 삭제 완료");
@@ -64,7 +64,7 @@ export default function CategoryImageList() {
                                 <td>
                                     {c.attachmentNo ? (
                                         <img
-                                            src={`http://localhost:8080/attachment/${c.attachmentNo}`}
+                                            src={`http://192.168.20.12:8080/attachment/${c.attachmentNo}`}
                                             style={{ width: 120, borderRadius: 8 }}
                                         />
                                     ) : (

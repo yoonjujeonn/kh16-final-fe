@@ -47,7 +47,7 @@ export default function AdminMemberInfo() {
 
     const loadData = useCallback(async () => {
         try {
-            const response = await axios.get(`http://localhost:8080/memberProfile/${memberId}`);
+            const response = await axios.get(`http://192.168.20.12:8080/memberProfile/${memberId}`);
             setProfile(response.data);
         } catch (e) { 
             console.log(e);
@@ -160,7 +160,7 @@ export default function AdminMemberInfo() {
                 <div className="col-sm-9">
                     <img
                         src={profile && profile.attachmentNo
-                            ? `http://localhost:8080/attachment/${profile.attachmentNo}`
+                            ? `http://192.168.20.12:8080/attachment/${profile.attachmentNo}`
                             : "https://dummyimage.com/300X300/a6a6a6/fff.png&text=no+profile"
                         }
                         className="border rounded"

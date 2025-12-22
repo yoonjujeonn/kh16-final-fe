@@ -63,7 +63,7 @@ export default function RestaurantBasicInfo({ data, setData, onNext }) {
 
     // 상위 카테고리 목록 불러오기
     useEffect(() => {
-        axios.get("http://localhost:8080/category/parent")
+        axios.get("http://192.168.20.12:8080/category/parent")
             .then(res => setParentList(res.data))
             .catch(err => console.log("상위 카테고리 불러오기 실패", err));
     }, []);
@@ -77,7 +77,7 @@ export default function RestaurantBasicInfo({ data, setData, onNext }) {
             return;
         }
 
-        const res = await axios.get(`http://localhost:8080/category/child/${no}`)
+        const res = await axios.get(`http://192.168.20.12:8080/category/child/${no}`)
         setChildList(res.data);
 
     }, [parentList]);

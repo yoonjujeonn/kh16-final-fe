@@ -90,7 +90,7 @@ export default function MyWishList() {
                         <Link to={`/restaurant/detail/${restaurant.restaurantId}`}>
                             <img
                                 // 이미지 주소는 백엔드 파일 서버 경로를 사용합니다.
-                                src={`http://localhost:8080/restaurant/image/${restaurant.restaurantId}`}
+                                src={`http://192.168.20.12:8080/restaurant/image/${restaurant.restaurantId}`}
                                 className="card-img-top"
                                 alt={restaurant.restaurantName}
                                 style={{ height: '200px', objectFit: 'cover' }}
