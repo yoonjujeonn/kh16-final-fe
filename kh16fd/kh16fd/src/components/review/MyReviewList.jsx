@@ -22,7 +22,7 @@ export default function MyReviewList() {
     const [expandedReviews, setExpandedReviews] = useState({}); // 더보기/접기 상태
 
     const getImageUrl = (attachmentNo) => {
-        return `http://localhost:8080/attachment/${attachmentNo}`;
+        return `http://192.168.20.12:8080/attachment/${attachmentNo}`;
     };
 
 

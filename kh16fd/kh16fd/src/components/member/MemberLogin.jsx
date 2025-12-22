@@ -36,7 +36,7 @@ export default function MemberLogin() {
         if(!targetId) return;
         try {
             // const { data } = await axios.get(`http://192.168.20.21:8080/memberProfile/${loginId}`);
-            const { data } = await axios.get(`http://localhost:8080/memberProfile/${targetId}`);
+            const { data } = await axios.get(`http://192.168.20.12:8080/memberProfile/${targetId}`);
             setProfileNo(data.attachmentNo);
             console.log("프로필 번호 저장 완료:", data.attachmentNo);
         } catch (err){

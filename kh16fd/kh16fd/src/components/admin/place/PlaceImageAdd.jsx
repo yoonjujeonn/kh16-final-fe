@@ -18,7 +18,7 @@ export default function PlaceImageAdd() {
 
     // 지역 목록 조회
     useEffect(() => {
-        axios.get("http://localhost:8080/place/depth1/list")
+        axios.get("http://192.168.20.12:8080/place/depth1/list")
             .then(res => setPlaceList(res.data))
             .catch(() => toast.error("지역 목록 불러오기 실패"));
     }, []);
@@ -37,7 +37,7 @@ export default function PlaceImageAdd() {
         formData.append("placeId", placeId);
         formData.append("attach", file);
 
-        axios.post("http://localhost:8080/admin/place/image", formData, {
+        axios.post("http://192.168.20.12:8080/admin/place/image", formData, {
             headers: { "Content-Type": "multipart/form-data" },
             withCredentials: true
         })

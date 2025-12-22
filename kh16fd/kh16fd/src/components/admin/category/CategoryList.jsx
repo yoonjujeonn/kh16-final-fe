@@ -14,7 +14,7 @@ export default function CategoryList() {
     useEffect(() => { loadData(); }, []);
 
     const loadData = useCallback(async () => {
-        const response = await axios.get("http://localhost:8080/category/");
+        const response = await axios.get("http://192.168.20.12:8080/category/");
         setCategoryList(response.data);
     }, []);
 
@@ -47,7 +47,7 @@ export default function CategoryList() {
     const saveEdit = async (categoryNo) => {
         try {
             await axios.patch(
-                `http://localhost:8080/admin/category/${categoryNo}`,
+                `http://192.168.20.12:8080/admin/category/${categoryNo}`,
                 { categoryName: editName },
                 { withCredentials: true }
             );
@@ -63,7 +63,7 @@ export default function CategoryList() {
 
         try {
             await axios.delete(
-                `http://localhost:8080/admin/category/${categoryNo}`,
+                `http://192.168.20.12:8080/admin/category/${categoryNo}`,
                 { withCredentials: true }
             );
             loadData();

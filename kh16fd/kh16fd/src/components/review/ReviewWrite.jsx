@@ -58,7 +58,7 @@ export default function ReviewWrite() {
         try {
             // ⭐ Content-Type 헤더를 명시하여 멀티파트 데이터 전송을 확실히 합니다.
             await axios.post(
-                `http://localhost:8080/restaurant/detail/${restaurantId}/review/`,
+                `http://192.168.20.12:8080/restaurant/detail/${restaurantId}/review/`,
                 formData,
                 {
                     headers: {
@@ -83,7 +83,7 @@ export default function ReviewWrite() {
         // };
 
         // try {
-        //     await axios.post(`http://localhost:8080/restaurant/detail/${restaurantId}/review/`, payload);
+        //     await axios.post(`http://192.168.20.12:8080/restaurant/detail/${restaurantId}/review/`, payload);
         //     toast.success("리뷰 작성이 완료되었습니다");
         //     navigate(`/restaurant/detail/${restaurantId}/review/`);
         // }

@@ -27,7 +27,7 @@ export default function ReviewEdit() {
     const loadData = useCallback(async () => {
         setLoading(true);
         try {
-            const response = await axios.get(`http://localhost:8080/restaurant/detail/${restaurantId}/review/${reviewNo}`);
+            const response = await axios.get(`http://192.168.20.12:8080/restaurant/detail/${restaurantId}/review/${reviewNo}`);
             const data = response.data;
             if (data.memberId !== currentMemberId) {
                 toast.error("수정 권한이 없습니다");
@@ -40,7 +40,7 @@ export default function ReviewEdit() {
             // ⭐ 기존 이미지가 없으면 null로 확실히 초기화
         if (data.reviewAttachmentNo) {
             setExistingAttachmentNo(data.reviewAttachmentNo);
-            setPreviewUrl(`http://localhost:8080/attachment/${data.reviewAttachmentNo}`);
+            setPreviewUrl(`http://192.168.20.12:8080/attachment/${data.reviewAttachmentNo}`);
         } else {
             setExistingAttachmentNo(null);
             setPreviewUrl(null);

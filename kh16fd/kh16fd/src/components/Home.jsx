@@ -22,26 +22,26 @@ export default function Home() {
 
     const [categoryList, setCategoryList] = useState([]);
 
-    // ⭐ depth1 대표 지역 + 이미지
+    //depth1 대표 지역 + 이미지
     const [placeTopList, setPlaceTopList] = useState([]);
 
     useEffect(() => {
-        axios.get("http://localhost:8080/banner/list")
+        axios.get("http://192.168.20.12:8080/banner/list")
             .then(res => setBannerList(res.data));
     }, []);
 
     useEffect(() => {
-        axios.get("http://localhost:8080/place/upper")
+        axios.get("http://192.168.20.12:8080/place/upper")
             .then(res => setDepth1List(res.data));
     }, []);
 
     useEffect(() => {
-        axios.get("http://localhost:8080/category/top")
+        axios.get("http://192.168.20.12:8080/category/top")
             .then(res => setCategoryList(res.data));
     }, []);
 
     useEffect(() => {
-        axios.get("http://localhost:8080/place/top")
+        axios.get("http://192.168.20.12:8080/place/top")
             .then(res => setPlaceTopList(res.data));
     }, []);
 
@@ -55,7 +55,7 @@ export default function Home() {
         setSelectedDepth1(depth1);
 
         const res = await axios.get(
-            `http://localhost:8080/place/lower/${encodeURIComponent(depth1)}`
+            `http://192.168.20.12:8080/place/lower/${encodeURIComponent(depth1)}`
         );
         setDepth2List(res.data);
     };
@@ -87,7 +87,7 @@ export default function Home() {
                             {bannerList.map(banner => (
                                 <SwiperSlide key={banner.bannerNo}>
                                     <img
-                                        src={`http://localhost:8080/attachment/${banner.bannerAttachmentNo}`}
+                                        src={`http://192.168.20.12:8080/attachment/${banner.bannerAttachmentNo}`}
                                         alt=""
                                         style={{ cursor: "pointer" }}
                                         onClick={() => navigate(banner.bannerLink)}
@@ -114,7 +114,7 @@ export default function Home() {
                                 <img
                                     src={
                                         place.attachmentNo
-                                            ? `http://localhost:8080/attachment/${place.attachmentNo}`
+                                            ? `http://192.168.20.12:8080/attachment/${place.attachmentNo}`
                                             : "/no-image.png"
                                     }
                                     alt={place.placeDepth1}
@@ -175,7 +175,7 @@ export default function Home() {
                             >
                                 {category.attachmentNo && (
                                     <img
-                                        src={`http://localhost:8080/attachment/${category.attachmentNo}`}
+                                        src={`http://192.168.20.12:8080/attachment/${category.attachmentNo}`}
                                         alt={category.categoryName}
                                         className="category-image"
                                     />

@@ -10,7 +10,7 @@ export default function PlaceImageList() {
     const navigate = useNavigate();
 
     const loadData = useCallback(() => {
-        axios.get("http://localhost:8080/place/top")
+        axios.get("http://192.168.20.12:8080/place/top")
             .then(res => setList(res.data))
             .catch(() => toast.error("지역 목록 불러오기 실패"));
     }, []);
@@ -23,7 +23,7 @@ export default function PlaceImageList() {
         if (!window.confirm("지역 이미지를 삭제하시겠습니까?")) return;
         try {
             await axios.delete(
-                `http://localhost:8080/admin/place/image/${placeId}`,
+                `http://192.168.20.12:8080/admin/place/image/${placeId}`,
                 { withCredentials: true }
             );
             toast.success("이미지 삭제 완료");
@@ -71,7 +71,7 @@ export default function PlaceImageList() {
                                 <td>
                                     {p.attachmentNo ? (
                                         <img
-                                            src={`http://localhost:8080/attachment/${p.attachmentNo}`}
+                                            src={`http://192.168.20.12:8080/attachment/${p.attachmentNo}`}
                                             style={{ width: 120, borderRadius: 8 }}
                                         />
                                     ) : (
