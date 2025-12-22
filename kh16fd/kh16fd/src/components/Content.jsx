@@ -72,8 +72,8 @@ export default function Content() {
                         <Route path="/member/info/reservation" element={<MyReservationList />} />
 
                         {/* 식당 등록 */}
-                        <Route path="/restaurant/add" element={<RestaurantAddByStep />}></Route>
-                        <Route path="/restaurant/add/finish/:restaurantId" element={<RestaurantAddFinish />} />
+                        <Route path="/restaurant/add" element={<Owner><RestaurantAddByStep /></Owner>}></Route>
+                        <Route path="/restaurant/add/finish/:restaurantId" element={<Owner><RestaurantAddFinish /></Owner>} />
 
                         {/* 사장님 */}
                         <Route path="/owner/my-restaurant" element={<MyRestaurantList />} />
