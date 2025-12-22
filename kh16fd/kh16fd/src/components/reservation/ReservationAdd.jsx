@@ -153,6 +153,7 @@ export default function ReservationAdd() {
         catch (err) {
             console.log(reservationInfo);
             toast.error("요청이 정상적으로 처리되지 않았습니다");
+            navigate("/error/409");
         }
         finally {
             setIsPaying(false);
