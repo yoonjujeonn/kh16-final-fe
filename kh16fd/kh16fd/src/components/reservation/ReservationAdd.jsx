@@ -22,7 +22,7 @@ export default function ReservationAdd() {
         reservationRequestNote: "",
         reservationPurpose: ""
     });
-
+    
     console.log(reservationTime);
     
     const [agreements, setAgreements] = useState({
@@ -99,6 +99,7 @@ export default function ReservationAdd() {
 
     //effect
     useEffect(() => {
+
         loadData();
     }, []);
 

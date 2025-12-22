@@ -551,6 +551,7 @@ export default function RestaurantDetail() {
 
         try {
             lockId = await lockSlot();
+            
         }
         catch (error) {
             console.error("에러 로그", error);
@@ -559,6 +560,10 @@ export default function RestaurantDetail() {
             return;
         }
 
+        if(!lockId) {
+            toast.error("이미 예약된 좌석입니다");
+        }
+        
         const info = {
             reservationTarget: selectedSeat.seatRestaurantId,
             reservationSeat: selectedSeat.seatId,
