@@ -15,7 +15,7 @@ export default function BannerAdd() {
         bannerOrder: 1,
         attach: null
     });
-
+    
     const changeValue = useCallback(e => {
         const { name, value } = e.target;
         setBanner(prev => ({

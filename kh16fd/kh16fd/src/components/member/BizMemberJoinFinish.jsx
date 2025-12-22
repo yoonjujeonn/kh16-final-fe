@@ -12,7 +12,7 @@ export default function BizMemberJoinFinish() {
         <hr/>
         <div className="row mt-4 ">
             <Link to="/restaurant/add" className="text-decoration-none">
-            <div className="col d-flex flex-column justify-content-center">
+            <div className="col d-flex flex-column align-items-center justify-content-center">
                 <img src="https://i.gifer.com/7efs.gif" alt="완료" />
             </div>
             </Link>

@@ -99,6 +99,11 @@ export default function Menu() {
                         {!isLogin && !isOwner && !isAdmin && (
                             <>
                                 <li className="nav-item">
+                                    <Link className="nav-link" to="/restaurant/list">
+                                        식당 목록
+                                    </Link>
+                                </li>
+                                <li className="nav-item">
                                     <Link className="nav-link" to="/member/login">
                                         <FaRightToBracket className="me-1" />로그인
                                     </Link>
