@@ -85,6 +85,7 @@ export default function MemberInfo() {
                     <img
                         src={profileUrl}
                         className="border rounded"
+                        style={{ width: "150px", height: "150px", objectFit: "cover" }}
                     />
                 </div>
             </div>

@@ -64,7 +64,7 @@ export const clearLoginState = atom(
     });
 
 // 1. 순수하게 번호만 저장 (localStorage 연동)
-export const attachmentProfileAtomState = atomWithStorage("profileNo", 0);
+export const attachmentProfileAtomState = atomWithStorage("profileNo", 0, sessionStorage);
 
 // 2. 번호를 기반으로 URL을 계산 (읽기 전용 아톰)
 export const profileImageUrlAtom = atom((get) => {
