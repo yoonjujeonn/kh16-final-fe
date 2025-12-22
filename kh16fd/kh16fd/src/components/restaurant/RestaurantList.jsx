@@ -339,6 +339,11 @@ export default function RestaurantList() {
             return;
         }
 
+         if(!lockId) {
+            toast.error("이미 예약된 좌석입니다");
+            return;
+        }
+
         const info = {
             reservationTarget: selectedSeat.seatRestaurantId,
             reservationSeat: selectedSeat.seatId,
