@@ -44,6 +44,7 @@ import RestaurantConfirmDetail from "./admin/restaurant/RestaurantConfirmDetail"
 import Owner from "./guard/Owner";
 import OwnerReservationList from "./owner/OwnerReservationList";
 import AdminMemberInfo from "./admin/member/AdminMemberInfo";
+import ReservationConflict from "./error/ReservationConflict";
 // import AdminPartnerInfo from "./admin/member/AdminPartnerInfo";
 
 
@@ -124,6 +125,7 @@ export default function Content() {
 
                         {/* 에러 페이지들 */}
                         <Route path="/error/403" element={<NeedPermission />}></Route>
+                        <Route path="/error/409" element={<ReservationConflict />}></Route>
                         {/* 페이지를 못찾은 경우 보여줄 에러페이지는 맨 마지막에 와일드카드를 사용 */}
                         <Route path="*" element={<TargetNoutfound />}></Route>
 
