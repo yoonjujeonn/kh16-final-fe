@@ -80,6 +80,7 @@ export default function Home() {
                         <Swiper
                             modules={[Navigation, Autoplay]}
                             navigation
+                            pagination={false}
                             autoplay={{ delay: 3000, disableOnInteraction: false }}
                             loop
                             className="swiper"
