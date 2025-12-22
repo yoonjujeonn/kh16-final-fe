@@ -188,6 +188,10 @@ export default function Menu() {
                                         <FaGear className="me-1" />관리 메뉴
                                     </a>
                                     <div className="dropdown-menu">
+                                        <Link className="dropdown-item" to="/admin/setting">
+                                            <FaClipboardCheck className="me-2" />
+                                            회원 관리
+                                        </Link>
                                         <Link className="dropdown-item" to="/admin/restaurant">
                                             <FaClipboardCheck className="me-2" />
                                             미승인 레스토랑
