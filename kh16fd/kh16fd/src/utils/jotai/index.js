@@ -72,7 +72,7 @@ export const profileImageUrlAtom = atom((get) => {
     if (!no) {
         return "https://dummyimage.com/300X300/a6a6a6/fff.png&text=no+profile";
     }
-    return `http://localhost:8080/attachment/${no}?t=${new Date().getTime()}`;
+    return `http://192.168.20.12:8080/attachment/${no}?t=${new Date().getTime()}`;
 });
 
 

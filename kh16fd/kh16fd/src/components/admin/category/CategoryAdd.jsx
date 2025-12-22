@@ -17,7 +17,7 @@ export default function CategoryAdd() {
     const [parentList, setParentList] = useState([]);
 
     useEffect(() => {
-        axios.get("http://localhost:8080/category/parent")
+        axios.get("http://192.168.20.12:8080/category/parent")
             .then(res => setParentList(res.data))
             .catch(() => toast.error("카테고리 목록 조회 실패"));
     }, []);
@@ -42,7 +42,7 @@ export default function CategoryAdd() {
                     : Number(category.parentCategoryNo)
         };
 
-        axios.post("http://localhost:8080/admin/category", payload, {
+        axios.post("http://192.168.20.12:8080/admin/category", payload, {
             withCredentials: true
         })
         .then(() => {

@@ -9,7 +9,7 @@ export default function BannerList() {
     const [list, setList] = useState([]);
 
     const loadData = useCallback(() => {
-        axios.get("http://localhost:8080/banner/list")
+        axios.get("http://192.168.20.12:8080/banner/list")
             .then(res => setList(res.data))
             .catch(() => toast.error("배너 목록 불러오기 실패"));
     }, []);
@@ -23,7 +23,7 @@ export default function BannerList() {
 
         try {
             await axios.delete(
-                `http://localhost:8080/admin/banner/${bannerNo}`,
+                `http://192.168.20.12:8080/admin/banner/${bannerNo}`,
                 { withCredentials: true }
             );
             toast.success("삭제 완료");
@@ -35,7 +35,7 @@ export default function BannerList() {
     };
 
     const getImageUrl = (attachmentNo) =>
-        `http://localhost:8080/attachment/${attachmentNo}`;
+        `http://192.168.20.12:8080/attachment/${attachmentNo}`;
 
     return (
         <>

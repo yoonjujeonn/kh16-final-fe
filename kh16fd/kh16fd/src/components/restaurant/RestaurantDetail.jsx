@@ -615,7 +615,7 @@ export default function RestaurantDetail() {
                                     </span>
                                 </span>
                             </div>
-                            <img src={`http://localhost:8080/restaurant/image/${restaurantId}`} className="w-100 mb-4" style={{ height: "450px" }} />
+                            <img src={`http://192.168.20.12:8080/restaurant/image/${restaurantId}`} className="w-100 mb-4" style={{ height: "450px" }} />
                         </div>
                         <span className="fs-1 me-2">{fullInfo.restaurantName}</span>
                         <div className="review-info-wrapper d-flex" style={{ cursor: "pointer" }} onClick={goReview}>

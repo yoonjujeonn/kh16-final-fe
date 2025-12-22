@@ -63,7 +63,7 @@ export default function RestaurantSearch() {
             >
               {/* 이미지 */}
               <img
-                src={`http://localhost:8080/restaurant/image/${restaurant.restaurantId}`}
+                src={`http://192.168.20.12:8080/restaurant/image/${restaurant.restaurantId}`}
                 className="w-100 rounded mb-3"
                 style={{ height: "350px", objectFit: "cover" }}
               />
