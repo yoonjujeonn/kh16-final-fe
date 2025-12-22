@@ -660,7 +660,7 @@ export default function RestaurantDetail() {
                         <Link to={`/restaurant/detail/${restaurantId}`} className="list-group-item text-primary">홈</Link>
                         <Link to={`/restaurant/detail/${restaurantId}/menu`} className="text-decoration-none">메뉴</Link>
                         <Link to={`/restaurant/detail/${restaurantId}/review`} className="text-decoration-none">리뷰</Link>
-                        <Link to={`/restaurant/detail/${restaurantId}/info`} className="text-decoration-none">매장정보</Link>
+                        {/* <Link className="text-decoration-none">매장정보</Link> */}
                     </div>
                 </div>
                 <Outlet />
