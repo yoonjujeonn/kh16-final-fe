@@ -382,7 +382,6 @@ export default function RestaurantList() {
                                     <li className="list-group-item">
                                         <div className="row">
                                             <div className="col">
-
                                                 <Link to={`/restaurant/detail/${restaurant.restaurantId}`}><img className="d-flex rounded mt-2 clickable w-100" src={`http://192.168.20.12:8080/restaurant/image/${restaurant.restaurantId}`} style={{ height: "400px", objectFit: "cover" }} /></Link>
                                                 <h3 className="mt-4">{restaurant.restaurantName}</h3>
                                                 <div className="mt-2">{restaurant.statusText}  ·  <FaUser className="me-2" />최대 {restaurant.restaurantMaxPeople}명 예약 가능</div>
