@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 export default function ReservationConflict(){
     return (<>
             <div className="title-wrapper p-4 mb-4 ms-3">
